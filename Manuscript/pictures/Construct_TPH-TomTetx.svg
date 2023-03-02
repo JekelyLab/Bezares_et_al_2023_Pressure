@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="596.66553mm"
+   height="129.96486mm"
+   viewBox="0 0 596.66553 129.96486"
+   version="1.1"
+   id="svg6440"
+   inkscape:version="1.2.1 (9c6d41e, 2022-07-14)"
+   sodipodi:docname="Construct_TPH-TomTetx.svg"
+   inkscape:export-filename="Construct_TPH-TomTetx.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview6442"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="0.35778002"
+     inkscape:cx="568.78526"
+     inkscape:cy="32.142656"
+     inkscape:window-width="1280"
+     inkscape:window-height="930"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     inkscape:showpageshadow="0"
+     inkscape:deskcolor="#d1d1d1" />
+  <defs
+     id="defs6437">
+    <marker
+       style="overflow:visible"
+       id="TriangleStart"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="TriangleStart"
+       markerWidth="5.3244081"
+       markerHeight="6.155385"
+       viewBox="0 0 5.3244081 6.1553851"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path135" />
+    </marker>
+    <rect
+       x="-413.66199"
+       y="30.74515"
+       width="1106.8254"
+       height="385.71188"
+       id="rect581" />
+    <rect
+       x="6.8248768"
+       y="156.97215"
+       width="202.47134"
+       height="145.59737"
+       id="rect20636" />
+    <marker
+       style="overflow:visible"
+       id="Arrow1Send"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Arrow1Send"
+       inkscape:isstock="true">
+      <path
+         transform="matrix(-0.2,0,0,-0.2,-1.2,0)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 0,0 5,-5 -12.5,0 5,5 Z"
+         id="path1268" />
+    </marker>
+    <rect
+       x="120.57282"
+       y="120.57282"
+       width="395.84286"
+       height="113.74794"
+       id="rect10574" />
+    <inkscape:path-effect
+       effect="bspline"
+       id="path-effect6759"
+       is_visible="true"
+       lpeversion="1"
+       weight="33.333333"
+       steps="2"
+       helper_size="0"
+       apply_no_weight="true"
+       apply_with_weight="true"
+       only_selected="false" />
+    <rect
+       x="120.57282"
+       y="120.57282"
+       width="395.84286"
+       height="113.74794"
+       id="rect10574-3" />
+    <rect
+       x="120.57282"
+       y="120.57282"
+       width="395.84286"
+       height="113.74794"
+       id="rect10574-8" />
+    <rect
+       x="120.57282"
+       y="120.57282"
+       width="395.84286"
+       height="113.74794"
+       id="rect10574-36" />
+    <rect
+       x="120.57282"
+       y="120.57282"
+       width="395.84286"
+       height="113.74794"
+       id="rect10574-8-7" />
+    <rect
+       x="120.57282"
+       y="120.57282"
+       width="395.84286"
+       height="113.74794"
+       id="rect10574-3-5" />
+    <marker
+       style="overflow:visible"
+       id="Arrow1Send-3"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Arrow1Send"
+       inkscape:isstock="true">
+      <path
+         transform="matrix(-0.2,0,0,-0.2,-1.2,0)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 0,0 5,-5 -12.5,0 5,5 Z"
+         id="path1268-5" />
+    </marker>
+    <rect
+       x="6.8248768"
+       y="156.97215"
+       width="202.47134"
+       height="145.59737"
+       id="rect20636-6" />
+    <marker
+       style="overflow:visible"
+       id="TriangleStart-2"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="TriangleStart"
+       markerWidth="5.3244081"
+       markerHeight="6.155385"
+       viewBox="0 0 5.3244081 6.1553851"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path135-6" />
+    </marker>
+    <rect
+       x="120.57282"
+       y="120.57282"
+       width="395.84286"
+       height="113.74794"
+       id="rect10574-1" />
+    <rect
+       x="120.57282"
+       y="120.57282"
+       width="395.84286"
+       height="113.74794"
+       id="rect10574-8-8" />
+    <rect
+       x="120.57282"
+       y="120.57282"
+       width="395.84286"
+       height="113.74794"
+       id="rect10574-3-7" />
+    <rect
+       x="6.8248768"
+       y="156.97215"
+       width="202.47134"
+       height="145.59737"
+       id="rect20636-9" />
+    <rect
+       x="-413.66199"
+       y="30.74515"
+       width="1106.8254"
+       height="385.71188"
+       id="rect581-9" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(246.38494,5.8184242)">
+    <g
+       id="g3652"
+       transform="translate(0,72.662)">
+      <g
+         id="g1879">
+        <rect
+           style="opacity:1;fill:#ff0000;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           id="rect6546"
+           width="154.12862"
+           height="23.585037"
+           x="51.424519"
+           y="26.899418" />
+        <rect
+           style="opacity:1;fill:#008080;stroke:#000000;stroke-width:1.93392;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           id="rect6546-9"
+           width="34.153805"
+           height="23.651083"
+           x="207.5201"
+           y="26.866394" />
+        <rect
+           style="opacity:1;fill:#ff00ff;stroke:#000000;stroke-width:1.97157;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           id="rect6546-4"
+           width="55.812294"
+           height="23.613426"
+           x="243.62665"
+           y="26.885223" />
+        <path
+           style="fill:none;stroke:#000000;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#TriangleStart)"
+           d="M 50.920058,38.691936 H 1.0642239 V 40.07742 6.492346 H 33.0045"
+           id="path6846"
+           sodipodi:nodetypes="ccccc" />
+        <path
+           style="fill:none;stroke:#000000;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 300.42473,38.691936 c 49.85583,0 49.85583,0 49.85583,0"
+           id="path6846-2" />
+        <text
+           xml:space="preserve"
+           transform="matrix(0.48413569,0,0,0.48413569,-5.7764773,-26.905762)"
+           id="text10572"
+           style="font-style:normal;font-weight:normal;font-size:29.147px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect10574);display:inline;fill:#000000;fill-opacity:1;stroke:none"><tspan
+             x="120.57227"
+             y="146.36053"
+             id="tspan3907">3xHA-Palmi-tdTomato</tspan></text>
+        <text
+           xml:space="preserve"
+           transform="matrix(0.48413569,0,0,0.48413569,188.48141,-27.029786)"
+           id="text10572-4"
+           style="font-style:normal;font-weight:normal;font-size:29.147px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect10574-8);display:inline;fill:#000000;fill-opacity:1;stroke:none"><tspan
+             x="120.57227"
+             y="146.36053"
+             id="tspan3909">TeTxLC</tspan></text>
+        <text
+           xml:space="preserve"
+           transform="matrix(0.48413569,0,0,0.48413569,151.90018,-26.929878)"
+           id="text10572-5"
+           style="font-style:normal;font-weight:normal;font-size:29.147px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect10574-3);display:inline;fill:#000000;fill-opacity:1;stroke:none"><tspan
+             x="120.57227"
+             y="146.36053"
+             id="tspan3911">P2A</tspan></text>
+        <text
+           xml:space="preserve"
+           transform="matrix(0.48413569,0,0,0.48413569,5.041833,-57.943787)"
+           id="text20634"
+           style="font-style:normal;font-weight:normal;font-size:29.147px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect20636);display:inline;fill:#000000;fill-opacity:1;stroke:none"><tspan
+             x="6.8242188"
+             y="182.76092"
+             id="tspan3913">TPHp</tspan></text>
+      </g>
+      <text
+         xml:space="preserve"
+         transform="matrix(0.26458333,0,0,0.26458333,-136.8955,6.1060487)"
+         id="text579"
+         style="font-size:53.3333px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect581);display:inline"><tspan
+           x="-413.66211"
+           y="77.933566"
+           id="tspan3915">TPHp::Palmi-tdTomato-P2A-TeTxLC</tspan></text>
+    </g>
+    <g
+       id="g3610"
+       transform="translate(0,-72.661982)">
+      <text
+         xml:space="preserve"
+         transform="matrix(0.26458333,0,0,0.26458333,-94.107442,78.768028)"
+         id="text579-7"
+         style="font-size:53.3333px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect581-9);display:inline"><tspan
+           x="-413.66211"
+           y="77.933566"
+           id="tspan3917">TPHp::Palmi-tdTomato</tspan></text>
+      <g
+         id="g1912"
+         transform="translate(5.9080398)">
+        <rect
+           style="fill:#ff0000;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           id="rect6546-2"
+           width="154.12862"
+           height="23.585037"
+           x="45.516479"
+           y="99.561394" />
+        <path
+           style="fill:none;stroke:#000000;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#TriangleStart-2)"
+           d="M 45.012018,111.35392 H -4.8438159 V 112.7394 79.154328 H 27.096458"
+           id="path6846-3"
+           sodipodi:nodetypes="ccccc" />
+        <path
+           style="fill:none;stroke:#000000;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 200.6451,111.35391 c 49.85583,0 49.85583,0 49.85583,0"
+           id="path6846-2-7" />
+        <text
+           xml:space="preserve"
+           transform="matrix(0.48413569,0,0,0.48413569,-11.684517,45.756218)"
+           id="text10572-59"
+           style="font-style:normal;font-weight:normal;font-size:29.147px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect10574-1);display:inline;fill:#000000;fill-opacity:1;stroke:none"><tspan
+             x="120.57227"
+             y="146.36053"
+             id="tspan3919">3xHA-Palmi-tdTomato</tspan></text>
+        <text
+           xml:space="preserve"
+           transform="matrix(0.48413569,0,0,0.48413569,-0.86620692,14.718191)"
+           id="text20634-8"
+           style="font-style:normal;font-weight:normal;font-size:29.147px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect20636-9);display:inline;fill:#000000;fill-opacity:1;stroke:none"><tspan
+             x="6.8242188"
+             y="182.76092"
+             id="tspan3921">TPHp</tspan></text>
+      </g>
+    </g>
+  </g>
+</svg>
