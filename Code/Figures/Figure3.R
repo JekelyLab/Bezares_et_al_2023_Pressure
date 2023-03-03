@@ -530,7 +530,7 @@ ggsave("/ebio/ag-jekely/share/Luis/Writing/Pressure_paper/Pressure-sensation-in-
   cellmut <- nlapply(read.neurons.catmaid("^cell$", pid=31),
                     function(x) smooth_neuron(x, sigma=200))
   
-  #scale_bar_250nm = read.neurons.catmaid("^scale_bar_250nm$", pid=31)
+
   
 
 ##3D Plotting----
@@ -546,11 +546,6 @@ close3d()
 plot3d(Cilia_cPRCs_Copsmut, soma = T, lwd=2, alpha = 1,col = colorRampPalette(CbbPalette) )
 plot3d(cellmut, lwd=2,  alpha =0.1,col = "black",add = T )
 
-#plot3d(scale_bar_250nm, lwd = 2, col = 'black')
-# par3d(zoom=0.75)
-# nview3d("ventral")
-# rgl.postscript("Manuscript/pictures/cPRCcilia_c-ops1mut.eps")
-# close3d()
 
 ##3d Plotting cilia by strahler----
 #Copsmut
@@ -568,11 +563,7 @@ plot3d(cellmut, lwd=2,  alpha =0.1,col = "black",add = T )
   plot3d(cellmut, lwd=5,  alpha =0.1,col = "black",add = T)
   par3d(zoom=0.75)
 }
-# rgl.postscript("Manuscript/pictures/snapshots_EM/Cops8bD/finalset/StrCopsMut3Dplot2430899.eps")
-# # convert to png
-# cmd <- 
-#   "gs -dSAFER -dBATCH -dNOPAUSE -dEPSCrop -sDEVICE=png16m -r600 -sOutputFile=Manuscript/pictures/snapshots_EM/Cops8bD/finalset/StrCopsMut3Dplot2430899.png Manuscript/pictures/snapshots_EM/Cops8bD/finalset/StrCopsMut3Dplot2430899.eps"
-# system(cmd)
+
 
 rgl.snapshot("Manuscript/pictures/snapshots_EM/Cops8bD/finalset/StrCopsMut3Dplot2430899.png")
 close3d()
@@ -599,7 +590,7 @@ close3d()
 # 
 # #CiliaColouredbyStrahler 2D
 # #copsMut
-{
+
   n=Cilia_cPRCs_Copsmut[[5]]
   so=strahler_order(n)
   orders=1:max(so$points)
@@ -608,45 +599,13 @@ close3d()
     plot(subset(n, so$points==i), col=CbbPalette[i], add = i, lwd = 6,PointAlpha = 0.1)
   }
   
-  #Measuring curvature https://www.whitman.edu/mathematics/calculus_online/section13.03.html
-  #https://www.cuemath.com/radius-of-curvature-formula/
-  Cilia <- tibble(X = n$d$X, Y = n$d$Y, Z = n$d$Z)
-  ScatCilia <- scatterplot3d(Cilia$X,Cilia$Y,Cilia$Z, type="l", 
-                xlab="X", ylab="Y", zlab="Z",
-                box=FALSE)
-  ScatCilia$points3d(Cilia$X,Cilia$Y,Cilia$Z)
- }
-# #WT
-# {
-#   n=Cilia_cPRCs_WT[[10]]
-#   # points(xyzmatrix(n)[1724:1736,],col ="red",shape ="square")
-#   so=strahler_order(n)
-#   orders=1:max(so$points)
-#   plot(n, 
-#        col='black',
-#        lwd = 4,
-#        main = element_blank(),
-#        PointAlpha = 1, 
-#        axes=F,
-#        xlab = element_blank(),
-#        ylab = element_blank(),
-#        )
-#   for (i in orders) {
-#     plot(subset(n, so$points==i), col=CbbPalette[i], add = i, lwd = 4,PointAlpha = 0.1)
-#   }
-# }
-
-  
-
-
 
 # generate figure composite panel grid ------------------------------------
 
   imgLM <- readPNG("Manuscript/pictures/cPRC_WTvsCopsnolabs.png")
-  imgEM <- readPNG("Manuscript/pictures/EMcPRCnolabs3.png")
- # imgCPRCciliaRec <- readPNG("Manuscript/pictures/cPRC_EMvolReco.png")
- # imgCPRCcilia_StrCops <- readPNG("Manuscript/pictures/cPRCStr.png")
-  Fontsize = 10
+  imgEM <- readPNG("Manuscript/pictures/EMcPRCnolabsFinal.png")
+
+    Fontsize = 10
 ####plotCBF
   
   CBFpriorduring <- ggdraw(MaxPlotCops) + 
@@ -759,26 +718,7 @@ close3d()
       draw_grob(Rect2)
     
      }
-   ##Strahler image
-   # { 
-   #   cPRCciliaStr <- ggdraw() + 
-   #     draw_image(imgCPRCcilia_StrCops) +
-   #     draw_label(expression(italic(WT)), x = 0.05, y = 0.9, size = Fontsize,color = "black") +
-   #     draw_label(expression(italic(paste("c-ops-",1^{"∆8/∆8"}))), x = 0.62, y = 0.9, size = Fontsize,color = "black") +
-   #     draw_label("bb", x = 0.33, y = 0.87, size = Fontsize,color = "black") +
-   #     draw_label("cb", x = 0.42, y = 0.6, size = Fontsize,color = "black") +
-   #     draw_label("bb", x = 0.59, y = 0.6, size = Fontsize,color = "black") +
-   #     draw_label("cb", x = 0.8, y = 0.87, size = Fontsize,color = "black") +
-   #     draw_label(paste("2", "\u00B5", "m", sep = ""), 
-   #                x = 0.42, y = 0.15, size = Fontsize, color = "black") +
-   #     draw_label(paste("2", "\u00B5", "m", sep = ""), 
-   #                x = 0.95, y = 0.15, size = Fontsize, color = "black") +
-   #     draw_label("str. order", x = 0.1, y = 0.38, size = Fontsize,color = "black") +
-   #     draw_label("1", x = 0.05, y = 0.32, size = Fontsize,color = CbbPalette[1]) +
-   #     draw_label("2", x = 0.05, y = 0.26, size = Fontsize,color = CbbPalette[2]) +
-   #     draw_label("3", x = 0.05, y = 0.2, size = Fontsize,color = CbbPalette[3]) +
-   #     draw_label("4", x = 0.05, y = 0.14, size = Fontsize,color = CbbPalette[4]) 
-   # }
+
 ###full composite
    {
    layout <- "

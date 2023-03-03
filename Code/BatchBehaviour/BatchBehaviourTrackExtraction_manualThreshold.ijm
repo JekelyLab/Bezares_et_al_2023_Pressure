@@ -6,16 +6,15 @@
 /////////////////////////////////////////////////////////
 // ImageJ macro to extract the tracks and the          //
 // distribution of the larvae from the raw videos.     //
+// Author: Martin Gühmann.                             // 
+// Modified by Luis Bezares-Calderon                    //
 /////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////
 // Asks the user where the input video files are, and  //
 // into which directory the output files should go.    //
 // The user can give the input directory first and     //
-// then the output directory. Or the user can give a   //
-// text file that contains on each line an input       //
-// directory and an output directory seperated by a    //
-// space, for batch processing.                        //
+// then the output directory.                          //
 /////////////////////////////////////////////////////////
 macro "Extract Tracks"
 {

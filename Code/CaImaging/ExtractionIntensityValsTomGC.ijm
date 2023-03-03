@@ -1,7 +1,7 @@
 //Script written by Luis Bezares in May 2017 
-//Purpose:Recording intensity profiles of selected ROIs across a list of files. This macro is the same as that called Measure-intensityvaluechanges3.ijm
-//Important: the macro assumes the videos are already corrected for X-Y shifts. This is done using the Descriptor-based Series registration plugin. Before registering the videos, crop only the frames to be analyzed and that do not include big XY shifts. Use the DIC channel for registration and then apply the calculations to the GCaMP and TdTomato channels.
-//Publication:Bezares-Calderon et al, 2018 
+//Purpose:Recording intensity profiles of selected ROIs across a list of files. 
+//Important: the macro assumes the videos are already corrected for X-Y shifts. This is done using the Descriptor-based Series registration ImageJ plugin. Before registering the videos, crop only the frames to be analyzed and that do not include big XY shifts. Use the DIC or tdTomato channel for registration and then apply the calculations to the GCaMP and TdTomato channels.
+//Publication: Bezares-Calderon et al, 2023 
 
 macro "MeasureIntensityprofiles"
 
