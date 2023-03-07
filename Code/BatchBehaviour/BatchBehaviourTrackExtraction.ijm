@@ -10,13 +10,6 @@
 // Modified by Luis Bezares-Calderon                    //
 /////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////
-// Asks the user where the input video files are, and  //
-// into which directory the output files should go.    //
-// The user can give the input directory first and     //
-// then the output directory. 						   //
-//                                                     //
-/////////////////////////////////////////////////////////
 macro "Extract Tracks"
 {
 	if(getBoolean("Choose an input and output directory otherwise give a text file containing a list of input and output directories"))
@@ -50,10 +43,6 @@ function extractTracks(inputDir, outputDir)
 
 	print (inputDir);
 	print (outputDir);
-
-	// Do not show all the calculation steps on the
-	// ImageJ user interface, this saves time and memory.
-
 
 	// Get all the files in the input directory.
 	list=getFileList(inputDir);

@@ -10,13 +10,6 @@
 //													   //
 /////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////
-// Asks the user where the input video files are, and  //
-// into which directory the output files should go.    //
-// The user can give the input directory first and     //
-// then the output directory.                         //
-/////////////////////////////////////////////////////////
-
 macro "CBF_per_second"
 {
 	if(getBoolean("Choose an input and output directory otherwise give a text file containing a list of input and output directories"))
