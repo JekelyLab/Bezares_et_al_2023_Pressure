@@ -10,14 +10,6 @@
 //													   //
 /////////////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////
-// Asks the user where the input video files are, and    //
-// into which directory the output files should go.      //
-// The user can give the input directory first and       //
-// then the output directory. 						     //
-//                                                       //
-///////////////////////////////////////////////////////////
-
 ///////////////////////////////////////////////////////////////////////// 
 //                                                                     //                                  
 // Important: the macro assumes the videos are already                 //
