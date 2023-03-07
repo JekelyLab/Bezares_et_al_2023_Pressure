@@ -1,6 +1,13 @@
+
 /////////////////////////////////////////////////////////
-// Author:L.A.Bezares-Calderón. 2022
-//ImageJ macro to calculate distribution of larvae in chamber across a time-series.     //
+// This file is best viewed with a monospaced font.    //
+/////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////
+// ImageJ macro to calculate distribution of larvae in // 
+// chamber across a time-series.                       //
+// Author: Luis Alberto Bezares-Calderón               // 
+//													   //
 /////////////////////////////////////////////////////////
 
 
@@ -27,17 +34,10 @@ macro "Input-Output dir"
 function ParticleProcessor(inputDir, outputDir)
 {
 
-	// These three parameters can be adjusted
-	// depending on video length and frame rate
-	
-
 	print (inputDir);
 	print (outputDir);
 
-	// Do not show all the calculation steps on the
-	// ImageJ user interface, this saves time and memory.
 
-	
 	// Get all the files in the input directory.
 	list=getFileList(inputDir);
 	Array.sort(list);
@@ -135,4 +135,3 @@ function findRoiWithName(roiName) {
 	} 
 	return -1; 
 } 
-//Save results
