@@ -1,7 +1,33 @@
-//Script written by Luis Bezares in May 2017 
-//Purpose:Recording intensity profiles of selected ROIs across a list of files. 
-//Important: the macro assumes the videos are already corrected for X-Y shifts. This is done using the Descriptor-based Series registration ImageJ plugin. Before registering the videos, crop only the frames to be analyzed and that do not include big XY shifts. Use the DIC or tdTomato channel for registration and then apply the calculations to the GCaMP and TdTomato channels.
-//Publication: Bezares-Calderon et al, 2023 
+
+/////////////////////////////////////////////////////////
+// This file is best viewed with a monospaced font.    //
+/////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////
+// ImageJ macro to extract the intensity profiles of   //
+// selected ROIs across a list of files. 		       //
+// Author: Luis Alberto Bezares-Calderón               // 
+//													   //
+/////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////
+// Asks the user where the input video files are, and    //
+// into which directory the output files should go.      //
+// The user can give the input directory first and       //
+// then the output directory. 						     //
+//                                                       //
+///////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////// 
+//                                                                     //                                  
+// Important: the macro assumes the videos are already                 //
+// corrected for X-Y shifts.                                           //
+// This is done using the Descriptor-based Series                      //
+// registration ImageJ plugin.                                         //
+// Use the DIC or tdTomato channel for registration and                //
+// then apply the calculations to the GCaMP and TdTomato channels.     //
+//                                                                     //
+///////////////////////////////////////////////////////////////////////// 
 
 macro "MeasureIntensityprofiles"
 
@@ -12,8 +38,6 @@ macro "MeasureIntensityprofiles"
          inputCZIDir = getDirectory("Choose the Input file directory (where the files are)");
          OutJET=getDirectory("Choose the file  directory to store the JET GC stacks");
          OutTableDir=getDirectory("Choose the file directory to store the intensity values tables");
-	    //OutTom_Ddir = getDirectory("Choose destination directory");
-	    	//GJet_Ddir = getDirectory("Choose destination directory JETLUT videos");
 	}
 
  
