@@ -48,20 +48,20 @@ gc() #free up memory and report the memory usage.
 INDirMetric <- "Data/cPRCMorphology/" #Indicate the folder with data.
 Txtpattern <- ".txt"
 
-FilesNITVols <- list.files(path = INDirMetric, pattern = Txtpattern, recursive = TRUE)
+FilescPRCVols <- list.files(path = INDirMetric, pattern = Txtpattern, recursive = TRUE)
 
-ScansTable <- read.csv("Data/InputTables/NITAcTubScanTable.csv", header = TRUE, sep = ",")
+ScansTable <- read.csv("Data/InputTables/cPRCciliaAcTubScanTable.csv", header = TRUE, sep = ",")
 
 
 for (l in seq_along(ScansTable$File_name)) {
-  Fileindex <- grep(ScansTable[l, "File_name"], FilesNITVols)
+  Fileindex <- grep(ScansTable[l, "File_name"], FilescPRCVols)
   if (length(Fileindex) > 0) {
-    TableVolume <- read.table(FilesNITVols[Fileindex], header = TRUE, sep = "\t", na.strings = " ")
+    TableVolume <- read.table(FilescPRCVols[Fileindex], header = TRUE, sep = "\t", na.strings = " ")
     ScansTable[l, "Volume"] <- sum(TableVolume$Volume)
   }
 }
 
 #Writing tables to file-------
   SavePath <- "Data/TablesResults/"
-  FullMetricsTable <- "NITAcTub_VolcPRC_WT-Cops_Table_demo.csv"
+  FullMetricsTable <- "cPRCcilia_AcTub_VolcPRC_WT-Cops_Table_demo.csv"
   write.csv(ScansTable, paste(SavePath, FullMetricsTable, sep = ""), row.names = FALSE)
