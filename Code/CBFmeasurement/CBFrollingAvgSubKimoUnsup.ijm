@@ -1,3 +1,22 @@
+
+/////////////////////////////////////////////////////////
+// This file is best viewed with a monospaced font.    //
+/////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////
+// ImageJ macro to extract the max.R values from FFT   //
+// images obtained from kymographs of the ciliary band.//
+// Author: Luis Alberto Bezares-Calderón               // 
+//													   //
+/////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////
+// Asks the user where the input video files are, and  //
+// into which directory the output files should go.    //
+// The user can give the input directory first and     //
+// then the output directory.                         //
+/////////////////////////////////////////////////////////
+
 macro "CBF_per_second"
 {
 	if(getBoolean("Choose an input and output directory otherwise give a text file containing a list of input and output directories"))
@@ -7,24 +26,10 @@ macro "CBF_per_second"
 		 measureDir =getDirectory("Choose the CBF measurements output directory"); 
 		CBFsec(inputDir, outputDir);
 	}
-	else
-	{
-		fileList = File.openDialog("Open a text file containing a list of input and output directories");
-		lines = split(File.openAsString(fileList), "\n");
-		for(i = 0; i < lines.length; i++)
-		{
-			dirs = split(lines[i], " ");
-			extractTracks(dirs[0], dirs[1]);
-		}
-	}
 }
 
 function CBFsec(inputDir, outputDir)
 {
-
-	// These three parameters can be adjusted
-	// depending on video length and frame rate
-	
 
 	print (inputDir);
 	print (outputDir);
@@ -48,16 +53,12 @@ function CBFsec(inputDir, outputDir)
 		imageTitle = getTitle();
 		imageTitle = replace(imageTitle, " ", "_"); // Replace spaces by underscores to avoid problems with file writing
 		print(imageTitle);
-		FPS =200 ;  //  with 10fps (noise reduction)
+		FPS =200 ;  //  this parameter has to be manually adjusted according to the recording rate.
 		run("8-bit");
 		rename("video");
 		selectWindow("video");
 		waitForUser("Write down intervals video to analyze");
 		KimoRanges(imageTitle,FPS);
-		// Cut the video into smaller parts and give each part an index.
-		// Start with 100 to aviod problems with file sorting
-		//selectWindow("video");
-		//run("Close");
 		close();
 	}
 	selectWindow("video");
@@ -65,7 +66,7 @@ function CBFsec(inputDir, outputDir)
 
 }
 
-function KimoRanges(Imge,FPS)
+function KimoRanges(Imge,FPS) // This function selects the range to analyse.
 {
 	selectWindow("video");
 	Stack.getDimensions(w, h, channels, slices, frames);
@@ -97,13 +98,13 @@ function KimoRanges(Imge,FPS)
 	}while(LSlice < slices);
 }
 
-function stabilize()
+function stabilize() // This function runs the plugin "image stablizer"
 {
 	selectWindow("subvideo");
 	run("Image Stabilizer", "transformation=Affine maximum_pyramid_levels=1 template_update_coefficient=0.90 maximum_iterations=200 error_tolerance=0.0000001");
 }
 
-function qualityKimo(First,Last)
+function qualityKimo(First,Last)  // This function is called to define the kymograph line and to let user adjust its quality.
 {
 	do{
 		selectWindow("subvideo");
@@ -138,16 +139,15 @@ function qualityKimo(First,Last)
 	return KymoName;
 }
 
-function FFTfunction(ImageName,KymName,First,Last,FPS)
+function FFTfunction(ImageName,KymName,First,Last,FPS)  // Calculation of the FFT images from the kymographs. Manually adjust prominence value.
 {
 	setBatchMode(true);
 	selectWindow("Kymo");
 	width = getWidth;
   	height = getHeight;
-  	prominence=18;
+  	prominence=18; // The lower the prominence value the more permissive the search for maxima is. A compromise has to be chosen between sensitvity and specificity.
 	setTool("rectangle");
 	y=0;
-	//FPS=585;
 	while (y < height){
 		selectWindow("Kymo");
 		run("Specify...", "width="+width+ " height="+FPS+" x=0 y="+y);
@@ -159,29 +159,11 @@ function FFTfunction(ImageName,KymName,First,Last,FPS)
 			else{
 				run("Select All");
 			}
-		//do{
 			selectWindow("SubKymo-"+y);
-			//waitForUser("Adjust width rectangular ROI  to threshold");
 			run("FFT");
-			//do{
 				selectWindow("FFT of SubKymo-"+y);
 				print("prominence for " +y+ " is "+prominence);
 				run("Find Maxima...", "prominence="+prominence+" exclude output=[Point Selection]");   //Take the R value in the first quadrant (ideally with a Theta of 90° (given that the frequency pattern is aligned vertically)=. If no value appears there you have to adjust the prominence value, usaully you need to reduce it to find local maxima. The points further away from the orgiing represent higher frequencies and they could also be noise.
-			//	Dialog.create("FFT quality");
-				//Dialog.addCheckbox("check box if not one maximum in 1st quadrant", false);
-			//	Dialog.addCheckbox("check box if ROI kymograph needs to be redfined", false)
-			//	Dialog.show();
-	     //		Satis1 = Dialog.getCheckbox();
-	     	//	Satis2= Dialog.getCheckbox();
-	     		//if(Satis1){
-	     	//		prominence=getNumber("New prominence", prominence); 
-	     	//	}
-	     	//}while(Satis1);
-	     	//if(Satis2){
-	     		//selectWindow("FFT of SubKymo-"+y);
-	     		//run("Close");
-	     	//}
-		//}while(Satis2);
      	selectWindow("SubKymo-"+y);
      	run("Add to Manager");
      	selectWindow("FFT of SubKymo-"+y);
