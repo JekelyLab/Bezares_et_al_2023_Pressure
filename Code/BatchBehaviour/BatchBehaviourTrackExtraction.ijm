@@ -14,10 +14,8 @@
 // Asks the user where the input video files are, and  //
 // into which directory the output files should go.    //
 // The user can give the input directory first and     //
-// then the output directory. Or the user can give a   //
-// text file that contains on each line an input       //
-// directory and an output directory seperated by a    //
-// space, for batch processing.                        //
+// then the output directory. 						   //
+//                                                     //
 /////////////////////////////////////////////////////////
 macro "Extract Tracks"
 {
@@ -40,19 +38,15 @@ macro "Extract Tracks"
 	}
 }
 
-/////////////////////////////////////////////////////////
-// Extracts the tracks from the videos that are all in //
-// the folder inputDir via mTrack2. All files in the   //
-// folder inputDir must be video files that ImageJ can //
-// read. Otherwise this macro aborts with an error     //
-// message. And will not analyse more videos.          //
-/////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+// Extracts the tracks from the videos that are all in    //
+// the folder inputDir via mTrack2. All files in the      //
+// folder inputDir must be video files that ImageJ can	  //
+// read (AVI). Otherwise this macro aborts with an error  //
+// message. And will not analyse more videos.             //
+////////////////////////////////////////////////////////////
 function extractTracks(inputDir, outputDir)
 {
-
-	// These three parameters can be adjusted
-	// depending on video length and frame rate
-	
 
 	print (inputDir);
 	print (outputDir);
