@@ -254,7 +254,7 @@ __Luis Alberto Bezares Calderón__ : Conceptualization, Data curation, Formal An
 
 ## Acknowledgements
 
-We thank Paulina Cherek for fixing and embedding samples for sSEM, Kei Jokura for kindly sharing the anti-cPRC cilia antibody, Cameron Hird, Adam Johnstone and Rebecca Turner for animal husbandry, Sanja Jasek for IT support and data server maintenance, and Emelie Brodrick and Elizabeth Williams for critical reading of the manuscript. This research was funded by the Wellcome Trust Investigator Award 214337/Z/18/Z and the Biotechnology and Biological Sciences Research Council Response Mode Grant BB/W00853X/1.
+We thank Paulina Cherek for fixing and embedding samples for sSEM, Kei Jokura for kindly sharing the anti-cPRC cilia antibody, Cameron Hird, Adam Johnstone and Rebecca Turner for animal husbandry, Sanja Jasek for IT support and data server maintenance, and Emelie Brodrick and Elizabeth Williams for critical reading of the manuscript. This research was funded by the Wellcome Trust Investigator Award 214337/Z/18/Z and the Biotechnology and a Biological Sciences Research Council Response Mode BB/W00853X/1 and ALERT BB/S019499/1 Grant. This project has received funding from the European Research Council (ERC) under the European Union’s Horizon 2020 research and innovation programme (grant agreement No 101020792).
 
 `r htmltools::tags$hr(style = "page-break-before:always;")`
 
