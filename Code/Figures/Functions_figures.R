@@ -135,3 +135,14 @@ Strahler_seg_avglength <- function(Neuron,Str_num){
   IndexStrOrderSeg <- which(strahler_order(Neuron)$segments == Str_num)
   Aver = mean(seglengths(Neuron)[IndexStrOrderSeg])
 }
+
+SegLengthFunc<- function(Neuron,SearchTag){
+  
+  Endnodes <- as.character(Neuron$tags[[grep(SearchTag,names(Neuron$tags))]])
+  Points <- as.character(Neuron$d$PointNo)
+  
+  NeuroTib <- tibble(SegNumber = rep(1:length(Neuron$SegList)), Nodes = Neuron$SegList, Seglength = seglengths(Neuron))
+  RowsEnds <- as_tibble(Neuron$d) %>% mutate(row_id=row_number()) %>%  filter(PointNo %in% Endnodes) %>% select(row_id)
+  EndSegments <- NeuroTib %>% unnest(Nodes) %>% filter(Nodes %in% RowsEnds$row_id)
+  return(EndSegments$Seglength)
+}
