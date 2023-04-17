@@ -136,7 +136,7 @@ Strahler_seg_avglength <- function(Neuron,Str_num){
   Aver = mean(seglengths(Neuron)[IndexStrOrderSeg])
 }
 
-SegLengthFunc<- function(Neuron,SearchTag){
+SegLengthbyTag<- function(Neuron,SearchTag){
   
   TaggedNodes <- as.character(Neuron$tags[[grep(SearchTag,names(Neuron$tags))]])
   Points <- as.character(Neuron$d$PointNo)
@@ -145,4 +145,23 @@ SegLengthFunc<- function(Neuron,SearchTag){
   RowsTaggedNodes <- as_tibble(Neuron$d) %>% mutate(row_id=row_number()) %>%  filter(PointNo %in% TaggedNodes) %>% select(row_id)
   TaggedSegments <- NeuroTib %>% unnest(Nodes) %>% filter(Nodes %in% RowsTaggedNodes$row_id)
   return(TaggedSegments$Seglength)
+}
+
+SegLengthwTags<- function(Neuron,SearchTags){
+  
+  Points <- as.character(Neuron$d$PointNo)
+  NeuroTib <- tibble(SegNumber = rep(1:length(Neuron$SegList)),
+                     Nodes = Neuron$SegList,
+                     Seglength = seglengths(Neuron),
+                     Tag = NA)
+  for(j in seq_along(SearchTags)){
+    TaggedNodes <- as.character(Neuron$tags[[grep(SearchTags[j],names(Neuron$tags))]])
+    RowsTaggedNodes <- as_tibble(Neuron$d) %>%
+      mutate(row_id=row_number()) %>%
+      filter(PointNo %in% TaggedNodes) %>%
+      select(row_id)
+    TaggedSegments <- NeuroTib %>% unnest(Nodes) %>% filter(Nodes %in% RowsTaggedNodes$row_id)
+    NeuroTib[TaggedSegments$SegNumber,"Tag"] <- SearchTags[j]
+    }
+  return(NeuroTib)
 }
