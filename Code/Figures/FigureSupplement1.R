@@ -4,11 +4,11 @@
 ##
 ##########################################
 ##
-## Author: Luis Alberto Bezares Calderón
+## Author: Luis Alberto Bezares Calderón and Gáspár Jékely
 ##
-## Last Date modified: 2023-02-25
+## Last Date modified: 2023-03-25
 ##
-## Description: Code to generate Figure Supplement 1.Descriptive statistics of the pressure response in 2 and 3 day-old larvae.
+## Description: Code to generate Figure Supplement 1.Descriptive statistics  of the pressure response and swimming trajectories of 2 and 3 day-old larvae.
 ##
 ## Input files: 
 ##
@@ -338,64 +338,6 @@ PlotVertStraightAvg2dpf
 ggsave("Manuscript/pictures/PanelAvgvertStraight_step2dpf.png",plot = PlotVertStraightAvg2dpf,
        width = 2200,height = 2000,units = "px",device = "png")
 
-#### Change Larva_num. up vs time
-
-PlotNumTracksUPAvg2dpf <- 
-  (ggplot(TableAvgStep2dpf,aes(RelTime,Corr_Num_Tracks_Up_mean,col = Pressure_Level))+
-     theme_plot +
-     background_grid(major = 'none', minor = 'none') +
-     guides(colour = "none") +
-     scale_colour_viridis(discrete = TRUE, option = 'D', direction = 1,end = 0.5) +
-     geom_hline(yintercept = 0) +
-     scale_x_continuous(breaks = seq(0,100,20),limits = c(-10,130)) +
-     scale_y_continuous(breaks = seq(-150, 400, 50),limits = c(-150,150)) +
-     coord_cartesian(xlim = c(-10,100)) +
-     geom_vline(xintercept = 0,color = "black") +
-     geom_line(data = TableAvgStep2dpf,aes(x = RelTime,y = Corr_Num_Tracks_Up_mean, col = Pressure_Level),linewidth = 0.5, alpha = 1) +
-     geom_errorbar(
-       data = TableAvgStep2dpf,
-       aes(ymin = Corr_Num_Tracks_Up_mean, ymax = Corr_Num_Tracks_Up_mean+Corr_Num_Tracks_Up_se),
-       linewidth = 0.2) +
-     labs(x = "time after stimulus (s)",y = expression(paste(Delta," # upward tracks",sep = "")),color = str_wrap("pressure (mb)",width = 20)) +
-     geom_vline(xintercept = 60,color = "gray",linetype = 2))
-
-PlotNumTracksUPAvg2dpf
-
-##### Saving PNG of plot
-
-ggsave("Manuscript/pictures/PanelChangeAvgTracksUP_step2dpf.png",plot = PlotNumTracksUPAvg2dpf,
-       width = 2200,height = 2000,units = "px",device = "png")
-
-####Change Larva_num down vs time
-
-
-PlotNumTracksDownAvg2dpf <- 
-  (ggplot(TableAvgStep2dpf,aes(RelTime,Corr_Num_Tracks_Down_mean,col = Pressure_Level)) +
-     theme_plot +
-     background_grid(major = 'none', minor = 'none') +
-     guides(colour = "none") +
-     scale_colour_viridis(discrete = TRUE, option = 'D', direction = 1,end = 0.5) +
-     geom_hline(yintercept = 0) +
-     scale_x_continuous(breaks = seq(0,100,20),limits = c(-10,130)) +
-     scale_y_continuous(breaks = seq(-150,150,50),limits = c(-150,150)) +
-     coord_cartesian(xlim = c(-10,100)) +
-     geom_vline(xintercept = 0,color = "black") +
-     geom_line(data = TableAvgStep2dpf,aes(x = RelTime,y = Corr_Num_Tracks_Down_mean, col = Pressure_Level),linewidth = 0.5, alpha = 1) +
-     geom_errorbar(
-       data = TableAvgStep2dpf,
-       aes(ymin = Corr_Num_Tracks_Down_mean, ymax = Corr_Num_Tracks_Down_mean+Corr_Num_Tracks_Down_se),
-       linewidth = 0.2) +
-     labs(x = "time after stimulus (s)",y = expression(paste(Delta," # downward tracks",sep = "")),color = str_wrap("pressure (mb)",width = 20)) +
-     geom_vline(xintercept = 60,color = "gray",linetype = 2))
-
-PlotNumTracksDownAvg2dpf
-
-##### Saving PNG of plot
-
-ggsave("Manuscript/pictures/PanelChangeAvgTracksDown_step2dpf.png",plot = PlotNumTracksDownAvg2dpf,
-       width = 2200,height = 2000,units = "px",device = "png")
-
-
 ####Ratio up/down tracks
 
 PlotAvgRatioTracks2dpf <- 
@@ -677,10 +619,10 @@ PlotTorAvg3dpf <-
      scale_y_continuous(breaks = seq(0,1,0.2),limits = c(0,1)) +
      coord_cartesian(xlim = c(-10,100), ylim = c(0,0.8)) +
      geom_vline(xintercept = 0,color = "black") +
-     geom_line(data = TableAvgStep3dpf,aes(x = RelTime,y = Tortuosity_mean, col = Pressure_Level),size = 1, alpha = 0.5) +
+     geom_line(data = TableAvgStep3dpf,aes(x = RelTime,y = Tortuosity_mean, col = Pressure_Level), linewidth = 1, alpha = 0.5) +
      geom_errorbar(
        data = TableAvgStep3dpf,
-       aes(ymin = Tortuosity_mean, ymax = Tortuosity_mean+Tortuosity_se),
+       aes(ymin = Tortuosity_mean, ymax = Tortuosity_mean + Tortuosity_se),
        linewidth = 0.2) +
      labs(x = "time after stimulus (s)",y = "straightness index", color = str_wrap("pressure (mb)",width = 10)) +
      geom_vline(xintercept = 60,color = "gray",linetype = 2)) 
@@ -721,66 +663,6 @@ PlotVertStraightAvg3dpf
 ggsave("Manuscript/pictures/PanelAvgvertStraight_step3dpf.png",plot = PlotVertStraightAvg3dpf,
        width = 2200,height = 2000,units = "px",device = "png")
 
-#### Change Larva_num. up vs time
-
-PlotNumTracksUPAvg3dpf <- 
-  ggplot(TableAvgStep3dpf,aes(RelTime,Corr_Num_Tracks_Up_mean,col = Pressure_Level))+
-     theme_plot +
-     background_grid(major = 'none', minor = 'none') +
-     guides(colour = "none") +
-     scale_colour_viridis(discrete = TRUE, option = 'D', direction = 1,end = 0.5) +
-     geom_hline(yintercept = 0) +
-     scale_x_continuous(breaks = seq(0,100,20),limits = c(-10,130)) +
-     scale_y_continuous(breaks = seq(-150, 150, 50), limits = c(-200, 150)) +
-     coord_cartesian(xlim = c(-10,100), ylim = c(-110,150)) +
-      geom_vline(xintercept = 0,color = "black") +
-     geom_line(data = TableAvgStep3dpf,aes(x = RelTime,y = Corr_Num_Tracks_Up_mean, col = Pressure_Level),linewidth = 0.5, alpha = 1) +
-     geom_errorbar(
-       data = TableAvgStep3dpf,
-       aes(ymin = Corr_Num_Tracks_Up_mean, ymax = Corr_Num_Tracks_Up_mean+Corr_Num_Tracks_Up_se),
-       linewidth = 0.2) +
-     labs(x = "time after stimulus (s)", y = expression(paste(Delta," # up. tracks",sep = "")),
-          color = str_wrap("pressure (mb)", width = 10)
-          ) +
-     geom_vline(xintercept = 60,color = "gray", linetype = 2) 
-
-PlotNumTracksUPAvg3dpf
-
-##### Saving PNG of plot
-
-ggsave("Manuscript/pictures/PanelChangeAvgTracksUP_step3dpf.png", plot = PlotNumTracksUPAvg3dpf,
-       width = 2200,height = 2000,units = "px", device = "png")
-
-####Change Larva_num down vs time
-
-
-PlotNumTracksDownAvg3dpf <- 
-  ggplot(TableAvgStep3dpf,aes(RelTime,Corr_Num_Tracks_Down_mean,col = Pressure_Level)) +
-     theme_plot +
-     background_grid(major = 'none', minor = 'none') +
-     guides(colour = "none") +
-     scale_colour_viridis(discrete = TRUE, option = 'D', direction = 1,end = 0.5) +
-     geom_hline(yintercept = 0) +
-     scale_x_continuous(breaks = seq(0,100,20),limits = c(-10, 130)) +
-     scale_y_continuous(breaks = seq(-150, 150, 50), limits = c(-150, 100)) +
-      coord_cartesian(xlim = c(-10,100)) +
-      geom_vline(xintercept = 0,color = "black") +
-     geom_line(data = TableAvgStep3dpf,aes(x = RelTime,y = Corr_Num_Tracks_Down_mean, col = Pressure_Level),linewidth = 0.5, alpha = 1) +
-     geom_errorbar(
-       data = TableAvgStep3dpf,
-       aes(ymin = Corr_Num_Tracks_Down_mean, ymax = Corr_Num_Tracks_Down_mean+Corr_Num_Tracks_Down_se),
-       linewidth = 0.2) +
-     labs(x = "time after stimulus (s)",y = expression(paste(Delta," # down. tracks",sep = "")),
-          color = str_wrap("pressure (mb)", width = 10)) +
-     geom_vline(xintercept = 60,color = "gray",linetype = 2)
-
-PlotNumTracksDownAvg3dpf
-
-##### Saving PNG of plot
-
-ggsave("Manuscript/pictures/PanelChangeAvgTracksDown_step3dpf.png",plot = PlotNumTracksDownAvg3dpf,
-       width = 2200,height = 2000,units = "px",device = "png")
-
 ####Ratio up/down tracks
 
 PlotAvgRatioTracks3dpf <- 
@@ -804,30 +686,44 @@ PlotAvgRatioTracks3dpf <-
 PlotAvgRatioTracks3dpf
 
 
-
-
-##### Saving PNG of plot
-
-# 
-# ggsave("Manuscript/pictures/PanelTvsIndDispBP_step3dpf.png",
-#        width = 2200,height = 2000,units = "px",device = "png")
-
-
-
 # generate figure composite panel grid ------------------------------------
+
+ImgTraj <- readPNG("Manuscript/pictures/Trajectories_panel.png")
+Fontsize = 10
+PanelTraj <- ggdraw() +
+  draw_image(ImgTraj) +
+  draw_label(paste("1 ", "mm", sep = ""),
+             x = 0.9, y = 0.5, color = "white",
+             fontfamily = "sans", size = 7) +
+  draw_label("12.5 mb", x = 0.22, y = 0.45, size = Fontsize, color = "black", fontface = "plain") +
+  draw_label("32 mb", x = 0.47, y = 0.45, size = Fontsize, color = "black", fontface = "plain") +
+  draw_label("85 mb", x = 0.72, y = 0.45, size = Fontsize, color = "black", fontface = "plain") +
+  draw_label("500 mb", x = 0.97, y = 0.45, size = Fontsize, color = "black", fontface = "plain") +
+  draw_label("35 mb", x = 0.22, y = 0.9, size = Fontsize, color = "black", fontface = "plain") +
+  draw_label("85 mb", x = 0.47, y = 0.9, size = Fontsize, color = "black", fontface = "plain") +
+  draw_label("250 mb", x = 0.72, y = 0.9, size = Fontsize, color = "black", fontface = "plain") +
+  draw_label("1000 mb", x = 0.97, y = 0.9, size = Fontsize, color = "black", fontface = "plain") +
+  draw_label("2 dpf", angle = 90, x = 0 , y = 0.74, size = Fontsize,color = "black") +
+  draw_label("3 dpf",angle = 90, x = 0, y = 0.25, size = Fontsize,color = "black") 
+  
+
+  
 
 layout <- "
 AABBCCDDEE
 FFGGHHIIJJ
+KKKKKKKKKK
+KKKKKKKKKK
 "
 
 FigSuppl1 <- 
   ggdraw(PlotAveragePressure2dpf) + ggdraw(PlotCorSpeedAvg2dpf) +  
   ggdraw(PlotMovAvg2dpf) + ggdraw(PlotTorAvg2dpf) + 
-  ggdraw(PlotAvgRatioTracks2dpf) + #ggdraw(PlotNumTracksDownAvg2dpf) +
+  ggdraw(PlotAvgRatioTracks2dpf) +
   ggdraw(PlotAveragePressure3dpf) + ggdraw(PlotCorSpeedAvg3dpf) +  
   ggdraw(PlotMovAvg3dpf) + ggdraw(PlotTorAvg3dpf) + 
-  ggdraw(PlotAvgRatioTracks3dpf) + #ggdraw(PlotNumTracksDownAvg3dpf) +
+  ggdraw(PlotAvgRatioTracks3dpf) + 
+  PanelTraj +
   plot_layout(design = layout, heights = c(1, 1), guides = 'collect') +
   plot_annotation(tag_levels = "A") &
   theme(plot.tag = element_text(size = 12, face = "plain"))
@@ -835,11 +731,11 @@ FigSuppl1 <-
 ####Saving Figure
 ggsave(
   filename = "Manuscript/Figures/FigureSupplement_1.pdf",
-  FigSuppl1, width = 4400, height = 2000, units = "px"
+  FigSuppl1, width = 3100, height = 3000, units = "px"
 )
 ggsave(
   filename = "Manuscript/Figures/FigureSupplement_1.png",
-  FigSuppl1, width = 4400, height = 2000, units = "px"
+  FigSuppl1, width = 3100, height = 3000, units = "px"
 )
 
 
