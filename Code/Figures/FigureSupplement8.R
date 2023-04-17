@@ -78,7 +78,7 @@ theme_plot <- theme(
   
   GtypeNames <- c(rep( "WT",length(Cilia_cPRCs_WT[,"skid"])),rep( '"c-ops-1"^"∆8/∆8"',length(Cilia_cPRCs_Copsmut[,"skid"])))
   tags <- c("ends","soma")
-  StoreMetrics <- tibble(skids= AllCilia[,"skid"],
+  StoreMetrics <- tibble(skids = AllCilia[,"skid"],
                          sknames = AllCilia[,"name"],
                          Genotype = GtypeNames,
                          CableLen = c(CableLWT,CableLmut),
@@ -96,38 +96,46 @@ theme_plot <- theme(
   
   
   
-  for(j in seq_along(tags)){
-    SegLengthList <- list()   
-    for(i in seq_along(AllCilia)){ #getting average length of segments for each Strahler order for each cilium.
-      SegLengthList[[i]] <- SegLengthFunc(AllCilia[[i]],tags[j])
-    }
-    StoreMetrics[[grep(tags[j],names(StoreMetrics),ignore.case = T)]] <- SegLengthList
-    
-    
-      #StoreMetrics[i,"EndSegLength"] <-  as.list(SegLengthFunc(AllCilia[[i]],tag))
-    #StoreMetrics[i,"maxStr"] <- max(strahler_order(AllCilia[[i]])$segments)
-    # for (j in 1:as.numeric(StoreMetrics[i,"maxStr"])) {
-    #   AvgStrLen <- Strahler_seg_avglength(AllCilia[[i]],j)
-    #   nameVar <- paste("avgL",as.character(j),"StrOr",sep = '')
-    #   StoreMetrics[i,nameVar] <- AvgStrLen
-    # }
-  }
-  StoreMetrics <- 
-    StoreMetrics %>% 
-    pivot_longer(cols =avgL1StrOr:avgL5StrOr,
-                 names_to = "Strahler_number",
-                 names_pattern = "avgL(.)StrOr", 
-                 values_to = "average_length") %>% 
-    drop_na() %>%
-    mutate(Pc_average_length = (100*(average_length/CableLen)))
-  
-  StoreMetrics$Genotype <- factor(StoreMetrics$Genotype,levels =  c("WT", '"c-ops-1"^"∆8/∆8"'))
 
+    #SegLengthList <- list()   
+    SkeTaggedLenghtTib <- tibble()
+    for(i in seq_along(AllCilia)){ #getting average length of segments for each Strahler order for each cilium.
+      if (i == 1) {
+        SkeTaggedLenghtTib <- SegLengthwTags(AllCilia[[1]],tags)
+      }
+      SkeTaggedLenghtTib <- bind_rows(SkeTaggedLenghtTib,
+                                      SegLengthwTags(AllCilia[[i]],
+                                                     tags)
+                                      )
+      #SegLengthList[[i]] <- SegLengthbyTag(AllCilia[[i]],tags[j])
+    }
+    SkeTaggedLenghtTib <- SkeTaggedLenghtTib %>%
+      mutate(Pc_average_length = (100*(Seglength/CableLen)))
+    
+    SkeTaggedLenghtTib <- SkeTaggedLenghtTib %>%
+      nest(values = - skid) %>%
+      mutate(Genotype = GtypeNames,
+             sknames = AllCilia[,"name"]
+             )
+    SkeTaggedLenghtTib$Genotype <- factor(SkeTaggedLenghtTib$Genotype,levels =  c("WT", '"c-ops-1"^"∆8/∆8"'))
+    
+    #StoreMetrics[[grep(tags[j],names(StoreMetrics),ignore.case = T)]] <- SegLengthList
+  
+  # StoreMetrics <- 
+  #   StoreMetrics %>% 
+  #   pivot_longer(cols =avgL1StrOr:avgL5StrOr,
+  #                names_to = "Strahler_number",
+  #                names_pattern = "avgL(.)StrOr", 
+  #                values_to = "average_length") %>% 
+  #   drop_na() %>%
+  #   mutate(Pc_average_length = (100*(average_length/CableLen)))
+  # 
+   
    
   ## Statistical test cable length
  { 
-   ggplot(StoreMetrics %>%
-           ungroup(),aes(x =CableLen)) + geom_histogram()
+   ggplot(SkeTaggedLenghtTib %>%
+            unnest(values) %>% distinct(skid,CableLen),aes(x =CableLen)) + geom_histogram()
   
   stat.testcable <- StoreMetrics %>%
     distinct(skids,sknames,CableLen,Genotype) %>%
