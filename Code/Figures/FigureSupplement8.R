@@ -33,7 +33,7 @@ source("~/R/conn.R")
 
 #switch to project directory
 ProjectDir  <- here()
-setwd(ProjectDir )
+setwd(ProjectDir)
 
 #define ggplot theme--------------------------------------------------
 
@@ -77,20 +77,44 @@ theme_plot <- theme(
   AllCilia <- c(Cilia_cPRCs_WT,Cilia_cPRCs_Copsmut)
   
   GtypeNames <- c(rep( "WT",length(Cilia_cPRCs_WT[,"skid"])),rep( '"c-ops-1"^"∆8/∆8"',length(Cilia_cPRCs_Copsmut[,"skid"])))
+  tags <- c("ends","soma")
+  StoreMetrics <- tibble(skids= AllCilia[,"skid"],
+                         sknames = AllCilia[,"name"],
+                         Genotype = GtypeNames,
+                         CableLen = c(CableLWT,CableLmut),
+                         EndsSegLength = rep(list(NA),
+                                            length(AllCilia[,"skid"])
+                                            ),
+                         InternalSegLength = rep(list(NA),
+                                            length(AllCilia[,"skid"])
+                                            ),
+                         SomaSegLength = rep(list(NA),
+                                                 length(AllCilia[,"skid"])
+                                                 )
+                         )
+
   
-  StoreMetrics <- tibble(skids= AllCilia[,"skid"], sknames = AllCilia[,"name"], Genotype = GtypeNames, CableLen = c(CableLWT,CableLmut))
   
-  for(i in seq_along(AllCilia)){
-    StoreMetrics[i,"maxStr"] <- max(strahler_order(AllCilia[[i]])$segments)
-    for (j in 1:as.numeric(StoreMetrics[i,"maxStr"])) {
-      AvgStrLen <- Strahler_seg_avglength(AllCilia[[i]],j)
-      nameVar <- paste("avgL",as.character(j),"StrOr",sep = '')
-      StoreMetrics[i,nameVar] <- AvgStrLen
+  
+  for(j in seq_along(tags)){
+    SegLengthList <- list()   
+    for(i in seq_along(AllCilia)){ #getting average length of segments for each Strahler order for each cilium.
+      SegLengthList[[i]] <- SegLengthFunc(AllCilia[[i]],tags[j])
     }
+    StoreMetrics[[grep(tags[j],names(StoreMetrics),ignore.case = T)]] <- SegLengthList
+    
+    
+      #StoreMetrics[i,"EndSegLength"] <-  as.list(SegLengthFunc(AllCilia[[i]],tag))
+    #StoreMetrics[i,"maxStr"] <- max(strahler_order(AllCilia[[i]])$segments)
+    # for (j in 1:as.numeric(StoreMetrics[i,"maxStr"])) {
+    #   AvgStrLen <- Strahler_seg_avglength(AllCilia[[i]],j)
+    #   nameVar <- paste("avgL",as.character(j),"StrOr",sep = '')
+    #   StoreMetrics[i,nameVar] <- AvgStrLen
+    # }
   }
   StoreMetrics <- 
     StoreMetrics %>% 
-    pivot_longer(cols =avgL1StrOr:avgL4StrOr,
+    pivot_longer(cols =avgL1StrOr:avgL5StrOr,
                  names_to = "Strahler_number",
                  names_pattern = "avgL(.)StrOr", 
                  values_to = "average_length") %>% 
@@ -150,18 +174,27 @@ theme_plot <- theme(
       )
   )
   PlotCiliaLength
+
   
+#### In development. Getting lengths segments by tag-----
+  
+  
+    
   ##External to internal length comparison-----
   {
   InternalMetric <- StoreMetrics %>%
     filter(Strahler_number != 1 & Strahler_number != maxStr) %>% 
-    group_by(skids) %>% print(n = 100) %>% summarise(sumInternal = sum(average_length))
+    arrange(skids) %>%
+    group_by(skids) %>% 
+    print(n = 100) %>% summarise(sumInternal = sum(average_length), avgInternal = mean(average_length))
   
-  
+  InternalMetric <- InternalMetric %>% group_by(skids)
   ExternalMetric <- StoreMetrics %>%
     group_by(skids) %>%
     filter(Strahler_number == 1 & Strahler_number != maxStr) %>% 
-    mutate(Ex2InLen = average_length/InternalMetric$sumInternal[cur_group_id()]) %>% 
+    mutate(Ex2SumInLen = average_length/InternalMetric$sumInternal[cur_group_id()],
+           Ex2AvgInLen = average_length/InternalMetric$avgInternal[cur_group_id()],
+           IntGroup = InternalMetric$skids[cur_group_id()]) %>% 
     print(n = 100)
   
   ## Statistical test Ext. vs internal ratio
@@ -180,6 +213,9 @@ theme_plot <- theme(
     add_y_position()
   stat.Ex2Int$p <- round(stat.Ex2Int$p,3)
   }
+  
+  testID <- "2440335"
+  ExternalMetric[which(ExternalMetric$skids == testID),"average_length"]/InternalMetric[which(InternalMetric$skids == testID),"avgInternal"]
 ##Plotting Ext. to Int. branch length bet. genotype----
   
   ExternalMetric$Genotype <- factor(ExternalMetric$Genotype,levels =  c("WT", '"c-ops-1"^"∆8/∆8"'))
@@ -259,7 +295,7 @@ theme_plot <- theme(
       scale_y_continuous(breaks = seq(0,100,2),limits = c(0,100)) +
       scale_x_discrete(labels= Glabels) +
       geom_hline(yintercept = 0) +
-      coord_cartesian(ylim = c(0,8)) + 
+      coord_cartesian(ylim = c(0,12)) + 
       labs(
         x = "",
         y = str_wrap("cPRC cilia base length (% total length)",width = 23),
