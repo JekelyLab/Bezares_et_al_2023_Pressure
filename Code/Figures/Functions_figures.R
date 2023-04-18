@@ -150,7 +150,9 @@ SegLengthbyTag<- function(Neuron,SearchTag){
 SegLengthwTags<- function(Neuron,SearchTags){
   
   Points <- as.character(Neuron$d$PointNo)
-  NeuroTib <- tibble(SegNumber = rep(1:length(Neuron$SegList)),
+  NeuroTib <- tibble(skids = Neuron$skid,
+                     CableLen = summary(Neuron)$cable.length,
+                     SegNumber = rep(1:length(Neuron$SegList)),
                      Nodes = Neuron$SegList,
                      Seglength = seglengths(Neuron),
                      Tag = NA)
@@ -162,6 +164,7 @@ SegLengthwTags<- function(Neuron,SearchTags){
       select(row_id)
     TaggedSegments <- NeuroTib %>% unnest(Nodes) %>% filter(Nodes %in% RowsTaggedNodes$row_id)
     NeuroTib[TaggedSegments$SegNumber,"Tag"] <- SearchTags[j]
-    }
+  }
+  NeuroTib <- mutate(NeuroTib,Tag = case_when(is.na(Tag) ~ "internal", TRUE ~ Tag))
   return(NeuroTib)
 }
