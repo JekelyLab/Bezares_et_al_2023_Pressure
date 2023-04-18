@@ -185,61 +185,74 @@ theme_plot <- theme(
   )
   PlotCiliaLength
 
-  
-  SkeTaggedLenghtTib %>%
-    unnest(values) %>%
-    group_by(skids,Tag) %>% summarise(sumSegLength = sum(Seglength)) %>% mutate(ratio = (. %>%  group_by(skids,Tag) %>% filter(Tag %in% "ends"))$sumSegLength)
-  
-  T1 <- SkeTaggedLenghtTib %>%
-    unnest(values) %>%
-    group_by(skids,Tag) %>% summarise(sumSegLength = sum(Seglength))
-  (T1 %>%  group_by(skids,Tag) %>% filter(Tag %in% "ends"))$sumSegLength/(T1 %>%  group_by(skids,Tag) %>% filter(Tag %in% "internal"))$sumSegLength
-  
+
+
     
   ##External to internal length comparison-----
   {
-  # InternalMetric <- StoreMetrics %>%
-  #   filter(Strahler_number != 1 & Strahler_number != maxStr) %>% 
-  #   arrange(skids) %>%
-  #   group_by(skids) %>% 
-  #   print(n = 100) %>% summarise(sumInternal = sum(average_length), avgInternal = mean(average_length))
-  # 
-  # InternalMetric <- InternalMetric %>% group_by(skids)
-  # ExternalMetric <- StoreMetrics %>%
-  #   group_by(skids) %>%
-  #   filter(Strahler_number == 1 & Strahler_number != maxStr) %>% 
-  #   mutate(Ex2SumInLen = average_length/InternalMetric$sumInternal[cur_group_id()],
-  #          Ex2AvgInLen = average_length/InternalMetric$avgInternal[cur_group_id()],
-  #          IntGroup = InternalMetric$skids[cur_group_id()]) %>% 
-  #   print(n = 100)
-  
-  ## Statistical test Ext. vs internal ratio
+    SummarySegLength <- SkeTaggedLenghtTib %>%
+      unnest(values) %>%
+      group_by(skids,Tag) %>% summarise(sumSegLength = sum(Seglength),
+                                        avgSegLength = mean(Seglength))
+    SkeTaggedLenghtTib <-  SkeTaggedLenghtTib %>%
+      mutate(
+        E2Is = (
+          (SummarySegLength %>%
+             group_by(skids,Tag) %>%
+             filter(Tag %in% "ends"))$sumSegLength/
+            (SummarySegLength %>%
+               group_by(skids,Tag) %>%
+               filter(Tag %in% "internal"))$sumSegLength
+          ),
+        E2Im = (
+          (SummarySegLength %>%
+             group_by(skids,Tag) %>%
+             filter(Tag %in% "ends"))$avgSegLength/
+            (SummarySegLength %>%
+               group_by(skids,Tag) %>%
+               filter(Tag %in% "internal"))$avgSegLength
+          )
+        )
+    
+     ## Statistical test Ext. vs internal ratio
   ##Comparing normalised length of main branch.
-  ggplot(ExternalMetric,aes(x =Ex2InLen)) + geom_histogram()
-  
-  ##### Testing differences between Periods for each pressure level(paired one tail t-test)
-  stat.Ex2Int <- ExternalMetric %>%
+  ggplot(SkeTaggedLenghtTib,aes(x =E2Is)) + geom_histogram()
+    
+  ##### Testing differences ratios External to internal branch lengths (sums or average values) for each pressure level(paired one tail t-test)
+  ##sum
+  stat.Ex2IntS <- SkeTaggedLenghtTib %>%
     ungroup() %>%
-    wilcox_test(Ex2InLen ~ Genotype, alternative = "g", paired = F) %>%
+    wilcox_test(E2Is ~ Genotype, alternative = "g", paired = F) %>%
     #adjust_pvalue(method = "bonferroni") %>%
     add_significance()
-  stat.Ex2Int
+  stat.Ex2IntS
   
-  stat.Ex2Int <- stat.Ex2Int %>% 
+  stat.Ex2IntS <- stat.Ex2IntS %>% 
     add_y_position()
-  stat.Ex2Int$p <- round(stat.Ex2Int$p,3)
-  }
+  stat.Ex2IntS$p <- round(stat.Ex2IntS$p,3)
   
-  testID <- "2440335"
-  ExternalMetric[which(ExternalMetric$skids == testID),"average_length"]/InternalMetric[which(InternalMetric$skids == testID),"avgInternal"]
-##Plotting Ext. to Int. branch length bet. genotype----
+  ##mean
+  stat.Ex2IntM <- SkeTaggedLenghtTib %>%
+    ungroup() %>%
+    wilcox_test(E2Im ~ Genotype, alternative = "g", paired = F) %>%
+    #adjust_pvalue(method = "bonferroni") %>%
+    add_significance()
+  stat.Ex2IntM
   
-  ExternalMetric$Genotype <- factor(ExternalMetric$Genotype,levels =  c("WT", '"c-ops-1"^"∆8/∆8"'))
-  Glabels <-  (parse(text=unique(as.character(ExternalMetric$Genotype))))
+  stat.Ex2IntM <- stat.Ex2IntM %>% 
+    add_y_position()
+  stat.Ex2IntM$p <- round(stat.Ex2IntM$p,3)
   
-  Ex2IntPlot <- (
-    ggplot(ExternalMetric,
-           aes(x=Genotype,y = Ex2InLen, col = Genotype)) +
+  ##Plotting Ext. to Int. branch length bet. genotype----
+  
+  SkeTaggedLenghtTib$Genotype <- factor(SkeTaggedLenghtTib$Genotype,levels =  c("WT", '"c-ops-1"^"∆8/∆8"'))
+  
+  Glabels <-  (parse(text=unique(as.character(SkeTaggedLenghtTib$Genotype))))
+  
+  ###sum
+  Ex2IntSPlot <- (
+    ggplot(SkeTaggedLenghtTib,
+           aes(x=Genotype,y = E2Im, col = Genotype)) +
       theme_minimal() +
       theme_plot +
       background_grid(major = "none", minor = "none") +
@@ -249,33 +262,64 @@ theme_plot <- theme(
       geom_point(position=position_jitterdodge(dodge.width = 1)) +
       scale_color_manual(values =  c("#000000", "#D55E00")) +
       stat_pvalue_manual(
-        stat.Ex2Int,
+        stat.Ex2IntS,
         bracket.nudge.y = 0, 
         tip.length = 0,
         step.increase = 0.05, 
         label = "p") +  
-      scale_y_continuous(breaks = seq(0,100,5),limits = c(0,100)) +
+      scale_y_continuous(breaks = seq(0,100,20),limits = c(0,100)) +
       scale_x_discrete(labels= Glabels) +
       geom_hline(yintercept = 0) +
-      coord_cartesian(ylim = c(0,20)) + 
+      coord_cartesian(ylim = c(0,100)) + 
       labs(
         x = "",
         y = str_wrap("terminal/internal branch length",width = 15),
         color = "genotype"
       )
   )
-  Ex2IntPlot
+  Ex2IntSPlot
+  
+  ###mean
+  Ex2IntMPlot <- (
+    ggplot(SkeTaggedLenghtTib,
+           aes(x=Genotype,y = E2Im, col = Genotype)) +
+      theme_minimal() +
+      theme_plot +
+      background_grid(major = "none", minor = "none") +
+      theme(legend.position = "none",
+            axis.text.x = element_text(size = 10, angle = 0 , colour="black")) +
+      geom_violin() + 
+      geom_point(position=position_jitterdodge(dodge.width = 1)) +
+      scale_color_manual(values =  c("#000000", "#D55E00")) +
+      stat_pvalue_manual(
+        stat.Ex2IntM,
+        bracket.nudge.y = 0, 
+        tip.length = 0,
+        step.increase = 0.05, 
+        label = "p") +  
+      scale_y_continuous(breaks = seq(0,100,20),limits = c(0,100)) +
+      scale_x_discrete(labels= Glabels) +
+      geom_hline(yintercept = 0) +
+      coord_cartesian(ylim = c(0,100)) + 
+      labs(
+        x = "",
+        y = str_wrap("terminal/internal branch length",width = 15),
+        color = "genotype"
+      )
+  )
+  Ex2IntMPlot
   
   
   ## Statistical test basal body to first branching point
   ##Comparing normalized length of main branch.
-  ggplot(StoreMetrics %>%
-           ungroup() %>%
-           filter(maxStr == Strahler_number),aes(x =Pc_average_length)) + geom_histogram()
   
-  stat.testRootBranching <- StoreMetrics %>%
-    ungroup() %>%
-    filter(maxStr == Strahler_number) %>%
+  ggplot(SkeTaggedLenghtTib %>%
+           unnest(values) %>%
+           filter(Tag %in% "soma"),aes(x =Pc_average_length)) + geom_histogram()
+  
+  stat.testRootBranching <- SkeTaggedLenghtTib %>%
+    unnest(values) %>%
+    filter(Tag %in% "soma") %>%
     wilcox_test(Pc_average_length ~ Genotype, alternative = "l", paired = F) %>%
     #adjust_pvalue(method = "bonferroni") %>%
     add_significance()
@@ -288,11 +332,12 @@ theme_plot <- theme(
   
   ##Plotting pc length of main branch bet. genotype----
   
-  StoreMetrics$Genotype <- factor(StoreMetrics$Genotype,levels =  c("WT", '"c-ops-1"^"∆8/∆8"'))
-  
+   Glabels <-  (parse(text=unique(as.character(SkeTaggedLenghtTib$Genotype))))
+ 
   LengthBase <- (
-    ggplot(StoreMetrics %>%
-             filter(maxStr == Strahler_number),
+    ggplot(SkeTaggedLenghtTib %>%
+             unnest(values) %>%
+             filter(Tag %in% "soma"),
            aes(x=Genotype,y = Pc_average_length, col = Genotype)) +
       theme_minimal() +
       theme_plot +
@@ -320,110 +365,7 @@ theme_plot <- theme(
   )
   LengthBase
   
-  # ## Statistical test internal branch length
-  # ##Comparing normalised length of internal branches.
-  # {ggplot(StoreMetrics %>%
-  #          ungroup() %>%
-  #          filter(Strahler_number != 1 & Strahler_number != maxStr & Pc_average_length < 10),
-  #        aes(x =Pc_average_length)) + 
-  #   geom_histogram()
-  # 
-  # stat.testInternalBranching <- StoreMetrics %>%
-  #   ungroup() %>%
-  #   filter(Strahler_number != 1 & Strahler_number != maxStr & Pc_average_length < 10) %>%
-  #   wilcox_test(Pc_average_length ~ Genotype, alternative = "l", paired = F) %>%
-  #   #adjust_pvalue(method = "bonferroni") %>%
-  #   add_significance()
-  # stat.testInternalBranching
-  # 
-  # stat.testInternalBranching <- stat.testInternalBranching %>% 
-  #   add_y_position()
-  # stat.testInternalBranching$p <- round(stat.testInternalBranching$p,3)
-  # 
-  # ##Plotting pc length of internal branches bet. genotype
-  # 
-  # PlotLengthInternal <- (
-  #   ggplot(StoreMetrics %>%
-  #            filter(Strahler_number != 1 & Strahler_number != maxStr & Pc_average_length < 10),
-  #          aes(x=Genotype,y = Pc_average_length, col = Genotype)) +
-  #     theme_minimal() +
-  #     theme_plot +
-  #     background_grid(major = "none", minor = "none") +
-  #     theme(legend.position = "none",
-  #           axis.text.x = element_text(size = 10, angle = 0 , colour="black")) +
-  #     geom_violin() + 
-  #     geom_point(position=position_jitterdodge(dodge.width = 1)) +
-  #     scale_color_manual(values =  c("#000000", "#D55E00")) +
-  #     stat_pvalue_manual(
-  #       stat.testInternalBranching,
-  #       bracket.nudge.y = 0, 
-  #       tip.length = 0,
-  #       step.increase = 0.05, 
-  #       label = "p") +  
-  #     scale_y_continuous(breaks = seq(0,100,2),limits = c(0,100)) +
-  #     scale_x_discrete(labels= Glabels) +
-  #     geom_hline(yintercept = 0) +
-  #     coord_cartesian(ylim = c(0,10)) + 
-  #     labs(
-  #       x = "",
-  #       y = str_wrap("cPRC cilia internal branch size (% total ciliary length)",width = 15),
-  #       color = "genotype"
-  #     )
-  # )
-  # PlotLengthInternal
-  # 
-  # }
-  # ## Statistical test terminal branch length
-  # ##Comparing normalised length of terminal branches.
-  # ggplot(StoreMetrics %>%
-  #          ungroup() %>%
-  #          filter(Strahler_number == 1 & Strahler_number != maxStr),
-  #        aes(x =Pc_average_length)) + 
-  #   geom_histogram()
-  # 
-  # stat.testTerminalBranching <- StoreMetrics %>%
-  #   ungroup() %>%
-  #   filter(Strahler_number == 1 & Strahler_number != maxStr) %>%
-  #   wilcox_test(Pc_average_length ~ Genotype, alternative = "l", paired = F) %>%
-  #   #adjust_pvalue(method = "bonferroni") %>%
-  #   add_significance()
-  # stat.testTerminalBranching
-  # 
-  # stat.testTerminalBranching <- stat.testTerminalBranching %>% 
-  #   add_y_position()
-  # stat.testTerminalBranching$p <- round(stat.testTerminalBranching$p,3)
-  # 
-  # ##Plotting pc length of Terminal branches bet. genotype
-  # 
-  # PlotLengthTerminal <- (
-  #   ggplot(StoreMetrics %>%
-  #            filter(Strahler_number == 1 & Strahler_number != maxStr & Pc_average_length < 10),
-  #          aes(x=Genotype,y = Pc_average_length, col = Genotype)) +
-  #     theme_minimal() +
-  #     theme_plot +
-  #     background_grid(major = "none", minor = "none") +
-  #     theme(legend.position = "none",
-  #           axis.text.x = element_text(size = 10, angle = 0 , colour="black")) +
-  #     geom_violin() + 
-  #     geom_point(position=position_jitterdodge(dodge.width = 1)) +
-  #     scale_color_manual(values =  c("#000000", "#D55E00")) +
-  #     stat_pvalue_manual(
-  #       stat.testTerminalBranching,
-  #       bracket.nudge.y = 0, 
-  #       tip.length = 0,
-  #       step.increase = 0.05, 
-  #       label = "p") +  
-  #     scale_y_continuous(breaks = seq(0,100,2),limits = c(0,100)) +
-  #     scale_x_discrete(labels= Glabels) +
-  #     geom_hline(yintercept = 0) +
-  #     coord_cartesian(ylim = c(0,10)) + 
-  #     labs(
-  #       x = "",
-  #       y = str_wrap("cPRC cilia Terminal branch size (% total ciliary length)",width = 15),
-  #       color = "genotype"
-  #     )
-  # )
-  # PlotLengthTerminal
+  
 
 # generate figure composite panel grid ------------------------------------
 
