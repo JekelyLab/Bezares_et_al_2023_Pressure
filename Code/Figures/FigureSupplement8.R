@@ -113,7 +113,7 @@ theme_plot <- theme(
       mutate(Pc_average_length = (100*(Seglength/CableLen)))
     
     SkeTaggedLenghtTib <- SkeTaggedLenghtTib %>%
-      nest(values = - skid) %>%
+      nest(values = - skids) %>%
       mutate(Genotype = GtypeNames,
              sknames = AllCilia[,"name"]
              )
@@ -135,9 +135,10 @@ theme_plot <- theme(
   ## Statistical test cable length
  { 
    ggplot(SkeTaggedLenghtTib %>%
-            unnest(values) %>% distinct(skid,CableLen),aes(x =CableLen)) + geom_histogram()
+            unnest(values) %>% distinct(skids,CableLen),aes(x =CableLen)) + geom_histogram()
   
-  stat.testcable <- StoreMetrics %>%
+  stat.testcable <- SkeTaggedLenghtTib %>%
+    unnest(values) %>%
     distinct(skids,sknames,CableLen,Genotype) %>%
     wilcox_test(CableLen ~ Genotype, alternative = "g", paired = F) %>%
     #adjust_pvalue(method = "bonferroni") %>%
@@ -147,14 +148,15 @@ theme_plot <- theme(
   stat.testcable <- stat.testcable %>% 
     add_y_position()
   stat.testcable$p <- round(stat.testcable$p,3)
-  stat.testcable$y.position <- round(stat.testcable$y.position,1)
+  stat.testcable$y.position <- 50 + round(stat.testcable$y.position,0)/1000
   }
 ##Plotting ciliary length feach genotype----
   
-  Glabels <-  (parse(text=unique(as.character(StoreMetrics$Genotype))))
+  Glabels <-  (parse(text=unique(as.character(SkeTaggedLenghtTib$Genotype))))
   
   PlotCiliaLength <- (
-    ggplot(StoreMetrics  %>%
+    ggplot(SkeTaggedLenghtTib %>%
+             unnest(values)  %>%
              distinct(skids,sknames,CableLen,Genotype),
            aes(x=Genotype,y = round(CableLen)/1000, col = Genotype)) +
       theme_minimal() +
@@ -167,10 +169,10 @@ theme_plot <- theme(
       scale_color_manual(values =  c("#000000", "#D55E00")) +
       stat_pvalue_manual(
         stat.testcable,
-        bracket.nudge.y = 0, 
+        bracket.nudge.y = 0,
         tip.length = 0,
-        step.increase = 0.05, 
-        label = "p") +  
+        step.increase = 0.05,
+        label = "p") +
       scale_y_continuous(breaks = seq(0,1000000/1000,100000/1000),limits = c(0,2000000/1000)) +
       scale_x_discrete(labels= Glabels) +
       geom_hline(yintercept = 0) +
@@ -184,26 +186,32 @@ theme_plot <- theme(
   PlotCiliaLength
 
   
-#### In development. Getting lengths segments by tag-----
+  SkeTaggedLenghtTib %>%
+    unnest(values) %>%
+    group_by(skids,Tag) %>% summarise(sumSegLength = sum(Seglength)) %>% mutate(ratio = (. %>%  group_by(skids,Tag) %>% filter(Tag %in% "ends"))$sumSegLength)
   
+  T1 <- SkeTaggedLenghtTib %>%
+    unnest(values) %>%
+    group_by(skids,Tag) %>% summarise(sumSegLength = sum(Seglength))
+  (T1 %>%  group_by(skids,Tag) %>% filter(Tag %in% "ends"))$sumSegLength/(T1 %>%  group_by(skids,Tag) %>% filter(Tag %in% "internal"))$sumSegLength
   
     
   ##External to internal length comparison-----
   {
-  InternalMetric <- StoreMetrics %>%
-    filter(Strahler_number != 1 & Strahler_number != maxStr) %>% 
-    arrange(skids) %>%
-    group_by(skids) %>% 
-    print(n = 100) %>% summarise(sumInternal = sum(average_length), avgInternal = mean(average_length))
-  
-  InternalMetric <- InternalMetric %>% group_by(skids)
-  ExternalMetric <- StoreMetrics %>%
-    group_by(skids) %>%
-    filter(Strahler_number == 1 & Strahler_number != maxStr) %>% 
-    mutate(Ex2SumInLen = average_length/InternalMetric$sumInternal[cur_group_id()],
-           Ex2AvgInLen = average_length/InternalMetric$avgInternal[cur_group_id()],
-           IntGroup = InternalMetric$skids[cur_group_id()]) %>% 
-    print(n = 100)
+  # InternalMetric <- StoreMetrics %>%
+  #   filter(Strahler_number != 1 & Strahler_number != maxStr) %>% 
+  #   arrange(skids) %>%
+  #   group_by(skids) %>% 
+  #   print(n = 100) %>% summarise(sumInternal = sum(average_length), avgInternal = mean(average_length))
+  # 
+  # InternalMetric <- InternalMetric %>% group_by(skids)
+  # ExternalMetric <- StoreMetrics %>%
+  #   group_by(skids) %>%
+  #   filter(Strahler_number == 1 & Strahler_number != maxStr) %>% 
+  #   mutate(Ex2SumInLen = average_length/InternalMetric$sumInternal[cur_group_id()],
+  #          Ex2AvgInLen = average_length/InternalMetric$avgInternal[cur_group_id()],
+  #          IntGroup = InternalMetric$skids[cur_group_id()]) %>% 
+  #   print(n = 100)
   
   ## Statistical test Ext. vs internal ratio
   ##Comparing normalised length of main branch.
