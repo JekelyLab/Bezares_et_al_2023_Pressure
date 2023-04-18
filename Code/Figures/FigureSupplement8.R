@@ -189,11 +189,15 @@ theme_plot <- theme(
 
     
   ##External to internal length comparison-----
-  {
+  
     SummarySegLength <- SkeTaggedLenghtTib %>%
-      unnest(values) %>%
-      group_by(skids,Tag) %>% summarise(sumSegLength = sum(Seglength),
-                                        avgSegLength = mean(Seglength))
+    unnest(values) %>%
+    group_by(skids,Tag,CableLen) %>%
+    summarise(sumSegLength = sum(Seglength),
+              avgSegLength = mean(Seglength)
+              ) %>%
+    mutate(pcSeqLength = sumSegLength/CableLen)
+  
     SkeTaggedLenghtTib <-  SkeTaggedLenghtTib %>%
       mutate(
         E2Is = (
@@ -309,6 +313,62 @@ theme_plot <- theme(
   )
   Ex2IntMPlot
   
+ ### Comparing and plotting branch lengths at the end, internal or root levels.-----
+  ## Statistical test basal body to first branching point
+  ##Comparing normalized length of main branch.
+  
+  #External
+  ggplot(SkeTaggedLenghtTib %>%
+           unnest(values) %>%
+           filter(Tag %in% "ends"),aes(x =Pc_average_length)) + geom_histogram()
+  
+  stat.testEndsBranching <- SkeTaggedLenghtTib %>%
+    unnest(values) %>%
+    filter(Tag %in% "ends") %>%
+    wilcox_test(Pc_average_length ~ Genotype, alternative = "g", paired = F) %>%
+    adjust_pvalue(method = "bonferroni") %>%
+    add_significance()
+  stat.testEndsBranching
+  print(stat.testEndsBranching, n = 100)
+  
+  stat.testEndsBranching <- stat.testEndsBranching %>% 
+    add_y_position()
+  stat.testEndsBranching$p <- round(stat.testEndsBranching$p,3)
+  
+  ##Plotting pc length of main branch bet. genotype----
+  
+  Glabels <-  (parse(text=unique(as.character(SkeTaggedLenghtTib$Genotype))))
+  
+  LengthEnds <- (
+    ggplot(SkeTaggedLenghtTib %>%
+             unnest(values) %>%
+             filter(Tag %in% "ends"),
+           aes(x=Genotype,y = Pc_average_length, col = Genotype)) +
+      theme_minimal() +
+      theme_plot +
+      background_grid(major = "none", minor = "none") +
+      theme(legend.position = "none",
+            axis.text.x = element_text(size = 9, angle = 0 , colour="black")) +
+      geom_violin() + 
+      geom_point(position=position_jitterdodge(dodge.width = 1)) +
+      scale_color_manual(values =  c("#000000", "#D55E00")) +
+      stat_pvalue_manual(
+        stat.testEndsBranching,
+        bracket.nudge.y = 0, 
+        tip.length = 0,
+        step.increase = 0.05, 
+        label = "p") +  
+      scale_y_continuous(breaks = seq(0,100,20),limits = c(0,100)) +
+      scale_x_discrete(labels= Glabels) +
+      geom_hline(yintercept = 0) +
+      coord_cartesian(ylim = c(0,100)) + 
+      labs(
+        x = "",
+        y = str_wrap("cPRC cilia base length (% total length)",width = 23),
+        color = "genotype"
+      )
+  )
+  LengthEnds
   
   ## Statistical test basal body to first branching point
   ##Comparing normalized length of main branch.
