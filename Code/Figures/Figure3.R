@@ -851,9 +851,6 @@ LengthBasal <- (
 LengthBasal
 
 
-
-
-
 # generate figure composite panel grid ------------------------------------
 
   imgLM <- readPNG("Manuscript/pictures/cPRC_WTvsCopsnolabs.png")
@@ -955,11 +952,10 @@ LengthBasal
              x = x_bar3, y = y_bar1, size = Fontsize, color = "black") +
     draw_label("500 nm", 
                x = 0.7, y = y_bar2, size = Fontsize, color = "black") +
-      draw_label("str. order", x = 0.8, y = 0.23, size = Fontsize,color = "black") +
-      draw_label("1", x = 0.78, y = 0.19, size = Fontsize,color = CbbPalette[1]) +
-      draw_label("2", x = 0.78, y = 0.15, size = Fontsize,color = CbbPalette[2]) +
-      draw_label("3", x = 0.78, y = 0.11, size = Fontsize,color = CbbPalette[3]) +
-      draw_label("4", x = 0.78, y = 0.07, size = Fontsize,color = CbbPalette[4]) +
+      draw_label("seg. type", x = 0.8, y = 0.23, size = Fontsize,color = "black") +
+      draw_label("terminal", x = 0.78, y = 0.19, size = Fontsize,color = CbbPalette[1]) +
+      draw_label("internal", x = 0.78, y = 0.15, size = Fontsize,color = CbbPalette[2]) +
+      draw_label("basal", x = 0.78, y = 0.11, size = Fontsize,color = CbbPalette[3]) +
       draw_label("bb", x = 0.79, y = 0.88, size = Fontsize,color = "black") +
       draw_label("cb", x = 0.94, y = 0.9, size = Fontsize,color = "black") +
       draw_label("bb", x = 0.81, y = 0.32, size = Fontsize,color = "black") +
