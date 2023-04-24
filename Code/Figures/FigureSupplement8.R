@@ -72,65 +72,36 @@ theme_plot <- theme(
 
 
 
-##Measuring branch lengths per Strahler number
+##Tibble structure to store branch lengths for each segment type (end,root, or internal segment).
 
   AllCilia <- c(Cilia_cPRCs_WT,Cilia_cPRCs_Copsmut)
   
-  GtypeNames <- c(rep( "WT",length(Cilia_cPRCs_WT[,"skid"])),rep( '"c-ops-1"^"∆8/∆8"',length(Cilia_cPRCs_Copsmut[,"skid"])))
+  GtypeNames <- c(rep( "WT",length(Cilia_cPRCs_WT[,"skid"])),
+                  rep( '"c-ops-1"^"∆8/∆8"',length(Cilia_cPRCs_Copsmut[,"skid"])
+                       )
+                  )
   tags <- c("ends","soma")
-  StoreMetrics <- tibble(skids = AllCilia[,"skid"],
-                         sknames = AllCilia[,"name"],
-                         Genotype = GtypeNames,
-                         CableLen = c(CableLWT,CableLmut),
-                         EndsSegLength = rep(list(NA),
-                                            length(AllCilia[,"skid"])
-                                            ),
-                         InternalSegLength = rep(list(NA),
-                                            length(AllCilia[,"skid"])
-                                            ),
-                         SomaSegLength = rep(list(NA),
-                                                 length(AllCilia[,"skid"])
-                                                 )
-                         )
-
-  
-  
-  
-
-    #SegLengthList <- list()   
-    SkeTaggedLenghtTib <- tibble()
-    for(i in seq_along(AllCilia)){ #getting average length of segments for each Strahler order for each cilium.
-      if (i == 1) {
-        SkeTaggedLenghtTib <- SegLengthwTags(AllCilia[[1]],tags)
-      }
+  SkeTaggedLenghtTib <- tibble()
+  for(i in seq_along(AllCilia)){ #getting average length of segments for each Strahler order for each cilium.
+    if (i == 1) {
+      SkeTaggedLenghtTib <- SegLengthwTags(AllCilia[[1]],tags)
+    } else {
       SkeTaggedLenghtTib <- bind_rows(SkeTaggedLenghtTib,
-                                      SegLengthwTags(AllCilia[[i]],
-                                                     tags)
-                                      )
-      #SegLengthList[[i]] <- SegLengthbyTag(AllCilia[[i]],tags[j])
+                                    SegLengthwTags(AllCilia[[i]],
+                                                   tags)
+                                    )
     }
-    SkeTaggedLenghtTib <- SkeTaggedLenghtTib %>%
-      mutate(Pc_average_length = (100*(Seglength/CableLen)))
-    
-    SkeTaggedLenghtTib <- SkeTaggedLenghtTib %>%
-      nest(values = - skids) %>%
-      mutate(Genotype = GtypeNames,
-             sknames = AllCilia[,"name"]
-             )
-    SkeTaggedLenghtTib$Genotype <- factor(SkeTaggedLenghtTib$Genotype,levels =  c("WT", '"c-ops-1"^"∆8/∆8"'))
-    
-    #StoreMetrics[[grep(tags[j],names(StoreMetrics),ignore.case = T)]] <- SegLengthList
+  }
+  SkeTaggedLenghtTib <- SkeTaggedLenghtTib %>%
+    mutate(Pc_average_length = (100*(Seglength/CableLen)))
   
-  # StoreMetrics <- 
-  #   StoreMetrics %>% 
-  #   pivot_longer(cols =avgL1StrOr:avgL5StrOr,
-  #                names_to = "Strahler_number",
-  #                names_pattern = "avgL(.)StrOr", 
-  #                values_to = "average_length") %>% 
-  #   drop_na() %>%
-  #   mutate(Pc_average_length = (100*(average_length/CableLen)))
-  # 
-   
+  SkeTaggedLenghtTib <- SkeTaggedLenghtTib %>%
+    nest(values = - skids) %>%
+    mutate(Genotype = GtypeNames,
+           sknames = AllCilia[,"name"]
+           )
+  SkeTaggedLenghtTib$Genotype <- factor(SkeTaggedLenghtTib$Genotype,levels =  c("WT", '"c-ops-1"^"∆8/∆8"'))
+  
    
   ## Statistical test cable length
  { 
@@ -187,16 +158,19 @@ theme_plot <- theme(
 
 
 
+  ##Tibble with summary of branch length----
+  SummarySegLength <- SkeTaggedLenghtTib %>%
+    unnest(values) %>%
+    group_by(skids,Tag,CableLen,Genotype) %>%
+    summarise(sumSegLength = sum(Seglength),
+              avgSegLength = mean(Seglength)
+    ) %>%
+    mutate(pcSeqLength = 100*sumSegLength/CableLen)
+  
     
   ##External to internal length comparison-----
   
-    SummarySegLength <- SkeTaggedLenghtTib %>%
-    unnest(values) %>%
-    group_by(skids,Tag,CableLen) %>%
-    summarise(sumSegLength = sum(Seglength),
-              avgSegLength = mean(Seglength)
-              ) %>%
-    mutate(pcSeqLength = sumSegLength/CableLen)
+   
   
     SkeTaggedLenghtTib <-  SkeTaggedLenghtTib %>%
       mutate(
@@ -207,14 +181,6 @@ theme_plot <- theme(
             (SummarySegLength %>%
                group_by(skids,Tag) %>%
                filter(Tag %in% "internal"))$sumSegLength
-          ),
-        E2Im = (
-          (SummarySegLength %>%
-             group_by(skids,Tag) %>%
-             filter(Tag %in% "ends"))$avgSegLength/
-            (SummarySegLength %>%
-               group_by(skids,Tag) %>%
-               filter(Tag %in% "internal"))$avgSegLength
           )
         )
     
@@ -235,17 +201,7 @@ theme_plot <- theme(
     add_y_position()
   stat.Ex2IntS$p <- round(stat.Ex2IntS$p,3)
   
-  ##mean
-  stat.Ex2IntM <- SkeTaggedLenghtTib %>%
-    ungroup() %>%
-    wilcox_test(E2Im ~ Genotype, alternative = "g", paired = F) %>%
-    #adjust_pvalue(method = "bonferroni") %>%
-    add_significance()
-  stat.Ex2IntM
-  
-  stat.Ex2IntM <- stat.Ex2IntM %>% 
-    add_y_position()
-  stat.Ex2IntM$p <- round(stat.Ex2IntM$p,3)
+
   
   ##Plotting Ext. to Int. branch length bet. genotype----
   
@@ -277,153 +233,11 @@ theme_plot <- theme(
       coord_cartesian(ylim = c(0,100)) + 
       labs(
         x = "",
-        y = str_wrap("terminal/internal branch length",width = 15),
+        y = "(Σ terminal branch length) / \n (Σ internal branch length)",
         color = "genotype"
       )
   )
   Ex2IntSPlot
-  
-  ###mean
-  Ex2IntMPlot <- (
-    ggplot(SkeTaggedLenghtTib,
-           aes(x=Genotype,y = E2Im, col = Genotype)) +
-      theme_minimal() +
-      theme_plot +
-      background_grid(major = "none", minor = "none") +
-      theme(legend.position = "none",
-            axis.text.x = element_text(size = 10, angle = 0 , colour="black")) +
-      geom_violin() + 
-      geom_point(position=position_jitterdodge(dodge.width = 1)) +
-      scale_color_manual(values =  c("#000000", "#D55E00")) +
-      stat_pvalue_manual(
-        stat.Ex2IntM,
-        bracket.nudge.y = 0, 
-        tip.length = 0,
-        step.increase = 0.05, 
-        label = "p") +  
-      scale_y_continuous(breaks = seq(0,100,20),limits = c(0,100)) +
-      scale_x_discrete(labels= Glabels) +
-      geom_hline(yintercept = 0) +
-      coord_cartesian(ylim = c(0,100)) + 
-      labs(
-        x = "",
-        y = str_wrap("terminal/internal branch length",width = 15),
-        color = "genotype"
-      )
-  )
-  Ex2IntMPlot
-  
- ### Comparing and plotting branch lengths at the end, internal or root levels.-----
-  ## Statistical test basal body to first branching point
-  ##Comparing normalized length of main branch.
-  
-  #External
-  ggplot(SkeTaggedLenghtTib %>%
-           unnest(values) %>%
-           filter(Tag %in% "ends"),aes(x =Pc_average_length)) + geom_histogram()
-  
-  stat.testEndsBranching <- SkeTaggedLenghtTib %>%
-    unnest(values) %>%
-    filter(Tag %in% "ends") %>%
-    wilcox_test(Pc_average_length ~ Genotype, alternative = "g", paired = F) %>%
-    adjust_pvalue(method = "bonferroni") %>%
-    add_significance()
-  stat.testEndsBranching
-  print(stat.testEndsBranching, n = 100)
-  
-  stat.testEndsBranching <- stat.testEndsBranching %>% 
-    add_y_position()
-  stat.testEndsBranching$p <- round(stat.testEndsBranching$p,3)
-  
-  ##Plotting pc length of main branch bet. genotype----
-  
-  Glabels <-  (parse(text=unique(as.character(SkeTaggedLenghtTib$Genotype))))
-  
-  LengthEnds <- (
-    ggplot(SkeTaggedLenghtTib %>%
-             unnest(values) %>%
-             filter(Tag %in% "ends"),
-           aes(x=Genotype,y = Pc_average_length, col = Genotype)) +
-      theme_minimal() +
-      theme_plot +
-      background_grid(major = "none", minor = "none") +
-      theme(legend.position = "none",
-            axis.text.x = element_text(size = 9, angle = 0 , colour="black")) +
-      geom_violin() + 
-      geom_point(position=position_jitterdodge(dodge.width = 1)) +
-      scale_color_manual(values =  c("#000000", "#D55E00")) +
-      stat_pvalue_manual(
-        stat.testEndsBranching,
-        bracket.nudge.y = 0, 
-        tip.length = 0,
-        step.increase = 0.05, 
-        label = "p") +  
-      scale_y_continuous(breaks = seq(0,100,20),limits = c(0,100)) +
-      scale_x_discrete(labels= Glabels) +
-      geom_hline(yintercept = 0) +
-      coord_cartesian(ylim = c(0,100)) + 
-      labs(
-        x = "",
-        y = str_wrap("cPRC cilia base length (% total length)",width = 23),
-        color = "genotype"
-      )
-  )
-  LengthEnds
-  
-  ## Statistical test basal body to first branching point
-  ##Comparing normalized length of main branch.
-  
-  ggplot(SkeTaggedLenghtTib %>%
-           unnest(values) %>%
-           filter(Tag %in% "soma"),aes(x =Pc_average_length)) + geom_histogram()
-  
-  stat.testRootBranching <- SkeTaggedLenghtTib %>%
-    unnest(values) %>%
-    filter(Tag %in% "soma") %>%
-    wilcox_test(Pc_average_length ~ Genotype, alternative = "l", paired = F) %>%
-    #adjust_pvalue(method = "bonferroni") %>%
-    add_significance()
-  stat.testRootBranching
-  print(stat.testRootBranching, n = 100)
-  
-  stat.testRootBranching <- stat.testRootBranching %>% 
-    add_y_position()
-  stat.testRootBranching$p <- round(stat.testRootBranching$p,3)
-  
-  ##Plotting pc length of main branch bet. genotype----
-  
-   Glabels <-  (parse(text=unique(as.character(SkeTaggedLenghtTib$Genotype))))
- 
-  LengthBase <- (
-    ggplot(SkeTaggedLenghtTib %>%
-             unnest(values) %>%
-             filter(Tag %in% "soma"),
-           aes(x=Genotype,y = Pc_average_length, col = Genotype)) +
-      theme_minimal() +
-      theme_plot +
-      background_grid(major = "none", minor = "none") +
-      theme(legend.position = "none",
-            axis.text.x = element_text(size = 9, angle = 0 , colour="black")) +
-      geom_violin() + 
-      geom_point(position=position_jitterdodge(dodge.width = 1)) +
-      scale_color_manual(values =  c("#000000", "#D55E00")) +
-      stat_pvalue_manual(
-        stat.testRootBranching,
-        bracket.nudge.y = 0, 
-        tip.length = 0,
-        step.increase = 0.05, 
-        label = "p") +  
-      scale_y_continuous(breaks = seq(0,100,2),limits = c(0,100)) +
-      scale_x_discrete(labels= Glabels) +
-      geom_hline(yintercept = 0) +
-      coord_cartesian(ylim = c(0,12)) + 
-      labs(
-        x = "",
-        y = str_wrap("cPRC cilia base length (% total length)",width = 23),
-        color = "genotype"
-      )
-  )
-  LengthBase
   
   
 
@@ -451,16 +265,15 @@ Rect1 <- rectGrob(
   layout <- "
   AAAAAA
   AAAAAA
-  BBCCDD
+  BBBCCC
   "
   
   FigSupp8 <- panel_EMWTvsCops +
     PlotCiliaLength +
-    LengthBase +
-    Ex2IntPlot +
+    Ex2IntSPlot +
     plot_layout(design = layout, heights = c(1, 1, 1, 1)) +
     plot_annotation(tag_levels = list(
-      c("A", "B", "C", "D"))) &
+      c("A", "B", "C"))) &
     theme(plot.tag = element_text(size = 12, face = "plain"))
   
   
