@@ -24,7 +24,7 @@
 #Initialize----
   rm(list = ls(all.names = TRUE)) #will clear all objects includes hidden objects.
   gc() #free up memory and report the memory usage.
-  CbbPalette <- c( "#56B4E9", "#009E73",  "#CC79A7", "#E69F00", "#0072B2","#F0E442","#000000", "#D55E00")
+  CbbPalette <- c( "#56B4E9", "#009E73",  "#CC79A7","#E69F00" ,"#0072B2", "#F0E442","#000000", "#D55E00")
 
 # Loading libraries--------------------------------------------------
 
@@ -520,90 +520,344 @@ ggsave("/ebio/ag-jekely/share/Luis/Writing/Pressure_paper/Pressure-sensation-in-
   Cilia_cPRCs_WT <- nlapply(read.neurons.catmaid("^Cilia_cPRC$", pid=21),
                                  function(x) smooth_neuron(x, sigma=200))
   CableLWT <- summary(Cilia_cPRCs_WT)$cable.length
+  Cilia_cPRCs_WT_cPRC1 <- nlapply(read.neurons.catmaid("^cPRC1$", pid=21),
+                            function(x) smooth_neuron(x, sigma=200))
   
   cellWT <- nlapply(read.neurons.catmaid("^cell$", pid=21),
                     function(x) smooth_neuron(x, sigma=200))
   
   Cilia_cPRCs_Copsmut <- nlapply(read.neurons.catmaid("^Cilia_cPRC$", pid=31),
                          function(x) smooth_neuron(x, sigma=200))
+  Cilia_cPRCs_Copsmut_cPRC1 <- nlapply(read.neurons.catmaid("^cPRC1$", pid=31),
+                                  function(x) smooth_neuron(x, sigma=200))
   CableLmut <- summary(Cilia_cPRCs_Copsmut)$cable.length
   cellmut <- nlapply(read.neurons.catmaid("^cell$", pid=31),
                     function(x) smooth_neuron(x, sigma=200))
+
+  ##Tibble structure to store branch lengths for each segment type (end,root, or internal segment).
+  
+  AllCilia <- c(Cilia_cPRCs_WT,Cilia_cPRCs_Copsmut)
+  
+  GtypeNames <- c(rep( "WT",length(Cilia_cPRCs_WT[,"skid"])),
+                  rep( '"c-ops-1"^"∆8/∆8"',length(Cilia_cPRCs_Copsmut[,"skid"])
+                  )
+  )
+  tags <- c("ends","soma")
+  SkeTaggedLenghtTib <- tibble()
+  for(i in seq_along(AllCilia)){ #getting average length of segments for each Strahler order for each cilium.
+    if (i == 1) {
+      SkeTaggedLenghtTib <- SegLengthwTags(AllCilia[[1]],tags)
+    } else {
+      SkeTaggedLenghtTib <- bind_rows(SkeTaggedLenghtTib,
+                                      SegLengthwTags(AllCilia[[i]],
+                                                     tags)
+      )
+    }
+  }
+  SkeTaggedLenghtTib <- SkeTaggedLenghtTib %>%
+    mutate(Pc_average_length = (100*(Seglength/CableLen)))
+  
+  SkeTaggedLenghtTib <- SkeTaggedLenghtTib %>%
+    nest(values = - skids) %>%
+    mutate(Genotype = GtypeNames,
+           sknames = AllCilia[,"name"]
+    )
+  SkeTaggedLenghtTib$Genotype <- factor(SkeTaggedLenghtTib$Genotype,levels =  c("WT", '"c-ops-1"^"∆8/∆8"'))
+  
   
 
   
 
 ##3D Plotting----
 ##WT
-plot3d(Cilia_cPRCs_WT, lwd=2, alpha = 1, soma= T, col = colorRampPalette(CbbPalette))
+plot3d(Cilia_cPRCs_WT_cPRC1, lwd=1, alpha = 1, soma= T, col = colorRampPalette(viridis(4)))
 plot3d(cellWT, lwd=2,  alpha =0.1,soma = T,col = "black",add = T )
 #plot3d(scale_bar_250nm, lwd = 2, col = 'black')
 par3d(zoom=0.75)
 nview3d("frontal")
-rgl.postscript("Manuscript/pictures/cPRCcilia_WT.eps")
+rgl.snapshot("Manuscript/pictures/cPRCcilia_WT.png",top = T)
 close3d()
 ##cops1mut
-plot3d(Cilia_cPRCs_Copsmut, soma = T, lwd=2, alpha = 1,col = colorRampPalette(CbbPalette) )
-plot3d(cellmut, lwd=2,  alpha =0.1,col = "black",add = T )
+plot3d(Cilia_cPRCs_Copsmut_cPRC1, lwd=1, alpha = 1, soma= T, col = colorRampPalette(viridis(4)))
+plot3d(cellmut, lwd=2,  alpha =0.1,soma = T,col = "black",add = T )
+#plot3d(scale_bar_250nm, lwd = 2, col = 'black')
 
-
-##3d Plotting cilia by strahler----
-#Copsmut
-{
-  Index1stStrOrdernode <- which(strahler_order(Cilia_cPRCs_Copsmut[[5]])$points == 1)
-  plot3d(subset(Cilia_cPRCs_Copsmut[[5]],Index1stStrOrdernode), soma = T, lwd = 7,col = CbbPalette[1])
-  Index2ndStrOrdernode <- which(strahler_order(Cilia_cPRCs_Copsmut[[5]])$points == 2)
-  plot3d(subset(Cilia_cPRCs_Copsmut[[5]],Index2ndStrOrdernode), soma = T,lwd = 7,col = CbbPalette[2], add = T)
-  Index3rdStrOrdernode <- which(strahler_order(Cilia_cPRCs_Copsmut[[5]])$points == 3)
-  plot3d(subset(Cilia_cPRCs_Copsmut[[5]],Index3rdStrOrdernode), soma = T,lwd = 7,col = CbbPalette[3], add = T)
-  Index4thStrOrdernode <- which(strahler_order(Cilia_cPRCs_Copsmut[[5]])$points == 4)
-  plot3d(subset(Cilia_cPRCs_Copsmut[[5]],Index4thStrOrdernode),soma = T, lwd = 7,col = CbbPalette[4], add = T)
-  plot3d(Cilia_cPRCs_Copsmut[[5]], lwd = 7,col = "black",soma = T, add = T)
-  plot3d(Cilia_cPRCs_Copsmut, lwd = 2,col = colorRampPalette(c("black","grey")), soma = T,add = T, alpha = 0.2)
-  plot3d(cellmut, lwd=5,  alpha =0.1,col = "black",add = T)
-  par3d(zoom=0.75)
-}
-
-
-rgl.snapshot("Manuscript/pictures/snapshots_EM/Cops8bD/finalset/StrCopsMut3Dplot2430899.png")
+rgl.snapshot("Manuscript/pictures/cPRCcilia_copsMut.png",top = T)
 close3d()
+
+
+##3d Plotting cilia by segment type----
 
 #WT
-{
-  Index1stStrOrdernode <- which(strahler_order(Cilia_cPRCs_WT[[10]])$points == 1)
-  plot3d(subset(Cilia_cPRCs_WT[[10]],Index1stStrOrdernode), soma = T, lwd = 5,col = CbbPalette[1])
-  Index2ndStrOrdernode <- which(strahler_order(Cilia_cPRCs_WT[[10]])$points == 2)
-  plot3d(subset(Cilia_cPRCs_WT[[10]],Index2ndStrOrdernode), soma = T,lwd = 5,col = CbbPalette[2], add = T)
-  Index3rdStrOrdernode <- which(strahler_order(Cilia_cPRCs_WT[[10]])$points == 3)
-  plot3d(subset(Cilia_cPRCs_WT[[10]],Index3rdStrOrdernode), soma = T,lwd = 5,col = CbbPalette[3], add = T)
-  Index4thStrOrdernode <- which(strahler_order(Cilia_cPRCs_WT[[10]])$points == 4)
-  plot3d(subset(Cilia_cPRCs_WT[[10]],Index4thStrOrdernode),soma = T, lwd = 5,col = CbbPalette[4], add = T)
-  plot3d(Cilia_cPRCs_WT[[10]], lwd = 5,col = "black",soma = T, add = T)
-  plot3d(Cilia_cPRCs_WT, lwd = 2,col = colorRampPalette(c("black","grey")), soma = T,add = T, alpha = 0.2)
-  plot3d(cellWT, lwd=5,  alpha =0.1,soma = T, col = "black",add = T)
-  par3d(zoom=0.75)
-}
-
-rgl.snapshot("Manuscript/pictures/snapshots_EM/WT/finalset/StrCopsWT3Dplot1291275.png")
+NodesEnds <- as.list(SkeTaggedLenghtTib %>%
+                       unnest(values) %>%
+                       filter(skids %in% Cilia_cPRCs_WT_cPRC1[[1]]$NeuronName &
+                                Tag %in% "ends") %>% unnest(Nodes) %>% select(Nodes))$Nodes
+NodesInternal <- as.list(SkeTaggedLenghtTib %>%
+                           unnest(values) %>%
+                           filter(skids %in% Cilia_cPRCs_WT_cPRC1[[1]]$NeuronName &
+                                    Tag %in% "internal") %>% unnest(Nodes) %>% select(Nodes))$Nodes
+NodesBasal <- as.list(SkeTaggedLenghtTib %>%
+                        unnest(values) %>%
+                        filter(skids %in% Cilia_cPRCs_WT_cPRC1[[1]]$NeuronName &
+                                 Tag %in% "soma") %>% unnest(Nodes) %>% select(Nodes))$Nodes
+plot3d(subset(Cilia_cPRCs_WT_cPRC1[[1]],NodesEnds), soma = T, lwd = 7,col = CbbPalette[1])
+plot3d(subset(Cilia_cPRCs_WT_cPRC1[[1]],NodesInternal), soma = T, lwd = 7,col = CbbPalette[2])
+plot3d(subset(Cilia_cPRCs_WT_cPRC1[[1]],NodesBasal), soma = T, lwd = 7,col = CbbPalette[3])
+plot3d(Cilia_cPRCs_WT_cPRC1[[1]], lwd = 5,col = "black",soma = T, add = T)
+plot3d(Cilia_cPRCs_WT_cPRC1, lwd = 2,col = colorRampPalette(c("black","grey")), soma = T,add = T, alpha = 0.2)
+plot3d(cellWT, lwd=5,  alpha =0.1,soma = T, col = "black",add = T)
+par3d(zoom=0.75)
+rgl.snapshot("Manuscript/pictures/cPRCcilia_WT_segment.png",top = T)
 close3d()
-# 
-# 
-# #CiliaColouredbyStrahler 2D
-# #copsMut
+#Cilia_cPRCs_Copsmut
+NodesEnds <- as.list(SkeTaggedLenghtTib %>%
+                       unnest(values) %>%
+                       filter(skids %in% Cilia_cPRCs_Copsmut_cPRC1[[1]]$NeuronName &
+                                Tag %in% "ends") %>% unnest(Nodes) %>% select(Nodes))$Nodes
+NodesInternal <- as.list(SkeTaggedLenghtTib %>%
+                           unnest(values) %>%
+                           filter(skids %in% Cilia_cPRCs_Copsmut_cPRC1[[1]]$NeuronName &
+                                    Tag %in% "internal") %>% unnest(Nodes) %>% select(Nodes))$Nodes
+NodesBasal <- as.list(SkeTaggedLenghtTib %>%
+                        unnest(values) %>%
+                        filter(skids %in% Cilia_cPRCs_Copsmut_cPRC1[[1]]$NeuronName &
+                                 Tag %in% "soma") %>% unnest(Nodes) %>% select(Nodes))$Nodes
+plot3d(subset(Cilia_cPRCs_Copsmut_cPRC1[[1]],NodesEnds), soma = T, lwd = 7,col = CbbPalette[1])
+plot3d(subset(Cilia_cPRCs_Copsmut_cPRC1[[1]],NodesInternal), soma = T, lwd = 7,col = CbbPalette[2])
+plot3d(subset(Cilia_cPRCs_Copsmut_cPRC1[[1]],NodesBasal), soma = T, lwd = 7,col = CbbPalette[3])
+plot3d(Cilia_cPRCs_Copsmut_cPRC1[[1]], lwd = 5,col = "black",soma = T, add = T)
+plot3d(Cilia_cPRCs_Copsmut_cPRC1, lwd = 2,col = colorRampPalette(c("black","grey")), soma = T,add = T, alpha = 0.2)
+plot3d(cellmut, lwd=5,  alpha =0.1,soma = T, col = "black",add = T)
+rgl.snapshot("Manuscript/pictures/cPRCcilia_Copsmut_segment.png",top = T)
+close3d()
 
-  n=Cilia_cPRCs_Copsmut[[5]]
-  so=strahler_order(n)
-  orders=1:max(so$points)
-  plot(n, col='black',lwd = 6,main = element_blank(),PointAlpha = 1, axes=F,xlab = element_blank(), ylab = element_blank() )
-  for (i in orders) {
-    plot(subset(n, so$points==i), col=CbbPalette[i], add = i, lwd = 6,PointAlpha = 0.1)
-  }
-  
+
+
+# ##3d Plotting cilia by strahler----
+# #Copsmut
+# {
+#   Index1stStrOrdernode <- which(strahler_order(Cilia_cPRCs_Copsmut[[5]])$points == 1)
+#   plot3d(subset(Cilia_cPRCs_Copsmut[[5]],Index1stStrOrdernode), soma = T, lwd = 7,col = CbbPalette[1])
+#   Index2ndStrOrdernode <- which(strahler_order(Cilia_cPRCs_Copsmut[[5]])$points == 2)
+#   plot3d(subset(Cilia_cPRCs_Copsmut[[5]],Index2ndStrOrdernode), soma = T,lwd = 7,col = CbbPalette[2], add = T)
+#   Index3rdStrOrdernode <- which(strahler_order(Cilia_cPRCs_Copsmut[[5]])$points == 3)
+#   plot3d(subset(Cilia_cPRCs_Copsmut[[5]],Index3rdStrOrdernode), soma = T,lwd = 7,col = CbbPalette[3], add = T)
+#   Index4thStrOrdernode <- which(strahler_order(Cilia_cPRCs_Copsmut[[5]])$points == 4)
+#   plot3d(subset(Cilia_cPRCs_Copsmut[[5]],Index4thStrOrdernode),soma = T, lwd = 7,col = CbbPalette[4], add = T)
+#   plot3d(Cilia_cPRCs_Copsmut[[5]], lwd = 7,col = "black",soma = T, add = T)
+#   plot3d(Cilia_cPRCs_Copsmut, lwd = 2,col = colorRampPalette(c("black","grey")), soma = T,add = T, alpha = 0.2)
+#   plot3d(cellmut, lwd=5,  alpha =0.1,col = "black",add = T)
+#   par3d(zoom=0.75)
+# }
+# 
+# 
+# rgl.snapshot("Manuscript/pictures/snapshots_EM/Cops8bD/finalset/StrCopsMut3Dplot2430899.png")
+# close3d()
+# 
+# #WT
+# {
+#   Index1stStrOrdernode <- which(strahler_order(Cilia_cPRCs_WT[[10]])$points == 1)
+#   plot3d(subset(Cilia_cPRCs_WT[[10]],Index1stStrOrdernode), soma = T, lwd = 5,col = CbbPalette[1])
+#   Index2ndStrOrdernode <- which(strahler_order(Cilia_cPRCs_WT[[10]])$points == 2)
+#   plot3d(subset(Cilia_cPRCs_WT[[10]],Index2ndStrOrdernode), soma = T,lwd = 5,col = CbbPalette[2], add = T)
+#   Index3rdStrOrdernode <- which(strahler_order(Cilia_cPRCs_WT[[10]])$points == 3)
+#   plot3d(subset(Cilia_cPRCs_WT[[10]],Index3rdStrOrdernode), soma = T,lwd = 5,col = CbbPalette[3], add = T)
+#   Index4thStrOrdernode <- which(strahler_order(Cilia_cPRCs_WT[[10]])$points == 4)
+#   plot3d(subset(Cilia_cPRCs_WT[[10]],Index4thStrOrdernode),soma = T, lwd = 5,col = CbbPalette[4], add = T)
+#   plot3d(Cilia_cPRCs_WT[[10]], lwd = 5,col = "black",soma = T, add = T)
+#   plot3d(Cilia_cPRCs_WT, lwd = 2,col = colorRampPalette(c("black","grey")), soma = T,add = T, alpha = 0.2)
+#   plot3d(cellWT, lwd=5,  alpha =0.1,soma = T, col = "black",add = T)
+#   par3d(zoom=0.75)
+# }
+# 
+# rgl.snapshot("Manuscript/pictures/snapshots_EM/WT/finalset/StrCopsWT3Dplot1291275.png")
+# close3d()
+# # 
+# # 
+# # #CiliaColouredbyStrahler 2D
+# # #copsMut
+# 
+#   n=Cilia_cPRCs_Copsmut[[5]]
+#   so=strahler_order(n)
+#   orders=1:max(so$points)
+#   plot(n, col='black',lwd = 6,main = element_blank(),PointAlpha = 1, axes=F,xlab = element_blank(), ylab = element_blank() )
+#   for (i in orders) {
+#     plot(subset(n, so$points==i), col=CbbPalette[i], add = i, lwd = 6,PointAlpha = 0.1)
+#   }
+#   
+
+
+### Comparing and plotting branch lengths at the end, internal or root levels.-----
+
+SummarySegLength <- SkeTaggedLenghtTib %>%
+  unnest(values) %>%
+  group_by(skids,Tag,CableLen,Genotype) %>%
+  summarise(sumSegLength = sum(Seglength),
+            avgSegLength = mean(Seglength)
+  ) %>%
+  mutate(pcSeqLength = 100*sumSegLength/CableLen)
+
+##Comparing normalized length of external branch.
+
+#External
+ggplot(SummarySegLength %>%
+         filter(Tag %in% "ends"),aes(x =pcSeqLength)) + geom_histogram()
+
+stat.testEndsBranching <- SummarySegLength %>% ungroup() %>%
+  filter(Tag %in% "ends") %>%
+  wilcox_test(pcSeqLength ~ Genotype, alternative = "g", paired = F) %>%
+  adjust_pvalue(method = "bonferroni") %>%
+  add_significance()
+stat.testEndsBranching
+print(stat.testEndsBranching, n = 100)
+
+stat.testEndsBranching <- stat.testEndsBranching %>% 
+  add_y_position()
+#stat.testEndsBranching$p <- round(stat.testEndsBranching$p,3)
+
+##Plotting pc length of main branch bet. genotype
+
+Glabels <-  (parse(text=unique(as.character(SkeTaggedLenghtTib$Genotype))))
+
+LengthEnds <- (
+  ggplot(SummarySegLength %>%
+           filter(Tag %in% "ends"),
+         aes(x=Genotype,y = pcSeqLength, col = Genotype)) +
+    theme_minimal() +
+    theme_plot +
+    background_grid(major = "none", minor = "none") +
+    theme(legend.position = "none",
+          axis.text.x = element_text(size = 9, angle = 0 , colour="black")) +
+    geom_violin() + 
+    geom_point(position=position_jitterdodge(dodge.width = 1)) +
+    scale_color_manual(values =  c("#000000", "#D55E00")) +
+    stat_pvalue_manual(
+      stat.testEndsBranching,
+      bracket.nudge.y = 0, 
+      tip.length = 0,
+      step.increase = 0.05, 
+      label = "p") +  
+    scale_y_continuous(breaks = seq(0,100,20),limits = c(0,100)) +
+    scale_x_discrete(labels= Glabels) +
+    geom_hline(yintercept = 0) +
+    coord_cartesian(ylim = c(0,120)) + 
+    labs(
+      x = "",
+      y = str_wrap("relative branch length (% total length)",width = 23),
+      color = "genotype"
+    )
+)
+LengthEnds
+
+#Internal
+ggplot(SummarySegLength %>%
+         filter(Tag %in% "internal"),aes(x =pcSeqLength)) + geom_histogram()
+
+stat.testInternalBranching <- SummarySegLength %>% ungroup() %>%
+  filter(Tag %in% "internal") %>%
+  wilcox_test(pcSeqLength ~ Genotype, alternative = "l", paired = F) %>%
+  adjust_pvalue(method = "bonferroni") %>%
+  add_significance()
+stat.testInternalBranching
+print(stat.testInternalBranching, n = 100)
+
+stat.testInternalBranching <- stat.testInternalBranching %>% 
+  add_y_position()
+#stat.testInternalBranching$p <- round(stat.testInternalBranching$p,3)
+
+##Plotting pc length of internal  branch bet. genotype
+
+Glabels <-  (parse(text=unique(as.character(SkeTaggedLenghtTib$Genotype))))
+
+LengthInternal <- (
+  ggplot(SummarySegLength %>%
+           filter(Tag %in% "internal"),
+         aes(x=Genotype,y = pcSeqLength, col = Genotype)) +
+    theme_minimal() +
+    theme_plot +
+    background_grid(major = "none", minor = "none") +
+    theme(legend.position = "none",
+          axis.text.x = element_text(size = 9, angle = 0 , colour="black")) +
+    geom_violin() + 
+    geom_point(position=position_jitterdodge(dodge.width = 1)) +
+    scale_color_manual(values =  c("#000000", "#D55E00")) +
+    stat_pvalue_manual(
+      stat.testInternalBranching,
+      bracket.nudge.y = 0, 
+      tip.length = 0,
+      step.increase = 0.05, 
+      label = "p") +  
+    scale_y_continuous(breaks = seq(0,100,10),limits = c(0,100)) +
+    scale_x_discrete(labels= Glabels) +
+    geom_hline(yintercept = 0) +
+    coord_cartesian(ylim = c(0,30)) + 
+    labs(
+      x = "",
+      y = str_wrap("relative branch length (% total length)",width = 23),
+      color = "genotype"
+    )
+)
+LengthInternal
+
+#Basal
+ggplot(SummarySegLength %>%
+         filter(Tag %in% "soma"),aes(x =pcSeqLength)) + geom_histogram()
+
+stat.testBasalBranching <- SummarySegLength %>% ungroup() %>%
+  filter(Tag %in% "soma") %>%
+  wilcox_test(pcSeqLength ~ Genotype, alternative = "l", paired = F) %>%
+  adjust_pvalue(method = "bonferroni") %>%
+  add_significance()
+stat.testBasalBranching
+print(stat.testBasalBranching, n = 100)
+
+stat.testBasalBranching <- stat.testBasalBranching %>% 
+  add_y_position()
+#stat.testBasalBranching$p <- round(stat.testBasalBranching$p,3)
+
+##Plotting pc length of root branch bet. genotype
+
+Glabels <-  (parse(text=unique(as.character(SkeTaggedLenghtTib$Genotype))))
+
+LengthBasal <- (
+  ggplot(SummarySegLength %>%
+           filter(Tag %in% "soma"),
+         aes(x=Genotype,y = pcSeqLength, col = Genotype)) +
+    theme_minimal() +
+    theme_plot +
+    background_grid(major = "none", minor = "none") +
+    theme(legend.position = "none",
+          axis.text.x = element_text(size = 9, angle = 0 , colour="black")) +
+    geom_violin() + 
+    geom_point(position=position_jitterdodge(dodge.width = 1)) +
+    scale_color_manual(values =  c("#000000", "#D55E00")) +
+    stat_pvalue_manual(
+      stat.testBasalBranching,
+      bracket.nudge.y = 0, 
+      tip.length = 0,
+      step.increase = 0.05, 
+      label = "p") +  
+    scale_y_continuous(breaks = seq(0,100,3),limits = c(0,100)) +
+    scale_x_discrete(labels= Glabels) +
+    geom_hline(yintercept = 0) +
+    coord_cartesian(ylim = c(0,12)) + 
+    labs(
+      x = "",
+      y = str_wrap("relative branch length (% total length)",width = 23),
+      color = "genotype"
+    )
+)
+LengthBasal
+
+
+
+
 
 # generate figure composite panel grid ------------------------------------
 
   imgLM <- readPNG("Manuscript/pictures/cPRC_WTvsCopsnolabs.png")
-  imgEM <- readPNG("Manuscript/pictures/EMcPRCnolabsFinal.png")
+  imgEM <- readPNG("Manuscript/pictures/EMcPRCnolabs4.png")
 
     Fontsize = 10
 ####plotCBF
@@ -722,23 +976,25 @@ close3d()
 ###full composite
    {
    layout <- "
-    #AABB
-    #CCDD
-    #EEEE
-    #EEEE
+    #AABBB
+    #CCDDD
+    #EEEEE
+    #EEEEE
+    FFGGHH
     "
     
-    Fig3 <- 
-    ggdraw(PlotPressVSMaxDispWTCops)  + 
-    CBFpriorduring +
-    panel_cPRC_staining + 
-    ggdraw(VolumePlot) + 
-    panel_cPRC_EM +
-    # cPRCciliaStr +
-    # LengthBase + 
-    plot_layout(design = layout, heights = c(1,1,1,1,1,1,1), widths = c(0.05,1)) +
+    Fig3 <-
+       ggdraw(PlotPressVSMaxDispWTCops) +
+       CBFpriorduring +
+       panel_cPRC_staining +
+       ggdraw(VolumePlot) +
+       panel_cPRC_EM +
+       LengthEnds +
+       LengthInternal +
+       LengthBasal +
+     plot_layout(design = layout, heights = c(1,1,1,1,1,1,1), widths = c(0.05,1)) +
     plot_annotation(tag_levels = list(
-      c("A", "B", "C", "D", "E"))) &
+      c("A", "B", "C", "D", "E", "F", "G", "H"))) &
     theme(plot.tag = element_text(size = 12, face = "plain"))
     
       
