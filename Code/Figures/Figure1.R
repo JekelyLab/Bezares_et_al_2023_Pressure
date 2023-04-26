@@ -926,8 +926,8 @@ ggsave(
 # generate figure composite panel grid ------------------------------------
 
 Imgchamb <- readPNG("Manuscript/pictures/ChamberDiagramplaty_Paper1nolabs.png")
-Img3dpf <- readPNG("Manuscript/pictures/snapshots_larvae/2022-01-26_Batch2022-01-23_3dpf_Experiment-13_s20SB_50um.png")
-Img2dpf <- readPNG("Manuscript/pictures/snapshots_larvae/2022-01-23_Batch2022-01-21_2dpf_Snap-77_crSB50.png")
+Img3dpf <- readPNG("Manuscript/pictures/snapshots_larvae/2023-04-06_fert030406-1137_L3_F003-crRGBSB.png")
+Img2dpf <- readPNG("Manuscript/pictures/snapshots_larvae/2023-04-26_fert240406-1200_L1_F006-crRGBSB.png")
 
 
 Xcoord1 <- 0
@@ -956,7 +956,7 @@ PanelChamber <- ggdraw() +
 LarvSca <- 1.2
 Larva2d <- ggdraw() + draw_image(Img2dpf, scale = LarvSca)
 Larva3d <- ggdraw() + draw_image(Img3dpf, scale = LarvSca)
-Xcoord2 <- 0.25
+Xcoord2 <- 0.2
 
 Panel2d <- ggdraw(PlotDispAvg2dpf) +
   draw_label("2 dpf", x = 0.35, y = 0.96, fontfamily = "sans",
@@ -968,7 +968,7 @@ Panel2d <- ggdraw(PlotDispAvg2dpf) +
                 top = 1,
                 align_to = "panel") +
   draw_label(paste("50 ", "\u00B5", "m", sep = ""),
-             x = 0.7, y = 0.1, color = "black",
+             x = 0.7, y = 0.05, color = "black",
              fontfamily = "sans", size = 7) +
   geom_segment(aes(x = Xcoord2,
                    y = 0.85,
@@ -990,6 +990,8 @@ Panel2d <- ggdraw(PlotDispAvg2dpf) +
 
 Panel2dDose <- ggdraw(PlotAVGPressVSMaxDisp2dpf)
 
+Xcoord3 <- 0.3
+
 Panel3d <- ggdraw(PlotDispAvg3dpf)  +
   draw_label("3 dpf", x = 0.37, y = 0.96, fontfamily = "sans",
              fontface = "plain", size = 11) +
@@ -1003,22 +1005,22 @@ Panel3d <- ggdraw(PlotDispAvg3dpf)  +
   draw_label(paste("50 ", "\u00B5", "m", sep = ""),
              x = 0.7, y = 0.1, color = "black",
              fontfamily = "sans", size = 7) +
-  geom_segment(aes(x = Xcoord2,
+  geom_segment(aes(x = Xcoord3,
                    y = 0.85,
-                   xend = Xcoord2,
+                   xend = Xcoord3,
                    yend = 0.6,
                    color = "black"),
                arrow = arrow(type = "closed", length = unit(2, "mm")),
                color = "black") +
-  geom_segment(aes(x = Xcoord2,
+  geom_segment(aes(x = Xcoord3,
                    y = 0.6,
-                   xend = Xcoord2,
+                   xend = Xcoord3,
                    yend = 0.85,
                    color = "black"),
                arrow = arrow(type = "closed", length = unit(2, "mm")),
                color = "black") +
-  draw_label("a", x = Xcoord2, y = 0.9, size = Fontsize, color = "black") +
-  draw_label("p", x = Xcoord2, y = 0.5, size = Fontsize, color = "black")
+  draw_label("a", x = Xcoord3, y = 0.9, size = Fontsize, color = "black") +
+  draw_label("p", x = Xcoord3, y = 0.5, size = Fontsize, color = "black")
 
 Panel3dDose <- ggdraw(PlotAVGPressVSMaxDisp3dpf)
 
