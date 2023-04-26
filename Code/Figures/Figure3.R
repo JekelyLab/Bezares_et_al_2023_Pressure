@@ -54,7 +54,7 @@
   ProjectDir  <- here()
   setwd(ProjectDir )
   
-  #define ggplot theme--------------------------------------------------
+#define ggplot theme--------------------------------------------------
   
   theme_plot <- theme(
     axis.text.x = element_text(size = 7, angle = 90),
@@ -586,7 +586,7 @@ rgl.snapshot("Manuscript/pictures/cPRCcilia_copsMut.png",top = T)
 close3d()
 
 
-##3d Plotting cilia by segment type----
+##3d Plotting cilia by segment type
 
 #WT
 NodesEnds <- as.list(SkeTaggedLenghtTib %>%
@@ -634,7 +634,7 @@ close3d()
 
 
 
-# ##3d Plotting cilia by strahler----
+# ##3d Plotting cilia by strahler (deprecated)----
 # #Copsmut
 # {
 #   Index1stStrOrdernode <- which(strahler_order(Cilia_cPRCs_Copsmut[[5]])$points == 1)
@@ -688,7 +688,7 @@ close3d()
 #   
 
 
-### Comparing and plotting branch lengths at the end, internal or root levels.-----
+## Comparing and plotting branch lengths at the end, internal or root levels.-----
 
 SummarySegLength <- SkeTaggedLenghtTib %>%
   unnest(values) %>%
@@ -698,157 +698,210 @@ SummarySegLength <- SkeTaggedLenghtTib %>%
   ) %>%
   mutate(pcSeqLength = 100*sumSegLength/CableLen)
 
+SummarySegLength$Tag <- factor(SummarySegLength$Tag,
+                                      levels =  c("ends", "internal", "soma"),
+                                      labels = c("terminal", "internal", "basal")
+)
+SummarySegLength$Genotype <- factor(SummarySegLength$Genotype ,
+                               levels =  c("WT",'"c-ops-1"^"∆8/∆8"'),
+                               labels = c(expression(italic("WT")),expression(italic(paste("c-ops-",1^{"∆8/∆8"})))))
+
+
+Glabels <-  (parse(text=unique(as.character(SummarySegLength$Genotype))))
+
 ##Comparing normalized length of external branch.
 
-#External
-ggplot(SummarySegLength %>%
-         filter(Tag %in% "ends"),aes(x =pcSeqLength)) + geom_histogram()
-
-stat.testEndsBranching <- SummarySegLength %>% ungroup() %>%
-  filter(Tag %in% "ends") %>%
-  wilcox_test(pcSeqLength ~ Genotype, alternative = "g", paired = F) %>%
+stat.testBranching <- SummarySegLength %>% ungroup() %>%
+  group_by(Tag) %>%
+  wilcox_test(pcSeqLength ~ Genotype, alternative = "two.sided", paired = F) %>%
   adjust_pvalue(method = "bonferroni") %>%
   add_significance()
-stat.testEndsBranching
-print(stat.testEndsBranching, n = 100)
-
-stat.testEndsBranching <- stat.testEndsBranching %>% 
+stat.testBranching
+print(stat.testBranching, n = 100)
+stat.testBranching <- stat.testBranching %>% 
   add_y_position()
+stat.testBranching$y.position <- stat.testBranching$y.position-stat.testBranching$y.position*0.05
+
+LengthBranchPlot <- (
+  ggplot(SummarySegLength,
+         aes(x=Genotype,y = pcSeqLength, col = Genotype)) +
+    theme_minimal() +
+    theme_plot +
+    background_grid(major = "none", minor = "none") +
+    theme(legend.position = "none",
+          axis.text.x = element_text(size = 10, angle = 0 , colour="black"),
+          axis.text.y = element_text(size = 10) ) +
+    geom_violin() + 
+    geom_point(position=position_jitterdodge(dodge.width = 1)) +
+    scale_color_manual(values =  c("#000000", "#D55E00")) +
+    stat_pvalue_manual(
+      stat.testBranching,
+      bracket.nudge.y = 0, 
+      tip.length = 0,
+      step.increase = 0.05, 
+      label = "p") +  
+    #scale_y_continuous(breaks = seq(0,100,20)) +
+    scale_x_discrete(labels= Glabels) +
+    geom_hline(yintercept = 0) +
+    #coord_cartesian(ylim = c(0,110)) + 
+    labs(
+      x = "",
+      y = str_wrap("relative branch length (% total length)",width = 23),
+      color = "genotype"
+    ) +
+    facet_wrap(~Tag,scales = "free")
+)
+LengthBranchPlot
+
+##Plots for each branch type (deprecated)----
+#External
+# ggplot(SummarySegLength %>%
+#          filter(Tag %in% "ends"),aes(x =pcSeqLength)) + geom_histogram()
+# 
+# stat.testEndsBranching <- SummarySegLength %>% ungroup() %>%
+#   filter(Tag %in% "ends") %>%
+#   wilcox_test(pcSeqLength ~ Genotype, alternative = "g", paired = F) %>%
+#   adjust_pvalue(method = "bonferroni") %>%
+#   add_significance()
+# stat.testEndsBranching
+# print(stat.testEndsBranching, n = 100)
+# 
+# stat.testEndsBranching <- stat.testEndsBranching %>% 
+#   add_y_position()
 #stat.testEndsBranching$p <- round(stat.testEndsBranching$p,3)
 
 ##Plotting pc length of main branch bet. genotype
 
-Glabels <-  (parse(text=unique(as.character(SkeTaggedLenghtTib$Genotype))))
 
-LengthEnds <- (
-  ggplot(SummarySegLength %>%
-           filter(Tag %in% "ends"),
-         aes(x=Genotype,y = pcSeqLength, col = Genotype)) +
-    theme_minimal() +
-    theme_plot +
-    background_grid(major = "none", minor = "none") +
-    theme(legend.position = "none",
-          axis.text.x = element_text(size = 9, angle = 0 , colour="black")) +
-    geom_violin() + 
-    geom_point(position=position_jitterdodge(dodge.width = 1)) +
-    scale_color_manual(values =  c("#000000", "#D55E00")) +
-    stat_pvalue_manual(
-      stat.testEndsBranching,
-      bracket.nudge.y = 0, 
-      tip.length = 0,
-      step.increase = 0.05, 
-      label = "p") +  
-    scale_y_continuous(breaks = seq(0,100,20),limits = c(0,100)) +
-    scale_x_discrete(labels= Glabels) +
-    geom_hline(yintercept = 0) +
-    coord_cartesian(ylim = c(0,120)) + 
-    labs(
-      x = "",
-      y = str_wrap("relative branch length (% total length)",width = 23),
-      color = "genotype"
-    )
-)
-LengthEnds
-
-#Internal
-ggplot(SummarySegLength %>%
-         filter(Tag %in% "internal"),aes(x =pcSeqLength)) + geom_histogram()
-
-stat.testInternalBranching <- SummarySegLength %>% ungroup() %>%
-  filter(Tag %in% "internal") %>%
-  wilcox_test(pcSeqLength ~ Genotype, alternative = "l", paired = F) %>%
-  adjust_pvalue(method = "bonferroni") %>%
-  add_significance()
-stat.testInternalBranching
-print(stat.testInternalBranching, n = 100)
-
-stat.testInternalBranching <- stat.testInternalBranching %>% 
-  add_y_position()
-#stat.testInternalBranching$p <- round(stat.testInternalBranching$p,3)
-
-##Plotting pc length of internal  branch bet. genotype
-
-Glabels <-  (parse(text=unique(as.character(SkeTaggedLenghtTib$Genotype))))
-
-LengthInternal <- (
-  ggplot(SummarySegLength %>%
-           filter(Tag %in% "internal"),
-         aes(x=Genotype,y = pcSeqLength, col = Genotype)) +
-    theme_minimal() +
-    theme_plot +
-    background_grid(major = "none", minor = "none") +
-    theme(legend.position = "none",
-          axis.text.x = element_text(size = 9, angle = 0 , colour="black")) +
-    geom_violin() + 
-    geom_point(position=position_jitterdodge(dodge.width = 1)) +
-    scale_color_manual(values =  c("#000000", "#D55E00")) +
-    stat_pvalue_manual(
-      stat.testInternalBranching,
-      bracket.nudge.y = 0, 
-      tip.length = 0,
-      step.increase = 0.05, 
-      label = "p") +  
-    scale_y_continuous(breaks = seq(0,100,10),limits = c(0,100)) +
-    scale_x_discrete(labels= Glabels) +
-    geom_hline(yintercept = 0) +
-    coord_cartesian(ylim = c(0,30)) + 
-    labs(
-      x = "",
-      y = str_wrap("relative branch length (% total length)",width = 23),
-      color = "genotype"
-    )
-)
-LengthInternal
-
-#Basal
-ggplot(SummarySegLength %>%
-         filter(Tag %in% "soma"),aes(x =pcSeqLength)) + geom_histogram()
-
-stat.testBasalBranching <- SummarySegLength %>% ungroup() %>%
-  filter(Tag %in% "soma") %>%
-  wilcox_test(pcSeqLength ~ Genotype, alternative = "l", paired = F) %>%
-  adjust_pvalue(method = "bonferroni") %>%
-  add_significance()
-stat.testBasalBranching
-print(stat.testBasalBranching, n = 100)
-
-stat.testBasalBranching <- stat.testBasalBranching %>% 
-  add_y_position()
-#stat.testBasalBranching$p <- round(stat.testBasalBranching$p,3)
-
-##Plotting pc length of root branch bet. genotype
-
-Glabels <-  (parse(text=unique(as.character(SkeTaggedLenghtTib$Genotype))))
-
-LengthBasal <- (
-  ggplot(SummarySegLength %>%
-           filter(Tag %in% "soma"),
-         aes(x=Genotype,y = pcSeqLength, col = Genotype)) +
-    theme_minimal() +
-    theme_plot +
-    background_grid(major = "none", minor = "none") +
-    theme(legend.position = "none",
-          axis.text.x = element_text(size = 9, angle = 0 , colour="black")) +
-    geom_violin() + 
-    geom_point(position=position_jitterdodge(dodge.width = 1)) +
-    scale_color_manual(values =  c("#000000", "#D55E00")) +
-    stat_pvalue_manual(
-      stat.testBasalBranching,
-      bracket.nudge.y = 0, 
-      tip.length = 0,
-      step.increase = 0.05, 
-      label = "p") +  
-    scale_y_continuous(breaks = seq(0,100,3),limits = c(0,100)) +
-    scale_x_discrete(labels= Glabels) +
-    geom_hline(yintercept = 0) +
-    coord_cartesian(ylim = c(0,12)) + 
-    labs(
-      x = "",
-      y = str_wrap("relative branch length (% total length)",width = 23),
-      color = "genotype"
-    )
-)
-LengthBasal
+# LengthEnds <- (
+#   ggplot(SummarySegLength %>%
+#            filter(Tag %in% "ends"),
+#          aes(x=Genotype,y = pcSeqLength, col = Genotype)) +
+#     theme_minimal() +
+#     theme_plot +
+#     background_grid(major = "none", minor = "none") +
+#     theme(legend.position = "none",
+#           axis.text.x = element_text(size = 9, angle = 0 , colour="black")) +
+#     geom_violin() + 
+#     geom_point(position=position_jitterdodge(dodge.width = 1)) +
+#     scale_color_manual(values =  c("#000000", "#D55E00")) +
+#     stat_pvalue_manual(
+#       stat.testEndsBranching,
+#       bracket.nudge.y = 0, 
+#       tip.length = 0,
+#       step.increase = 0.05, 
+#       label = "p") +  
+#     scale_y_continuous(breaks = seq(0,100,20),limits = c(0,100)) +
+#     scale_x_discrete(labels= Glabels) +
+#     geom_hline(yintercept = 0) +
+#     coord_cartesian(ylim = c(0,120)) + 
+#     labs(
+#       x = "",
+#       y = str_wrap("relative branch length (% total length)",width = 23),
+#       color = "genotype"
+#     )
+# )
+# LengthEnds
+# 
+# #Internal
+# ggplot(SummarySegLength %>%
+#          filter(Tag %in% "internal"),aes(x =pcSeqLength)) + geom_histogram()
+# 
+# stat.testInternalBranching <- SummarySegLength %>% ungroup() %>%
+#   filter(Tag %in% "internal") %>%
+#   wilcox_test(pcSeqLength ~ Genotype, alternative = "l", paired = F) %>%
+#   adjust_pvalue(method = "bonferroni") %>%
+#   add_significance()
+# stat.testInternalBranching
+# print(stat.testInternalBranching, n = 100)
+# 
+# stat.testInternalBranching <- stat.testInternalBranching %>% 
+#   add_y_position()
+# #stat.testInternalBranching$p <- round(stat.testInternalBranching$p,3)
+# 
+# ##Plotting pc length of internal  branch bet. genotype
+# 
+# Glabels <-  (parse(text=unique(as.character(SummarySegLength$Genotype))))
+# 
+# LengthInternal <- (
+#   ggplot(SummarySegLength %>%
+#            filter(Tag %in% "internal"),
+#          aes(x=Genotype,y = pcSeqLength, col = Genotype)) +
+#     theme_minimal() +
+#     theme_plot +
+#     background_grid(major = "none", minor = "none") +
+#     theme(legend.position = "none",
+#           axis.text.x = element_text(size = 9, angle = 0 , colour="black")) +
+#     geom_violin() + 
+#     geom_point(position=position_jitterdodge(dodge.width = 1)) +
+#     scale_color_manual(values =  c("#000000", "#D55E00")) +
+#     stat_pvalue_manual(
+#       stat.testInternalBranching,
+#       bracket.nudge.y = 0, 
+#       tip.length = 0,
+#       step.increase = 0.05, 
+#       label = "p") +  
+#     scale_y_continuous(breaks = seq(0,100,10),limits = c(0,100)) +
+#     scale_x_discrete(labels= Glabels) +
+#     geom_hline(yintercept = 0) +
+#     coord_cartesian(ylim = c(0,30)) + 
+#     labs(
+#       x = "",
+#       y = str_wrap("relative branch length (% total length)",width = 23),
+#       color = "genotype"
+#     )
+# )
+# LengthInternal
+# 
+# #Basal
+# ggplot(SummarySegLength %>%
+#          filter(Tag %in% "soma"),aes(x =pcSeqLength)) + geom_histogram()
+# 
+# stat.testBasalBranching <- SummarySegLength %>% ungroup() %>%
+#   filter(Tag %in% "soma") %>%
+#   wilcox_test(pcSeqLength ~ Genotype, alternative = "l", paired = F) %>%
+#   adjust_pvalue(method = "bonferroni") %>%
+#   add_significance()
+# stat.testBasalBranching
+# print(stat.testBasalBranching, n = 100)
+# 
+# stat.testBasalBranching <- stat.testBasalBranching %>% 
+#   add_y_position()
+# #stat.testBasalBranching$p <- round(stat.testBasalBranching$p,3)
+# 
+# ##Plotting pc length of root branch bet. genotype
+# 
+# Glabels <-  (parse(text=unique(as.character(SkeTaggedLenghtTib$Genotype))))
+# 
+# LengthBasal <- (
+#   ggplot(SummarySegLength %>%
+#            filter(Tag %in% "soma"),
+#          aes(x=Genotype,y = pcSeqLength, col = Genotype)) +
+#     theme_minimal() +
+#     theme_plot +
+#     background_grid(major = "none", minor = "none") +
+#     theme(legend.position = "none",
+#           axis.text.x = element_text(size = 9, angle = 0 , colour="black")) +
+#     geom_violin() + 
+#     geom_point(position=position_jitterdodge(dodge.width = 1)) +
+#     scale_color_manual(values =  c("#000000", "#D55E00")) +
+#     stat_pvalue_manual(
+#       stat.testBasalBranching,
+#       bracket.nudge.y = 0, 
+#       tip.length = 0,
+#       step.increase = 0.05, 
+#       label = "p") +  
+#     scale_y_continuous(breaks = seq(0,100,3),limits = c(0,100)) +
+#     scale_x_discrete(labels= Glabels) +
+#     geom_hline(yintercept = 0) +
+#     coord_cartesian(ylim = c(0,12)) + 
+#     labs(
+#       x = "",
+#       y = str_wrap("relative branch length (% total length)",width = 23),
+#       color = "genotype"
+#     )
+# )
+# LengthBasal
 
 
 # generate figure composite panel grid ------------------------------------
@@ -907,19 +960,19 @@ LengthBasal
 
 
 ###3d EMsnapshots
-  Rect1 <- rectGrob(
-    x = -0.032,
-    y = 0.048,
+   Rect1 <- rectGrob(
+    x = -0.04,
+    y = 0.011,
     width = unit(7.08, "mm"),
-    height = unit(56.1, "mm"),
+    height = unit(46, "mm"),
     hjust = 0, vjust = 0,
     gp = gpar(fill = NULL, alpha = 1 ,lwd = 1.5)
   )
   Rect2 <- rectGrob(
-    x = -0.032,
-    y = 0.504,
+    x = -0.04,
+    y = 0.511,
     width = unit(7.08, "mm"),
-    height = unit(56.1, "mm"),
+    height = unit(46, "mm"),
     hjust = 0, vjust = 0,
     gp = gpar(fill = NULL, alpha = 1 ,lwd = 1.5)
   )
@@ -939,7 +992,6 @@ LengthBasal
     draw_label("n", x = 0.12, y = 0.92, size = Fontsize,color = "black") +
     draw_label("bb", x = 0.04, y = 0.65, size = Fontsize,color = "black") +
     draw_label("bb", x = 0.07, y = 0.22, size = Fontsize,color = "black") +
-    draw_label("*", x = 0.14, y = 0.26, size = Fontsize,color = "black",fontface = "bold") +
     draw_label(paste("2", "\u00B5", "m", sep = ""), 
                  x = x_bar1, y = y_bar1, size = Fontsize, color = "black") +
     draw_label(paste("2", "\u00B5", "m", sep = ""), 
@@ -972,11 +1024,13 @@ LengthBasal
 ###full composite
    {
    layout <- "
-    #AABBB
-    #CCDDD
-    #EEEEE
-    #EEEEE
-    FFGGHH
+    AABBB
+    AABBB
+    CCDDD
+    EEEEE
+    EEEEE
+    FFFFF
+    FFFFF
     "
     
     Fig3 <-
@@ -985,26 +1039,25 @@ LengthBasal
        panel_cPRC_staining +
        ggdraw(VolumePlot) +
        panel_cPRC_EM +
-       LengthEnds +
-       LengthInternal +
-       LengthBasal +
-     plot_layout(design = layout, heights = c(1,1,1,1,1,1,1), widths = c(0.05,1)) +
+       LengthBranchPlot +
+     plot_layout(design = layout, heights = c(1,0.5,1,1,1,1,0.5)) +
     plot_annotation(tag_levels = list(
-      c("A", "B", "C", "D", "E", "F", "G", "H"))) &
+      c("A", "B", "C", "D", "E", "F"))) &
     theme(plot.tag = element_text(size = 12, face = "plain"))
     
       
    
     ggsave(
       filename = "Manuscript/Figures/Figure3.pdf", 
-      Fig3, width = 2800, height = 3000,
+      Fig3, width = 2800, height = 3500,
       units = "px"
     )
     ggsave(
       filename = "Manuscript/Figures/Figure3.png", 
-      Fig3, width = 2800, height = 3000,
+      Fig3, width = 2500, height = 3700,
       units = "px"
     )
   }
   
  
+  
