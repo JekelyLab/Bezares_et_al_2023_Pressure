@@ -688,6 +688,44 @@ close3d()
 #   
 
 
+
+##Plotting ciliary length feach genotype----
+
+Glabels <-  (parse(text=unique(as.character(SkeTaggedLenghtTib$Genotype))))
+
+PlotCiliaLength <- (
+  ggplot(SkeTaggedLenghtTib %>%
+           unnest(values)  %>%
+           distinct(skids,sknames,CableLen,Genotype),
+         aes(x=Genotype,y = round(CableLen)/1000, col = Genotype)) +
+    theme_minimal() +
+    theme_plot +
+    background_grid(major = "none", minor = "none") +
+    theme(legend.position = "none",
+          axis.text.x = element_text(size = 10, angle = 0 , colour="black")) +
+    geom_violin() + 
+    geom_point(position=position_jitterdodge(dodge.width = 1)) +
+    scale_color_manual(values =  c("#000000", "#D55E00")) +
+    stat_pvalue_manual(
+      stat.testcable,
+      bracket.nudge.y = 0,
+      tip.length = 0,
+      step.increase = 0.05,
+      label = "p") +
+    scale_y_continuous(breaks = seq(0,1000000/1000,100000/1000),limits = c(0,2000000/1000)) +
+    scale_x_discrete(labels= Glabels) +
+    geom_hline(yintercept = 0) +
+    coord_cartesian(ylim = c(0,350000/1000)) + 
+    labs(
+      x = "",
+      y = str_wrap("cPRC cilia  length (µm)",width = 15),
+      color = "genotype"
+    )
+)
+PlotCiliaLength
+
+
+
 ## Comparing and plotting branch lengths at the end, internal or root levels.-----
 
 SummarySegLength <- SkeTaggedLenghtTib %>%
