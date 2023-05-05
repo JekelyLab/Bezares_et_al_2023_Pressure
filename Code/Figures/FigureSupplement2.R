@@ -386,6 +386,9 @@ ggsave(
     draw_label("Pch", x = 0.7, y = 0.62, size = Fontsize,color = "black", angle = 0) +
     draw_label("850 nm\n LEDs", x = 0.2, y = 0.08, size = Fontsize,color = "black", angle = 0) 
   
+  panel_1dpf <- ggdraw(PlotDispAvg1dpf) +
+    draw_label("1 dpf", x = 0.54, y = 0.96, size = Fontsize,color = "black", angle = 0)
+  
   layout <- 
     "ABBC
      DDEE"
@@ -393,7 +396,7 @@ ggsave(
 
 FigSupp2 <- 
   ggdraw(PlotAveragePressure1dpf) +
-  ggdraw(PlotDispAvg1dpf) + 
+  panel_1dpf + 
   panel_chamber +
   ggdraw(PlotDispAvgHose3dpf) +
   ggdraw(PlotAVGPressVSMaxDispHose3dpf)+ 
