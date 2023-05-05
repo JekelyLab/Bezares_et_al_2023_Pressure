@@ -104,106 +104,78 @@ theme_plot <- theme(
 #   SkeTaggedLenghtTib$Genotype <- factor(SkeTaggedLenghtTib$Genotype,levels =  c("WT", '"c-ops-1"^"∆8/∆8"'))
 #   
 #    
-#   ## Statistical test cable length
-#  { 
-#    ggplot(SkeTaggedLenghtTib %>%
-#             unnest(values) %>% distinct(skids,CableLen),aes(x =CableLen)) + geom_histogram()
-#   
-#   stat.testcable <- SkeTaggedLenghtTib %>%
-#     unnest(values) %>%
-#     distinct(skids,sknames,CableLen,Genotype) %>%
-#     wilcox_test(CableLen ~ Genotype, alternative = "g", paired = F) %>%
+
+#
+#   ##External to internal length comparison
+#
+#
+#
+#     SkeTaggedLenghtTib <-  SkeTaggedLenghtTib %>%
+#       mutate(
+#         E2Is = (
+#           (SummarySegLength %>%
+#              group_by(skids,Tag) %>%
+#              filter(Tag %in% "ends"))$sumSegLength/
+#             (SummarySegLength %>%
+#                group_by(skids,Tag) %>%
+#                filter(Tag %in% "internal"))$sumSegLength
+#           )
+#         )
+#
+#      ## Statistical test Ext. vs internal ratio
+#   ##Comparing normalised length of main branch.
+#   ggplot(SkeTaggedLenghtTib,aes(x =E2Is)) + geom_histogram()
+#
+#   ##### Testing differences ratios External to internal branch lengths (sums or average values) for each pressure level(paired one tail t-test)
+#   ##sum
+#   stat.Ex2IntS <- SkeTaggedLenghtTib %>%
+#     ungroup() %>%
+#     wilcox_test(E2Is ~ Genotype, alternative = "g", paired = F) %>%
 #     #adjust_pvalue(method = "bonferroni") %>%
 #     add_significance()
-#   stat.testcable
-#   
-#   stat.testcable <- stat.testcable %>% 
+#   stat.Ex2IntS
+#
+#   stat.Ex2IntS <- stat.Ex2IntS %>%
 #     add_y_position()
-#   stat.testcable$p <- round(stat.testcable$p,3)
-#   stat.testcable$y.position <- 50 + round(stat.testcable$y.position,0)/1000
-#   }
-# # 
-# # 
-# #   ##Tibble with summary of branch length
-# #   SummarySegLength <- SkeTaggedLenghtTib %>%
-# #     unnest(values) %>%
-# #     group_by(skids,Tag,CableLen,Genotype) %>%
-# #     summarise(sumSegLength = sum(Seglength),
-# #               avgSegLength = mean(Seglength)
-# #     ) %>%
-# #     mutate(pcSeqLength = 100*sumSegLength/CableLen)
-# #   
-# #     
-# #   ##External to internal length comparison
-# #   
-# #    
-# #   
-# #     SkeTaggedLenghtTib <-  SkeTaggedLenghtTib %>%
-# #       mutate(
-# #         E2Is = (
-# #           (SummarySegLength %>%
-# #              group_by(skids,Tag) %>%
-# #              filter(Tag %in% "ends"))$sumSegLength/
-# #             (SummarySegLength %>%
-# #                group_by(skids,Tag) %>%
-# #                filter(Tag %in% "internal"))$sumSegLength
-# #           )
-# #         )
-# #     
-# #      ## Statistical test Ext. vs internal ratio
-# #   ##Comparing normalised length of main branch.
-# #   ggplot(SkeTaggedLenghtTib,aes(x =E2Is)) + geom_histogram()
-# #     
-# #   ##### Testing differences ratios External to internal branch lengths (sums or average values) for each pressure level(paired one tail t-test)
-# #   ##sum
-# #   stat.Ex2IntS <- SkeTaggedLenghtTib %>%
-# #     ungroup() %>%
-# #     wilcox_test(E2Is ~ Genotype, alternative = "g", paired = F) %>%
-# #     #adjust_pvalue(method = "bonferroni") %>%
-# #     add_significance()
-# #   stat.Ex2IntS
-# #   
-# #   stat.Ex2IntS <- stat.Ex2IntS %>% 
-# #     add_y_position()
-# #   stat.Ex2IntS$p <- round(stat.Ex2IntS$p,3)
-# #   
-# # 
-# #   
-# #   ##Plotting Ext. to Int. branch length bet. genotype
-# #   
-# #   SkeTaggedLenghtTib$Genotype <- factor(SkeTaggedLenghtTib$Genotype,levels =  c("WT", '"c-ops-1"^"∆8/∆8"'))
-# #   
-# #   Glabels <-  (parse(text=unique(as.character(SkeTaggedLenghtTib$Genotype))))
-# #   
-# #   ###sum
-# #   Ex2IntSPlot <- (
-# #     ggplot(SkeTaggedLenghtTib,
-# #            aes(x=Genotype,y = E2Im, col = Genotype)) +
-# #       theme_minimal() +
-# #       theme_plot +
-# #       background_grid(major = "none", minor = "none") +
-# #       theme(legend.position = "none",
-# #             axis.text.x = element_text(size = 10, angle = 0 , colour="black")) +
-# #       geom_violin() + 
-# #       geom_point(position=position_jitterdodge(dodge.width = 1)) +
-# #       scale_color_manual(values =  c("#000000", "#D55E00")) +
-# #       stat_pvalue_manual(
-# #         stat.Ex2IntS,
-# #         bracket.nudge.y = 0, 
-# #         tip.length = 0,
-# #         step.increase = 0.05, 
-# #         label = "p") +  
-# #       scale_y_continuous(breaks = seq(0,100,20),limits = c(0,100)) +
-# #       scale_x_discrete(labels= Glabels) +
-# #       geom_hline(yintercept = 0) +
-# #       coord_cartesian(ylim = c(0,100)) + 
-# #       labs(
-# #         x = "",
-# #         y = "(Σ terminal branch length) / \n (Σ internal branch length)",
-# #         color = "genotype"
-# #       )
-# #   )
-# #   Ex2IntSPlot
+#   stat.Ex2IntS$p <- round(stat.Ex2IntS$p,3)
+#
+#
+#
+#   ##Plotting Ext. to Int. branch length bet. genotype
+#
+#   SkeTaggedLenghtTib$Genotype <- factor(SkeTaggedLenghtTib$Genotype,levels =  c("WT", '"c-ops-1"^"∆8/∆8"'))
+#
+#   Glabels <-  (parse(text=unique(as.character(SkeTaggedLenghtTib$Genotype))))
+#
+#   ###sum
+#   Ex2IntSPlot <- (
+#     ggplot(SkeTaggedLenghtTib,
+#            aes(x=Genotype,y = E2Im, col = Genotype)) +
+#       theme_minimal() +
+#       theme_plot +
+#       background_grid(major = "none", minor = "none") +
+#       theme(legend.position = "none",
+#             axis.text.x = element_text(size = 10, angle = 0 , colour="black")) +
+#       geom_violin() +
+#       geom_point(position=position_jitterdodge(dodge.width = 1)) +
+#       scale_color_manual(values =  c("#000000", "#D55E00")) +
+#       stat_pvalue_manual(
+#         stat.Ex2IntS,
+#         bracket.nudge.y = 0,
+#         tip.length = 0,
+#         step.increase = 0.05,
+#         label = "p") +
+#       scale_y_continuous(breaks = seq(0,100,20),limits = c(0,100)) +
+#       scale_x_discrete(labels= Glabels) +
+#       geom_hline(yintercept = 0) +
+#       coord_cartesian(ylim = c(0,100)) +
+#       labs(
+#         x = "",
+#         y = "(Σ terminal branch length) / \n (Σ internal branch length)",
+#         color = "genotype"
+#       )
+#   )
+#   Ex2IntSPlot
 #   
 #   
 
