@@ -102,7 +102,8 @@ cutoff2dpf = 100
   ggplot(TableIndStep2dpf,aes(x = RelTime, y = Num_Tracks_Up + Num_Tracks_Down)) +
     geom_line() +
     geom_hline(yintercept = cutoff2dpf, color = "red") +
-    facet_wrap(~Pressure_Level))
+    facet_wrap(~Pressure_Level)
+  )
 
 
 
@@ -737,8 +738,3 @@ ggsave(
   filename = "Manuscript/Figures/FigureSupplement_1.png",
   FigSuppl1, width = 3100, height = 3000, units = "px"
 )
-
-
-
-
-
