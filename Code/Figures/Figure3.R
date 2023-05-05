@@ -124,8 +124,7 @@ AvgMaxStepWTCops <- TableMaxStepWTCops %>%
   summarise(across(max_Avg_Speed:max_STA5_Corr_Num_Tracks_Down,
                    list(mean = ~mean(.x, na.rm = TRUE),
                         sd = ~sd(.x, na.rm = TRUE),
-                        se = ~sd(.x/sqrt(length(.x)), na.rm = TRUE)),
-                   na.rm = TRUE))
+                        se = ~sd(.x/sqrt(length(.x)), na.rm = TRUE))))
 
 
 
@@ -690,6 +689,24 @@ close3d()
 
 
 ##Plotting ciliary length feach genotype----
+  ## Statistical test cable length
+ {
+   ggplot(SkeTaggedLenghtTib %>%
+            unnest(values) %>% distinct(skids,CableLen),aes(x =CableLen)) + geom_histogram()
+
+  stat.testcable <- SkeTaggedLenghtTib %>%
+    unnest(values) %>%
+    distinct(skids,sknames,CableLen,Genotype) %>%
+    wilcox_test(CableLen ~ Genotype, alternative = "g", paired = F) %>%
+    #adjust_pvalue(method = "bonferroni") %>%
+    add_significance()
+  stat.testcable
+
+  stat.testcable <- stat.testcable %>%
+    add_y_position()
+  stat.testcable$p <- round(stat.testcable$p,3)
+  stat.testcable$y.position <- 50 + round(stat.testcable$y.position,0)/1000
+  }
 
 Glabels <-  (parse(text=unique(as.character(SkeTaggedLenghtTib$Genotype))))
 
@@ -998,22 +1015,6 @@ LengthBranchPlot
 
 
 ###3d EMsnapshots
-   Rect1 <- rectGrob(
-    x = -0.04,
-    y = 0.011,
-    width = unit(7.08, "mm"),
-    height = unit(46, "mm"),
-    hjust = 0, vjust = 0,
-    gp = gpar(fill = NULL, alpha = 1 ,lwd = 1.5)
-  )
-  Rect2 <- rectGrob(
-    x = -0.04,
-    y = 0.511,
-    width = unit(7.08, "mm"),
-    height = unit(46, "mm"),
-    hjust = 0, vjust = 0,
-    gp = gpar(fill = NULL, alpha = 1 ,lwd = 1.5)
-  )
    ##EM composite
   {
     x_bar1 = 0.22
@@ -1023,8 +1024,8 @@ LengthBranchPlot
     y_bar2 = 0.09
     panel_cPRC_EM <- ggdraw() + 
     draw_image(imgEM, scale = 1) +
-    draw_label(expression(italic("WT")), angle = 90, x = -0.02 , y = 0.74, size = Fontsize,color = "black") +
-    draw_label(expression(italic(paste("c-ops-",1^{"∆8/∆8"}))),angle = 90, x = -0.02, y = 0.25, size = Fontsize,color = "black") +
+    draw_label(expression(italic("WT")), angle = 90, x = 0 , y = 0.74, size = Fontsize,color = "black") +
+    draw_label(expression(italic(paste("c-ops-",1^{"∆8/∆8"}))),angle = 90, x = 0, y = 0.25, size = Fontsize,color = "black") +
     draw_label("cb", x = 0.2, y = 0.9, size = Fontsize,color = "black") +
     draw_label("cb", x = 0.2, y = 0.46, size = Fontsize,color = "black") +
     draw_label("n", x = 0.12, y = 0.92, size = Fontsize,color = "black") +
@@ -1043,9 +1044,9 @@ LengthBranchPlot
     draw_label("500 nm", 
                x = 0.7, y = y_bar2, size = Fontsize, color = "black") +
       draw_label("seg. type", x = 0.8, y = 0.23, size = Fontsize,color = "black") +
-      draw_label("terminal", x = 0.78, y = 0.19, size = Fontsize,color = CbbPalette[1]) +
+      draw_label("terminal", x = 0.78, y = 0.11, size = Fontsize,color = CbbPalette[1]) +
       draw_label("internal", x = 0.78, y = 0.15, size = Fontsize,color = CbbPalette[2]) +
-      draw_label("basal", x = 0.78, y = 0.11, size = Fontsize,color = CbbPalette[3]) +
+      draw_label("basal", x = 0.78, y = 0.19, size = Fontsize,color = CbbPalette[3]) +
       draw_label("bb", x = 0.79, y = 0.88, size = Fontsize,color = "black") +
       draw_label("cb", x = 0.94, y = 0.9, size = Fontsize,color = "black") +
       draw_label("bb", x = 0.81, y = 0.32, size = Fontsize,color = "black") +
@@ -1053,9 +1054,7 @@ LengthBranchPlot
       draw_label(paste("2", "\u00B5", "m", sep = ""), 
                  x = 0.96, y = y_bar1, size = Fontsize, color = "black") +
       draw_label(paste("2", "\u00B5", "m", sep = ""), 
-                 x = 0.97, y = y_bar2, size = Fontsize, color = "black") +
-      draw_grob(Rect1) +
-      draw_grob(Rect2)
+                 x = 0.97, y = y_bar2, size = Fontsize, color = "black") 
     
      }
 
@@ -1065,10 +1064,14 @@ LengthBranchPlot
     AABBB
     AABBB
     CCDDD
+    CCDDD
+    #####
     EEEEE
     EEEEE
-    FFFFF
-    FFFFF
+    EEEEE
+    EEEEE
+    FFGGG
+    FFGGG
     "
     
     Fig3 <-
@@ -1077,10 +1080,11 @@ LengthBranchPlot
        panel_cPRC_staining +
        ggdraw(VolumePlot) +
        panel_cPRC_EM +
+       PlotCiliaLength +
        LengthBranchPlot +
-     plot_layout(design = layout, heights = c(1,0.5,1,1,1,1,0.5)) +
+     plot_layout(design = layout, heights = c(1,1,1,0.5,0.1,1,1,1,1,1,0.5)) +
     plot_annotation(tag_levels = list(
-      c("A", "B", "C", "D", "E", "F"))) &
+      c("A", "B", "C", "D", "E", "F", "G"))) &
     theme(plot.tag = element_text(size = 12, face = "plain"))
     
       
@@ -1092,7 +1096,7 @@ LengthBranchPlot
     )
     ggsave(
       filename = "Manuscript/Figures/Figure3.png", 
-      Fig3, width = 2500, height = 3700,
+      Fig3, width = 3500, height = 3500,
       units = "px"
     )
   }
