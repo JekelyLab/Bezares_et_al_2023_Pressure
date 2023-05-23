@@ -693,14 +693,14 @@ PanelTraj <- ggdraw() +
   draw_label(paste("1 ", "mm", sep = ""),
              x = 0.9, y = 0.5, color = "white",
              fontfamily = "sans", size = 7) +
-  draw_label("12.5 mb", x = 0.22, y = 0.45, size = Fontsize, color = "black", fontface = "plain") +
-  draw_label("32 mb", x = 0.47, y = 0.45, size = Fontsize, color = "black", fontface = "plain") +
-  draw_label("85 mb", x = 0.72, y = 0.45, size = Fontsize, color = "black", fontface = "plain") +
-  draw_label("500 mb", x = 0.97, y = 0.45, size = Fontsize, color = "black", fontface = "plain") +
-  draw_label("35 mb", x = 0.22, y = 0.9, size = Fontsize, color = "black", fontface = "plain") +
-  draw_label("85 mb", x = 0.47, y = 0.9, size = Fontsize, color = "black", fontface = "plain") +
-  draw_label("250 mb", x = 0.72, y = 0.9, size = Fontsize, color = "black", fontface = "plain") +
-  draw_label("1000 mb", x = 0.97, y = 0.9, size = Fontsize, color = "black", fontface = "plain") +
+  draw_label("12.5 mb", x = 0.04, y = 0.47, size = Fontsize, color = "white", fontface = "plain") +
+  draw_label("32 mb", x = 0.29, y = 0.47, size = Fontsize, color = "white", fontface = "plain") +
+  draw_label("85 mb", x = 0.54, y = 0.47, size = Fontsize, color = "white", fontface = "plain") +
+  draw_label("500 mb", x = 0.79, y = 0.47, size = Fontsize, color = "white", fontface = "plain") +
+  draw_label("35 mb", x = 0.04, y = 0.97, size = Fontsize, color = "white", fontface = "plain") +
+  draw_label("85 mb", x = 0.29, y = 0.97, size = Fontsize, color = "white", fontface = "plain") +
+  draw_label("250 mb", x = 0.54, y = 0.97, size = Fontsize, color = "white", fontface = "plain") +
+  draw_label("1000 mb", x = 0.79, y = 0.97, size = Fontsize, color = "white", fontface = "plain") +
   draw_label("2 dpf", angle = 90, x = 0 , y = 0.74, size = Fontsize,color = "black") +
   draw_label("3 dpf",angle = 90, x = 0, y = 0.25, size = Fontsize,color = "black") 
   
@@ -735,3 +735,4 @@ ggsave(
   filename = "Manuscript/Figures/FigureSupplement_1.png",
   FigSuppl1, width = 3100, height = 3000, units = "px"
 )
+
