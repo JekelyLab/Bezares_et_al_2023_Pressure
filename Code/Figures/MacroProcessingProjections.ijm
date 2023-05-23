@@ -1,0 +1,10 @@
+roiManager("Select", 0);
+run("Duplicate...", "title=cropped duplicate");
+run("Slice Keeper", "first=1 last=600 increment=2");
+run("Invert", "stack");
+rename("cropped_inverted");
+run("Z Project...", "projection=[Average Intensity]");
+imageCalculator("Subtract create stack", "cropped_inverted","AVG_cropped_inverted");
+selectWindow("Result of cropped_inverted");
+run("Z Project...", "projection=[Max Intensity]");
+saveAs("Tiff", "/ebio/ag-jekely/share/Luis/Writing/Pressure_paper/publicRepo/Bezares_et_al_2023_Pressure/Manuscript/pictures/snapshots_tracks/Bckg_substracted/MAX_2023-01-02_Platynereis_Closeup_E004_s201-800_2nd.tif");
