@@ -116,8 +116,8 @@ TableAvgStep2dpf <- TableIndStep2dpf %>%
   group_by(Pressure_Level,Type_Experiment,Genotype,RelTime) %>% 
   summarise(across(Avg_Speed:STA5_Corr_Num_Tracks_Down,list(mean = ~mean(.x, na.rm = TRUE),
                                                             sd = ~sd(.x, na.rm = TRUE),
-                                                            se = ~sd(.x/sqrt(length(.x)), na.rm = TRUE)),
-                   na.rm = TRUE))
+                                                            se = ~sd(.x/sqrt(length(.x)), na.rm = TRUE))
+                   ))
 
 TableAvgStep2dpf$n_trials <- count(TableIndStep2dpf %>%
                                      filter(Num_Tracks_Up + Num_Tracks_Down >= cutoff2dpf) %>%
@@ -146,8 +146,7 @@ AvgMaxStep2dpfWT <-
   summarise(across(max_Avg_Speed:max_STA5_Corr_Num_Tracks_Down,
                    list(mean = ~mean(.x, na.rm = TRUE),
                         sd = ~sd(.x, na.rm = TRUE),
-                        se = ~sd(.x/sqrt(length(.x)), na.rm = TRUE)),
-                   na.rm = TRUE))
+                        se = ~sd(.x/sqrt(length(.x)), na.rm = TRUE))))
 
 
 
