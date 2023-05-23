@@ -41,6 +41,7 @@
   library(rbokeh)
   library(rstatix)
   library(stringr)
+  library(tibble)
   library(tidyverse)
   library(viridis)
   library(zoo) 
@@ -585,7 +586,7 @@ rgl.snapshot("Manuscript/pictures/cPRCcilia_copsMut.png",top = T)
 close3d()
 
 
-##3d Plotting cilia by segment type
+##3D Plotting cilia by segment type-----
 
 #WT
 NodesEnds <- as.list(SkeTaggedLenghtTib %>%
@@ -633,7 +634,7 @@ close3d()
 
 
 
-# ##3d Plotting cilia by strahler (deprecated)----
+# ##3d Plotting cilia by strahler (deprecated)
 # #Copsmut
 # {
 #   Index1stStrOrdernode <- which(strahler_order(Cilia_cPRCs_Copsmut[[5]])$points == 1)
@@ -754,8 +755,8 @@ SummarySegLength <- SkeTaggedLenghtTib %>%
   mutate(pcSeqLength = 100*sumSegLength/CableLen)
 
 SummarySegLength$Tag <- factor(SummarySegLength$Tag,
-                                      levels =  c("ends", "internal", "soma"),
-                                      labels = c("terminal", "internal", "basal")
+                                      levels =  c("soma", "internal", "ends"),
+                                      labels = c("basal", "internal", "terminal")
 )
 SummarySegLength$Genotype <- factor(SummarySegLength$Genotype ,
                                levels =  c("WT",'"c-ops-1"^"∆8/∆8"'),
@@ -775,8 +776,8 @@ stat.testBranching
 print(stat.testBranching, n = 100)
 stat.testBranching <- stat.testBranching %>% 
   add_y_position()
-stat.testBranching$y.position <- stat.testBranching$y.position-stat.testBranching$y.position*0.05
-
+stat.testBranching$y.position <- stat.testBranching$y.position-stat.testBranching$y.position*0.1
+stat.testBranching$y.position <- c(12,30,50)
 LengthBranchPlot <- (
   ggplot(SummarySegLength,
          aes(x=Genotype,y = pcSeqLength, col = Genotype)) +
