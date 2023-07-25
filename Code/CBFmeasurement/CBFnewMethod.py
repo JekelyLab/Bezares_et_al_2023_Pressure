@@ -30,7 +30,7 @@ def processft(track,fps,sh,meanf = 0):
 
     #otherwise: cut off at 1.5x meanf
     else:
-        cutoff = round(1.5*np.argmin(abs(freq-meanf)))
+        cutoff = round(5*np.argmin(abs(freq-meanf)))
         
     # principal frequency is highest peak with f<1.5*meanf
     f1 = freq[np.argmax(abs(ft[:cutoff]))]
@@ -58,33 +58,38 @@ def processft(track,fps,sh,meanf = 0):
 
 
 #%%
-def FPSfreqList(t_image,fps):
+def FPSfreqList(t_image,fps,Nbins):
 
     
     s = np.shape(t_image)[1]
     
     freqsSec = []
     freqRecord = []
-    for j in range(int(num_bins)):
+    print(Nbins)
+    for j in range(int(Nbins)):
+        print("j", j)
         subim = t_image[fps*j:fps + fps*j, :]
         for i in range(s):
+            #print(range(s))
+            #print(i)
             track = subim[:,i]
             f, phi = processft(track,fps,0, 10)
             freqsSec.append(f)
         freqRecord.append(mean(freqsSec))
+        print(mean(freqsSec))
     return freqRecord
 
     
 #%% read in text image
 
-INdir = "/ebio/ag-jekely/share/Luis/Writing/Pressure_paper/publicRepo/Bezares_et_al_2023_Pressure/Data/Kymographs/"
-Odir = "/ebio/ag-jekely/share/Luis/Writing/Pressure_paper/publicRepo/Bezares_et_al_2023_Pressure/Data/CBF_timecourse/" 
+INdir = "/ebio/ag-jekely/share/Luis/Writing/Pressure_paper/publicRepo/Bezares_et_al_2023_Pressure/Data/Kymographs/test/"
+Odir = "/ebio/ag-jekely/share/Luis/Writing/Pressure_paper/publicRepo/Bezares_et_al_2023_Pressure/Data/CBF_timecourse/Otest/" 
 fps = 200
-for file  in listdir(INdir):
+for file  in sorted(listdir(INdir)):
     image = np.loadtxt(join(INdir,file))
-    FreqTcourse = FPSfreqList(image,fps)
     kymo_size = np.shape(image)[0]
     num_bins = kymo_size/fps
+    FreqTcourse = FPSfreqList(image,fps,num_bins)
     Binrange = list(range(1, int(num_bins) +1))
     df = pandas.DataFrame(FreqTcourse)
     df.columns = ["CBF"]
