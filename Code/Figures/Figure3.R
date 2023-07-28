@@ -270,7 +270,7 @@ ggsave("Manuscript/pictures/Panel_prVSMaxdispInd-AVG_step2dpf.png",
 # CB ----------------------------------------------------------------------
 
 ### read data 2 dpf
-TableCiliaNonbinned <- read_csv("Data/TablesResults/CBF-Closure_CiliaryDynamics2dpf_WT-Cops_nonbinned.csv")
+TableCiliaNonbinned <- read_csv("Data/TablesResults/CBF_MODA-Closure_CiliaryDynamics_demo.csv")
 
 ###define levels
 TableCiliaNonbinned$Pressure_Level <- factor(TableCiliaNonbinned$Pressure_Level, 
@@ -292,89 +292,94 @@ TableCiliaNonbinned$Genotype <- factor(TableCiliaNonbinned$Genotype ,
 
 ### Calculating metrics
 ####SMA/STA-CBF
-TableCiliaNonbinned <- 
+TableCiliaNonbinned <-
   TableCiliaNonbinned %>%
-  group_by(Trial_ID) %>% 
-  mutate(CBF_sma3 = rollmean(CBF, k = 3, na.pad = T),
-         CBF_sta3 = rollmean(rollmean(CBF, k =3, na.pad = T),
-                             k = 3, na.pad = T)) %>%
-  relocate(CBF_sma3, CBF_sta3, .after = CBF)
+  group_by(Trial_ID) %>%
+  mutate(CBF_sma3 = rollmean(CBF, k = 3, na.pad = TRUE),
+         CBF_sta3 = rollmean(rollmean(CBF, k = 3, na.pad = TRUE),
+                             k = 3, na.pad = TRUE),
+         CBFmoda_sma3 = rollmean(CBF_MODA, k = 3, na.pad = TRUE),
+         CBFmoda_sta3 = rollmean(rollmean(CBF_MODA, k = 3, na.pad = TRUE),
+                                 k = 3, na.pad = TRUE))
 
 
 ####dCBF value
 
-PriorCBFMean <- 
+PriorCBFMean <-
   TableCiliaNonbinned %>%
   ungroup() %>%
   filter(Period %in% "Before") %>%
-  group_by(Trial_ID, Larva_ID, Genotype) %>%
-  summarise(MeanPrior_staCBF= mean(CBF_sta3, na.rm = TRUE),
-            MeanPrior_smaCBF= mean(CBF_sma3, na.rm = TRUE)) %>%
+  group_by(Trial_ID,
+           Larva_ID,
+           Genotype) %>%
+  summarise(MeanPrior_staCBF = mean(CBF_sta3[Beat == 1], na.rm = TRUE),
+            MeanPrior_staCBFmoda = mean(CBFmoda_sta3[Beat == 1], na.rm = TRUE),
+            MeanPrior_smaCBF= mean(CBF_sma3[Beat == 1], na.rm = TRUE),
+            MeanPrior_smaCBFmoda= mean(CBFmoda_sma3[Beat == 1], na.rm = TRUE)) %>%
   group_by(Larva_ID) %>%
   mutate(Mean_staCBFlarva = mean(MeanPrior_staCBF,  na.rm = TRUE),
-         Mean_smaCBFlarva = mean(MeanPrior_smaCBF,  na.rm = TRUE)) %>%
+         MeanMODA_staCBFlarva = mean(MeanPrior_staCBFmoda,  na.rm = TRUE),
+         Mean_smaCBFlarva = mean(MeanPrior_smaCBF,  na.rm = TRUE),
+         MeanMODA_smaCBFlarva = mean(MeanPrior_smaCBFmoda,  na.rm = TRUE)) %>%
   arrange(Trial_ID) %>%
   ungroup() %>%
   group_by(Trial_ID) 
 
 
-TableCiliaNonbinned <- 
+
+TableCiliaNonbinned <-
   TableCiliaNonbinned %>%
-  group_by(Trial_ID) %>% 
-  mutate(dstaCBF= CBF - PriorCBFMean$MeanPrior_staCBF[cur_group_id()],
-         dsmaCBF= CBF - PriorCBFMean$MeanPrior_smaCBF[cur_group_id()],
-         PcstaCBF = (100*
-                       (CBF_sta3 - PriorCBFMean$MeanPrior_staCBF[cur_group_id()])
-                     /
-                       (PriorCBFMean$MeanPrior_staCBF[cur_group_id()])))  %>%
-  relocate(dsmaCBF, dstaCBF, PcstaCBF , CBF_sma3, CBF_sta3, .after = CBF)
-
-
-
+  group_by(Trial_ID) %>%
+  mutate(dstaCBF = CBF_sta3 - PriorCBFMean$MeanPrior_staCBF[cur_group_id()],
+         dstaCBFmoda = CBFmoda_sta3 - PriorCBFMean$MeanPrior_staCBFmoda[cur_group_id()]) %>%
+  relocate(dstaCBF, dstaCBFmoda, CBF_sma3, CBF_sta3,CBF_MODA, CBFmoda_sma3, CBFmoda_sta3, .after = CBF)
 
 ####max.CBFs
-MxCBF <- 
-  TableCiliaNonbinned %>% 
+MxCBFbeat <- (
+  TableCiliaNonbinned %>%
     group_by(Pressure_Level,
              Genotype,
              Trial_ID,
-             Period,
-             Larva_ID) %>% 
+             Larva_ID,
+             Period) %>%
     # filter(RelTime > 60 | RelTime <= 30) %>% (in case comparing same size intervals)
-    summarise(across(CBF:CBF_sta3, ~max(.x,na.rm = TRUE),.names = "max_{.col}")) %>%
+    summarise(across(CBF:CBFmoda_sta3, ~max(.x[Beat == 1], na.rm = TRUE), .names = "max_{.col}")) %>%
     arrange(Trial_ID)
+)
 
-
-MxCBF["max_CBF"][MxCBF["max_CBF"] == -Inf] <- NA
-MxCBF["max_dsmaCBF"][MxCBF["max_dsmaCBF"] == -Inf] <- NA
-MxCBF["max_dstaCBF"][MxCBF["max_dstaCBF"] == -Inf] <- NA
-MxCBF["max_CBF_sma3"][MxCBF["max_CBF_sma3"] == -Inf] <- NA
-MxCBF["max_CBF_sta3"][MxCBF["max_CBF_sta3"] == -Inf] <- NA
-MxCBF["max_PcstaCBF"][MxCBF["max_PcstaCBF"] == -Inf] <- NA
+MxCBFbeat["max_CBF"][MxCBFbeat["max_CBF"] == -Inf] <- NA
+MxCBFbeat["max_dstaCBF"][MxCBFbeat["max_dstaCBF"] == -Inf] <- NA
+MxCBFbeat["max_dstaCBFmoda"][MxCBFbeat["max_dstaCBFmoda"] == -Inf] <- NA
+MxCBFbeat["max_CBF_sma3"][MxCBFbeat["max_CBF_sma3"] == -Inf] <- NA
+MxCBFbeat["max_CBF_sta3"][MxCBFbeat["max_CBF_sta3"] == -Inf] <- NA
+MxCBFbeat["max_CBFmoda_sta3"][MxCBFbeat["max_CBFmoda_sta3"] == -Inf] <- NA
+MxCBFbeat["max_CBFmoda_sma3"][MxCBFbeat["max_CBFmoda_sma3"] == -Inf] <- NA
 
 
 #### CBF relation to pressure stimulus
 
-Ref_period = "Stimulus"
-metric = "max_CBF_sta3"
-MxCBF <-(MxCBF %>% 
-           group_by(Trial_ID,
-                    Pressure_Level,
-                    Genotype) %>% 
-           filter(all(!is.na(max_CBF_sta3))) %>% 
-           group_modify(~DirectionCBF(.,Ref_period,metric))
+RefPeriod <- "Stimulus"
+Metric <- "max_CBFmoda_sta3"
+MxCBFbeat <- (MxCBFbeat %>%
+                group_by(Trial_ID,
+                         Pressure_Level,
+                         Genotype) %>%
+                filter(all(!is.na(max_CBFmoda_sta3))) %>%
+                group_modify(~DirectionCBF(., RefPeriod, Metric))
 )
+
+
 
 ### Statistical test
 
-ggplot(MxCBF,aes(x =max_CBF_sta3)) + geom_histogram()
+ggplot(MxCBFbeat,aes(x =max_CBFmoda_sta3)) + geom_histogram()
 
 ##### Testing differences between Periods for each pressure level(paired one tail t-test)
-stat.testCBFCops <- MxCBF %>%
+stat.testCBFCops <- MxCBFbeat %>%
   filter(Genotype %in% c('"c-ops-1"^"∆8/∆8"') & 
-           Period %in% c("Stimulus","Before")) %>%
+           Period %in% c("Before", "Stimulus")) %>%
   group_by(Pressure_Level,Genotype) %>%
-  t_test(max_CBF_sta3 ~ Period, alternative = "less", paired = T) %>%
+  t_test(max_CBFmoda_sta3 ~ Period, alternative = "less", paired = T) %>%
   adjust_pvalue(method = "bonferroni") %>%
   add_significance()
 stat.testCBFCops
@@ -389,12 +394,12 @@ stat.testCBFCops$p.adj <- round(stat.testCBFCops$p.adj,2)
 MaxPlotCops <- (
   ggplot(
     subset(
-      MxCBF,
+      MxCBFbeat,
       Genotype %in% c('"c-ops-1"^"∆8/∆8"') &
         Period %in% c("Before","Stimulus") & 
         Pressure_Level %in% c("3.125","85","237.5","556","988")
     ),
-    aes(x = Period, y = max_CBF_sta3)
+    aes(x = Period, y = max_CBFmoda_sta3)
   )  +
     theme_plot +
     theme(strip.text.x = element_text(size = 10),
