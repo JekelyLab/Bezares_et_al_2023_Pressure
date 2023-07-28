@@ -65,53 +65,74 @@ theme_plot <- theme(
 
 # CB ----------------------------------------------------------------------
 
-  ### read data CBF
-  TableCiliaNonbinned <- read_csv("Data/TablesResults/CBF-Closure_CiliaryDynamics2dpf_WT-Cops_nonbinned.csv")
-
+ 
+  ### read data 2 dpf
+  TableCiliaNonbinned <- read_csv("Data/TablesResults/CBF_MODA-Closure_CiliaryDynamics_demo.csv")
+  
+  
   ###define pressure levels
-  TableCiliaNonbinned$Pressure_Level <- factor(TableCiliaNonbinned$Pressure_Level, 
+  TableCiliaNonbinned$Pressure_Level <- factor(TableCiliaNonbinned$Pressure_Level,
                                                levels = c("0", "3.125", "32.5",
                                                           "85", "237.5",
                                                           "556", "988")
   )
   
-  TableCiliaNonbinned$Period <- factor(TableCiliaNonbinned$Period, 
-                                       levels = c("Before", "During_1","During_2", "After")
+  TableCiliaNonbinned$Period <- factor(TableCiliaNonbinned$Period,
+                                       levels = c("Before", "During_1", "During_2", "After"),
+                                       labels = c("Before", "Stimulus", "Stimulus", "After"))
+  
+  TableCiliaNonbinned$Genotype <- factor(TableCiliaNonbinned$Genotype ,
+                                         levels = c("WT", "Cops8bD"),
+                                         labels = c("WT",'"c-ops-1"^"∆8/∆8"')
   )
-  
-  levels(TableCiliaNonbinned$Period) <- gsub("During_1", "Stimulus", levels(TableCiliaNonbinned$Period)) 
-  
   ### Calculating metrics
   ####SMA/STA-CBF
-  TableCiliaNonbinned <- 
+  TableCiliaNonbinned <-
     TableCiliaNonbinned %>%
-    group_by(Trial_ID) %>% 
-    mutate(CBF_sma3 = rollmean(CBF, k = 3, na.pad = T),
-           CBF_sta3 = rollmean(rollmean(CBF, k =3, na.pad = T),
-                               k = 3, na.pad = T))
+    group_by(Trial_ID) %>%
+    mutate(CBF_sma3 = rollmean(CBF, k = 3, na.pad = TRUE),
+           CBF_sta3 = rollmean(rollmean(CBF, k = 3, na.pad = TRUE),
+                               k = 3, na.pad = TRUE),
+           CBFmoda_sma3 = rollmean(CBF_MODA, k = 3, na.pad = TRUE),
+           CBFmoda_sta3 = rollmean(rollmean(CBF_MODA, k = 3, na.pad = TRUE),
+                                   k = 3, na.pad = TRUE))
   
   
   ####dCBF value
   
-  PriorCBFMean <- 
+  PriorCBFMean <-
     TableCiliaNonbinned %>%
     ungroup() %>%
     filter(Period %in% "Before") %>%
     group_by(Trial_ID) %>%
-    summarise(MeanPrior_staCBF= mean(CBF_sta3, na.rm = TRUE)) %>%
+    summarise(MeanPrior_staCBF = mean(CBF_sta3, na.rm = TRUE),
+              MeanPrior_staCBFmoda = mean(CBFmoda_sta3, na.rm = TRUE)) %>%
     arrange(Trial_ID) %>%
-    group_by(Trial_ID) 
-  
+    group_by(Trial_ID)
   
   TableCiliaNonbinned <- 
     TableCiliaNonbinned %>%
     group_by(Trial_ID) %>% 
     mutate(dstaCBF = CBF_sta3 - PriorCBFMean$MeanPrior_staCBF[cur_group_id()],
+           dstaCBFmoda = CBFmoda_sta3 - PriorCBFMean$MeanPrior_staCBFmoda[cur_group_id()],
            PcstaCBF = (100*
                          (CBF_sta3 - PriorCBFMean$MeanPrior_staCBF[cur_group_id()])
                        /
-                         (PriorCBFMean$MeanPrior_staCBF[cur_group_id()])))  %>%
-    relocate(dstaCBF, PcstaCBF , CBF_sma3, CBF_sta3, .after = CBF)
+                         (PriorCBFMean$MeanPrior_staCBF[cur_group_id()])),
+           PcstaCBFmoda = (100*
+                         (CBFmoda_sta3 - PriorCBFMean$MeanPrior_staCBFmoda[cur_group_id()])
+                       /
+                         (PriorCBFMean$MeanPrior_staCBFmoda[cur_group_id()])))  %>%
+    relocate(dstaCBF,
+             dstaCBFmoda,
+             CBF_sma3,
+             CBF_sta3,
+             PcstaCBF,
+             CBF_MODA,
+             CBFmoda_sma3,
+             CBFmoda_sta3,
+             PcstaCBFmoda,
+             .after = CBF)
   
   TableAvgCilia <- TableCiliaNonbinned %>% 
   relocate(PressVal, .before = CBF) %>% 
@@ -119,63 +140,67 @@ theme_plot <- theme(
            Genotype,
            RelTime,
            Period) %>% 
-  summarise(across(PressVal:CBF,
-                   list(mean = ~mean(.x, 
+  summarise(across(PressVal:PcstaCBFmoda,
+                   list(mean = ~mean(.x[Beat == 1], 
                                      na.rm = TRUE),
-                        sd = ~sd(.x,
+                        sd = ~sd(.x[Beat == 1],
                                  na.rm = TRUE),
-                        se = ~sd(.x/sqrt(length(.x)),
+                        se = ~sd(.x[Beat == 1]/sqrt(length(.x[Beat == 1])),
                                  na.rm = TRUE))))
   
   ####max.CBFs
-  MxCBF <- (
-    TableCiliaNonbinned %>% 
+  MxCBFbeat <- (
+    TableCiliaNonbinned %>%
       group_by(Pressure_Level,
                Genotype,
                Trial_ID,
                Period,
-               Larva_ID) %>% 
+               Larva_ID) %>%
       # filter(RelTime > 60 | RelTime <= 30) %>% (in case comparing same size intervals)
-      summarise(across(CBF:CBF_sta3, ~max(.x,na.rm = TRUE),.names = "max_{.col}")) %>%
+      summarise(across(CBF:PcstaCBFmoda, ~max(.x[Beat == 1], na.rm = TRUE), .names = "max_{.col}")) %>%
       arrange(Trial_ID)
-  )
+    )
   
-  MxCBF["max_CBF"][MxCBF["max_CBF"] == -Inf] <- NA
-  MxCBF["max_dstaCBF"][MxCBF["max_dstaCBF"] == -Inf] <- NA
-  MxCBF["max_CBF_sma3"][MxCBF["max_CBF_sma3"] == -Inf] <- NA
-  MxCBF["max_CBF_sta3"][MxCBF["max_CBF_sta3"] == -Inf] <- NA
-  MxCBF["max_PcstaCBF"][MxCBF["max_PcstaCBF"] == -Inf] <- NA
+  MxCBFbeat["max_CBF"][MxCBFbeat["max_CBF"] == -Inf] <- NA
+  MxCBFbeat["max_dstaCBF"][MxCBFbeat["max_dstaCBF"] == -Inf] <- NA
+  MxCBFbeat["max_dstaCBFmoda"][MxCBFbeat["max_dstaCBFmoda"] == -Inf] <- NA
+  MxCBFbeat["max_CBF_sma3"][MxCBFbeat["max_CBF_sma3"] == -Inf] <- NA
+  MxCBFbeat["max_CBF_sta3"][MxCBFbeat["max_CBF_sta3"] == -Inf] <- NA
+  MxCBFbeat["max_CBFmoda_sta3"][MxCBFbeat["max_CBFmoda_sta3"] == -Inf] <- NA
+  MxCBFbeat["max_CBFmoda_sma3"][MxCBFbeat["max_CBFmoda_sma3"] == -Inf] <- NA
+  MxCBFbeat["max_PcstaCBF"][MxCBFbeat["max_PcstaCBF"] == -Inf] <- NA
+  MxCBFbeat["max_PcstaCBFmoda"][MxCBFbeat["max_PcstaCBFmoda"] == -Inf] <- NA
+  
   
   #### CBF relation to pressure stimulus
   
-  Ref_period = "Stimulus"
-  metric = "max_CBF_sta3"
-  MxCBF <-(MxCBF %>% 
-             group_by(Trial_ID,
-                      Pressure_Level,
-                      Genotype) %>% 
-             filter(all(!is.na(max_CBF_sta3))) %>% 
-             group_modify(~DirectionCBF(.,Ref_period,metric))
+  RefPeriod <- "Stimulus"
+  Metric <- "max_CBFmoda_sta3"
+  MxCBFbeat <- (MxCBFbeat %>%
+                  group_by(Trial_ID,
+                           Pressure_Level,
+                           Genotype) %>%
+                  filter(all(!is.na(max_CBFmoda_sta3))) %>%
+                  group_modify(~DirectionCBF(., RefPeriod, Metric))
   )
-  
-  
-
   
   
   
   ### Statistical test
-  ggplot(MxCBF,aes(x =max_dstaCBF)) + geom_histogram()
-  ggplot(MxCBF,aes(x =max_PcstaCBF)) + geom_histogram()
+  
+  
+  ggplot(MxCBFbeat,aes(x =max_CBFmoda_sta3)) + geom_histogram()
+  ggplot(MxCBFbeat,aes(x =max_PcstaCBFmoda)) + geom_histogram()
   
   ##### Testing differences in dCBF between pressure levels for WT (paired one tail wilcox)
   
   #dCBF
-  stat.testdCBFpressLevelWT <- MxCBF %>%
+  stat.testdCBFpressLevelWT <- MxCBFbeat %>%
     filter(Period %in% c("Stimulus") & 
              Genotype %in% c("WT") &
              Pressure_Level %in% c("3.125","85","237.5","556","988")) %>%
     group_by(Period) %>%
-    t_test(max_dstaCBF ~ Pressure_Level, alternative = "less", paired = F) %>%
+    t_test(max_dstaCBFmoda ~ Pressure_Level, alternative = "less", paired = F) %>%
     adjust_pvalue(method = "bonferroni") %>%
     add_significance()
   stat.testdCBFpressLevelWT
@@ -186,12 +211,12 @@ theme_plot <- theme(
   stat.testdCBFpressLevelWT$p.adj <- round(stat.testdCBFpressLevelWT$p.adj,4)
   
   #Pc_dCBF
-  stat.testPcCBFpressLevelWT <- MxCBF %>%
+  stat.testPcCBFpressLevelWT <- MxCBFbeat %>%
     filter(Period %in% c("Stimulus") & 
              Genotype %in% c("WT") &
              Pressure_Level %in% c("3.125","85","237.5","556","988")) %>%
     group_by(Period) %>%
-    t_test(max_PcstaCBF ~ Pressure_Level, alternative = "less", paired = F) %>%
+    t_test(max_PcstaCBFmoda ~ Pressure_Level, alternative = "less", paired = F) %>%
     adjust_pvalue(method = "bonferroni") %>%
     add_significance()
   stat.testPcCBFpressLevelWT
@@ -250,12 +275,12 @@ ggsave(
 
 MaxDCBFvsPress <- (
   ggplot(
-      MxCBF %>% 
+      MxCBFbeat %>% 
         filter(Genotype %in% c("WT") &
                  Period %in% c("Stimulus") &
                  Pressure_Level %in% c("3.125","85","237.5","556","988"))
     ,
-    aes(x = Pressure_Level, y = max_dstaCBF, col = Pressure_Level)
+    aes(x = Pressure_Level, y = max_dstaCBFmoda, col = Pressure_Level)
   )  +
     theme_plot +
     theme(legend.position = "right", 
@@ -310,12 +335,12 @@ ggsave(
 
 MaxPc_dCBFvsPress <- (
   ggplot(
-    MxCBF %>% 
+    MxCBFbeat %>% 
       filter(Genotype %in% c("WT") &
                Period %in% c("Stimulus") &
                Pressure_Level %in% c("3.125","85","237.5","556","988"))
     ,
-    aes(x = Pressure_Level, y = max_PcstaCBF, col = Pressure_Level)
+    aes(x = Pressure_Level, y = max_PcstaCBFmoda, col = Pressure_Level)
   )  +
     theme_plot +
     theme(legend.position = "right", 
@@ -353,7 +378,7 @@ MaxPc_dCBFvsPress <- (
       limits = c(0,100), 
       expand = expansion(mult = c(0, 0.1))
     ) +
-    coord_cartesian(ylim = c(0,65)) +
+    coord_cartesian(ylim = c(0,100)) +
     labs(color =  str_wrap("set pressure (mbar)", width = 15)) +
     guides(col=guide_legend(keyheight = 0.3)) 
 )
