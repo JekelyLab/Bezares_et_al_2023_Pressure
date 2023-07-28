@@ -299,10 +299,10 @@ PriorCBFMean <-
   group_by(Trial_ID,
            Larva_ID,
            Genotype) %>%
-  summarise(MeanPrior_staCBF = mean(CBF_sta3, na.rm = TRUE),
-            MeanPrior_staCBFmoda = mean(CBFmoda_sta3, na.rm = TRUE),
-            MeanPrior_smaCBF= mean(CBF_sma3, na.rm = TRUE),
-            MeanPrior_smaCBFmoda= mean(CBFmoda_sma3, na.rm = TRUE)) %>%
+  summarise(MeanPrior_staCBF = mean(CBF_sta3[Beat == 1], na.rm = TRUE),
+            MeanPrior_staCBFmoda = mean(CBFmoda_sta3[Beat == 1], na.rm = TRUE),
+            MeanPrior_smaCBF= mean(CBF_sma3[Beat == 1], na.rm = TRUE),
+            MeanPrior_smaCBFmoda= mean(CBFmoda_sma3[Beat == 1], na.rm = TRUE)) %>%
   group_by(Larva_ID) %>%
   mutate(Mean_staCBFlarva = mean(MeanPrior_staCBF,  na.rm = TRUE),
          MeanMODA_staCBFlarva = mean(MeanPrior_staCBFmoda,  na.rm = TRUE),
