@@ -31,6 +31,7 @@
   library(broom)
   library(catmaid)
   library(cowplot)
+  library(dplyr)
   library(ggplot2)
   library(ggpubr)
   library(here)
@@ -57,7 +58,7 @@
   
 #define ggplot theme--------------------------------------------------
   
-  theme_plot <- theme(
+  ThemePlot <- theme(
     axis.text.x = element_text(size = 7, angle = 90),
     axis.text.y = element_text(size = 7),
     legend.text = element_text(size = 7),
@@ -208,7 +209,7 @@ PlotPressVSMaxDispWTCops <- (
         max_STA5_PressVal, 
         max_STA5_Corr_Avg_Y_displacement)
     ) +
-       theme_plot +
+       ThemePlot +
     theme(legend.position  = "right",
           legend.title = element_blank()) +
       background_grid(major = "none", minor = "none") +
@@ -401,7 +402,7 @@ MaxPlotCops <- (
     ),
     aes(x = Period, y = max_CBFmoda_sta3)
   )  +
-    theme_plot +
+    ThemePlot +
     theme(strip.text.x = element_text(size = 10),
           strip.background = element_blank()
     ) +
@@ -491,7 +492,7 @@ VolumePlot <- (
   ggplot(TableVols %>%
            filter(stage %in% c("2dpf")),
          aes(x=Body_side,y=Volume,col=Genotype)) +
-    theme_plot +
+    ThemePlot +
     theme(legend.position = "right",
           axis.text.x = element_text(size = 9, angle = 0 , colour="black"),
           legend.title = element_blank()) +
@@ -639,60 +640,6 @@ close3d()
 
 
 
-# ##3d Plotting cilia by strahler (deprecated)
-# #Copsmut
-# {
-#   Index1stStrOrdernode <- which(strahler_order(Cilia_cPRCs_Copsmut[[5]])$points == 1)
-#   plot3d(subset(Cilia_cPRCs_Copsmut[[5]],Index1stStrOrdernode), soma = T, lwd = 7,col = CbbPalette[1])
-#   Index2ndStrOrdernode <- which(strahler_order(Cilia_cPRCs_Copsmut[[5]])$points == 2)
-#   plot3d(subset(Cilia_cPRCs_Copsmut[[5]],Index2ndStrOrdernode), soma = T,lwd = 7,col = CbbPalette[2], add = T)
-#   Index3rdStrOrdernode <- which(strahler_order(Cilia_cPRCs_Copsmut[[5]])$points == 3)
-#   plot3d(subset(Cilia_cPRCs_Copsmut[[5]],Index3rdStrOrdernode), soma = T,lwd = 7,col = CbbPalette[3], add = T)
-#   Index4thStrOrdernode <- which(strahler_order(Cilia_cPRCs_Copsmut[[5]])$points == 4)
-#   plot3d(subset(Cilia_cPRCs_Copsmut[[5]],Index4thStrOrdernode),soma = T, lwd = 7,col = CbbPalette[4], add = T)
-#   plot3d(Cilia_cPRCs_Copsmut[[5]], lwd = 7,col = "black",soma = T, add = T)
-#   plot3d(Cilia_cPRCs_Copsmut, lwd = 2,col = colorRampPalette(c("black","grey")), soma = T,add = T, alpha = 0.2)
-#   plot3d(cellmut, lwd=5,  alpha =0.1,col = "black",add = T)
-#   par3d(zoom=0.75)
-# }
-# 
-# 
-# rgl.snapshot("Manuscript/pictures/snapshots_EM/Cops8bD/finalset/StrCopsMut3Dplot2430899.png")
-# close3d()
-# 
-# #WT
-# {
-#   Index1stStrOrdernode <- which(strahler_order(Cilia_cPRCs_WT[[10]])$points == 1)
-#   plot3d(subset(Cilia_cPRCs_WT[[10]],Index1stStrOrdernode), soma = T, lwd = 5,col = CbbPalette[1])
-#   Index2ndStrOrdernode <- which(strahler_order(Cilia_cPRCs_WT[[10]])$points == 2)
-#   plot3d(subset(Cilia_cPRCs_WT[[10]],Index2ndStrOrdernode), soma = T,lwd = 5,col = CbbPalette[2], add = T)
-#   Index3rdStrOrdernode <- which(strahler_order(Cilia_cPRCs_WT[[10]])$points == 3)
-#   plot3d(subset(Cilia_cPRCs_WT[[10]],Index3rdStrOrdernode), soma = T,lwd = 5,col = CbbPalette[3], add = T)
-#   Index4thStrOrdernode <- which(strahler_order(Cilia_cPRCs_WT[[10]])$points == 4)
-#   plot3d(subset(Cilia_cPRCs_WT[[10]],Index4thStrOrdernode),soma = T, lwd = 5,col = CbbPalette[4], add = T)
-#   plot3d(Cilia_cPRCs_WT[[10]], lwd = 5,col = "black",soma = T, add = T)
-#   plot3d(Cilia_cPRCs_WT, lwd = 2,col = colorRampPalette(c("black","grey")), soma = T,add = T, alpha = 0.2)
-#   plot3d(cellWT, lwd=5,  alpha =0.1,soma = T, col = "black",add = T)
-#   par3d(zoom=0.75)
-# }
-# 
-# rgl.snapshot("Manuscript/pictures/snapshots_EM/WT/finalset/StrCopsWT3Dplot1291275.png")
-# close3d()
-# # 
-# # 
-# # #CiliaColouredbyStrahler 2D
-# # #copsMut
-# 
-#   n=Cilia_cPRCs_Copsmut[[5]]
-#   so=strahler_order(n)
-#   orders=1:max(so$points)
-#   plot(n, col='black',lwd = 6,main = element_blank(),PointAlpha = 1, axes=F,xlab = element_blank(), ylab = element_blank() )
-#   for (i in orders) {
-#     plot(subset(n, so$points==i), col=CbbPalette[i], add = i, lwd = 6,PointAlpha = 0.1)
-#   }
-#   
-
-
 
 ##Plotting ciliary length feach genotype----
   ## Statistical test cable length
@@ -722,7 +669,7 @@ PlotCiliaLength <- (
            distinct(skids,sknames,CableLen,Genotype),
          aes(x=Genotype,y = round(CableLen)/1000, col = Genotype)) +
     theme_minimal() +
-    theme_plot +
+    ThemePlot +
     background_grid(major = "none", minor = "none") +
     theme(legend.position = "none",
           axis.text.x = element_text(size = 10, angle = 0 , colour="black")) +
@@ -782,12 +729,12 @@ print(stat.testBranching, n = 100)
 stat.testBranching <- stat.testBranching %>% 
   add_y_position()
 stat.testBranching$y.position <- stat.testBranching$y.position-stat.testBranching$y.position*0.1
-stat.testBranching$y.position <- c(12,30,50)
+stat.testBranching$y.position <- c(15,30,40)
 LengthBranchPlot <- (
   ggplot(SummarySegLength,
          aes(x=Genotype,y = pcSeqLength, col = Genotype)) +
     theme_minimal() +
-    theme_plot +
+    ThemePlot +
     background_grid(major = "none", minor = "none") +
     theme(legend.position = "none",
           axis.text.x = element_text(size = 10, angle = 0 , colour="black"),
@@ -810,162 +757,15 @@ LengthBranchPlot <- (
       y = str_wrap("relative branch length (% total length)",width = 23),
       color = "genotype"
     ) +
-    facet_wrap(~Tag,scales = "free")
+    facet_wrap(~Tag, scales = "free") +
+    theme(
+      strip.background = element_blank()
+    )
 )
 LengthBranchPlot
 
-##Plots for each branch type (deprecated)----
-#External
-# ggplot(SummarySegLength %>%
-#          filter(Tag %in% "ends"),aes(x =pcSeqLength)) + geom_histogram()
-# 
-# stat.testEndsBranching <- SummarySegLength %>% ungroup() %>%
-#   filter(Tag %in% "ends") %>%
-#   wilcox_test(pcSeqLength ~ Genotype, alternative = "g", paired = F) %>%
-#   adjust_pvalue(method = "bonferroni") %>%
-#   add_significance()
-# stat.testEndsBranching
-# print(stat.testEndsBranching, n = 100)
-# 
-# stat.testEndsBranching <- stat.testEndsBranching %>% 
-#   add_y_position()
-#stat.testEndsBranching$p <- round(stat.testEndsBranching$p,3)
 
-##Plotting pc length of main branch bet. genotype
-
-
-# LengthEnds <- (
-#   ggplot(SummarySegLength %>%
-#            filter(Tag %in% "ends"),
-#          aes(x=Genotype,y = pcSeqLength, col = Genotype)) +
-#     theme_minimal() +
-#     theme_plot +
-#     background_grid(major = "none", minor = "none") +
-#     theme(legend.position = "none",
-#           axis.text.x = element_text(size = 9, angle = 0 , colour="black")) +
-#     geom_violin() + 
-#     geom_point(position=position_jitterdodge(dodge.width = 1)) +
-#     scale_color_manual(values =  c("#000000", "#D55E00")) +
-#     stat_pvalue_manual(
-#       stat.testEndsBranching,
-#       bracket.nudge.y = 0, 
-#       tip.length = 0,
-#       step.increase = 0.05, 
-#       label = "p") +  
-#     scale_y_continuous(breaks = seq(0,100,20),limits = c(0,100)) +
-#     scale_x_discrete(labels= Glabels) +
-#     geom_hline(yintercept = 0) +
-#     coord_cartesian(ylim = c(0,120)) + 
-#     labs(
-#       x = "",
-#       y = str_wrap("relative branch length (% total length)",width = 23),
-#       color = "genotype"
-#     )
-# )
-# LengthEnds
-# 
-# #Internal
-# ggplot(SummarySegLength %>%
-#          filter(Tag %in% "internal"),aes(x =pcSeqLength)) + geom_histogram()
-# 
-# stat.testInternalBranching <- SummarySegLength %>% ungroup() %>%
-#   filter(Tag %in% "internal") %>%
-#   wilcox_test(pcSeqLength ~ Genotype, alternative = "l", paired = F) %>%
-#   adjust_pvalue(method = "bonferroni") %>%
-#   add_significance()
-# stat.testInternalBranching
-# print(stat.testInternalBranching, n = 100)
-# 
-# stat.testInternalBranching <- stat.testInternalBranching %>% 
-#   add_y_position()
-# #stat.testInternalBranching$p <- round(stat.testInternalBranching$p,3)
-# 
-# ##Plotting pc length of internal  branch bet. genotype
-# 
-# Glabels <-  (parse(text=unique(as.character(SummarySegLength$Genotype))))
-# 
-# LengthInternal <- (
-#   ggplot(SummarySegLength %>%
-#            filter(Tag %in% "internal"),
-#          aes(x=Genotype,y = pcSeqLength, col = Genotype)) +
-#     theme_minimal() +
-#     theme_plot +
-#     background_grid(major = "none", minor = "none") +
-#     theme(legend.position = "none",
-#           axis.text.x = element_text(size = 9, angle = 0 , colour="black")) +
-#     geom_violin() + 
-#     geom_point(position=position_jitterdodge(dodge.width = 1)) +
-#     scale_color_manual(values =  c("#000000", "#D55E00")) +
-#     stat_pvalue_manual(
-#       stat.testInternalBranching,
-#       bracket.nudge.y = 0, 
-#       tip.length = 0,
-#       step.increase = 0.05, 
-#       label = "p") +  
-#     scale_y_continuous(breaks = seq(0,100,10),limits = c(0,100)) +
-#     scale_x_discrete(labels= Glabels) +
-#     geom_hline(yintercept = 0) +
-#     coord_cartesian(ylim = c(0,30)) + 
-#     labs(
-#       x = "",
-#       y = str_wrap("relative branch length (% total length)",width = 23),
-#       color = "genotype"
-#     )
-# )
-# LengthInternal
-# 
-# #Basal
-# ggplot(SummarySegLength %>%
-#          filter(Tag %in% "soma"),aes(x =pcSeqLength)) + geom_histogram()
-# 
-# stat.testBasalBranching <- SummarySegLength %>% ungroup() %>%
-#   filter(Tag %in% "soma") %>%
-#   wilcox_test(pcSeqLength ~ Genotype, alternative = "l", paired = F) %>%
-#   adjust_pvalue(method = "bonferroni") %>%
-#   add_significance()
-# stat.testBasalBranching
-# print(stat.testBasalBranching, n = 100)
-# 
-# stat.testBasalBranching <- stat.testBasalBranching %>% 
-#   add_y_position()
-# #stat.testBasalBranching$p <- round(stat.testBasalBranching$p,3)
-# 
-# ##Plotting pc length of root branch bet. genotype
-# 
-# Glabels <-  (parse(text=unique(as.character(SkeTaggedLenghtTib$Genotype))))
-# 
-# LengthBasal <- (
-#   ggplot(SummarySegLength %>%
-#            filter(Tag %in% "soma"),
-#          aes(x=Genotype,y = pcSeqLength, col = Genotype)) +
-#     theme_minimal() +
-#     theme_plot +
-#     background_grid(major = "none", minor = "none") +
-#     theme(legend.position = "none",
-#           axis.text.x = element_text(size = 9, angle = 0 , colour="black")) +
-#     geom_violin() + 
-#     geom_point(position=position_jitterdodge(dodge.width = 1)) +
-#     scale_color_manual(values =  c("#000000", "#D55E00")) +
-#     stat_pvalue_manual(
-#       stat.testBasalBranching,
-#       bracket.nudge.y = 0, 
-#       tip.length = 0,
-#       step.increase = 0.05, 
-#       label = "p") +  
-#     scale_y_continuous(breaks = seq(0,100,3),limits = c(0,100)) +
-#     scale_x_discrete(labels= Glabels) +
-#     geom_hline(yintercept = 0) +
-#     coord_cartesian(ylim = c(0,12)) + 
-#     labs(
-#       x = "",
-#       y = str_wrap("relative branch length (% total length)",width = 23),
-#       color = "genotype"
-#     )
-# )
-# LengthBasal
-
-
-# generate figure composite panel grid ------------------------------------
+  # generate figure composite panel grid ------------------------------------
 
   imgLM <- readPNG("Manuscript/pictures/cPRC_WTvsCopsnolabs.png")
   imgEM <- readPNG("Manuscript/pictures/EMcPRCnolabs4.png")
@@ -1071,7 +871,6 @@ LengthBranchPlot
     AABBB
     CCDDD
     CCDDD
-    #####
     EEEEE
     EEEEE
     EEEEE
@@ -1086,9 +885,9 @@ LengthBranchPlot
        panel_cPRC_staining +
        ggdraw(VolumePlot) +
        panel_cPRC_EM +
-       PlotCiliaLength +
-       LengthBranchPlot +
-     plot_layout(design = layout, heights = c(1,1,1,0.5,0.1,1,1,1,1,1,0.5)) +
+       ggdraw(PlotCiliaLength) +
+       ggdraw(LengthBranchPlot) +
+     plot_layout(design = layout, heights = c(1,1,1,1,0.1,1,1,1,1,1,1)) +
     plot_annotation(tag_levels = list(
       c("A", "B", "C", "D", "E", "F", "G"))) &
     theme(plot.tag = element_text(size = 12, face = "plain"))
@@ -1097,12 +896,12 @@ LengthBranchPlot
    
     ggsave(
       filename = "Manuscript/Figures/Figure3.pdf", 
-      Fig3, width = 2800, height = 3500,
+      Fig3, width = 3500, height = 5000,
       units = "px"
     )
     ggsave(
       filename = "Manuscript/Figures/Figure3.png", 
-      Fig3, width = 3500, height = 3500,
+      Fig3, width = 3500, height = 5000,
       units = "px"
     )
   }
