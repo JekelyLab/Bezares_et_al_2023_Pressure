@@ -30,6 +30,7 @@
 
 # Loading libraries--------------------------------------------------
   library(cowplot)
+  library(dplyr)
   library(ggplot2)
   library(ggpubr)
   library(ggthemes)
@@ -108,8 +109,7 @@ TableAvgStep2dpf <- TableIndStep2dpf %>%
   group_by(Pressure_Level, Type_Experiment, Genotype, RelTime) %>%
   summarise(across(Avg_Speed:STA5_Corr_Num_Tracks_Down, list(mean = ~mean(.x, na.rm = TRUE),
                                                        sd = ~sd(.x, na.rm = TRUE),
-                                                       se = ~sd(.x / sqrt(length(.x)), na.rm = TRUE)),
-                   na.rm = TRUE))
+                                                       se = ~sd(.x / sqrt(length(.x)), na.rm = TRUE))))
 
 TableAvgStep2dpf$n_trials <- count(TableIndStep2dpf %>%
                                      filter(Num_Tracks_Up + Num_Tracks_Down >= Cutoff2dpf) %>%
@@ -138,8 +138,7 @@ AvgMaxStep2dpfWT <-
   summarise(across(max_Avg_Speed:max_STA5_Corr_Num_Tracks_Down,
                    list(mean = ~mean(.x, na.rm = TRUE),
                         sd = ~sd(.x, na.rm = TRUE),
-                        se = ~sd(.x / sqrt(length(.x)), na.rm = TRUE)),
-                   na.rm = TRUE))
+                        se = ~sd(.x / sqrt(length(.x)), na.rm = TRUE))))
 
 
 
@@ -319,8 +318,7 @@ TableAvgStep3dpf <- TableIndStep3dpf %>%
   group_by(Pressure_Level, Type_Experiment, Genotype, RelTime) %>%
   summarise(across(Avg_Speed:STA5_Corr_Num_Tracks_Down, list(mean = ~mean(.x, na.rm = TRUE),
                                                             sd = ~sd(.x, na.rm = TRUE),
-                                                            se = ~sd(.x / sqrt(length(.x)), na.rm = TRUE)),
-                   na.rm = TRUE))
+                                                            se = ~sd(.x / sqrt(length(.x)), na.rm = TRUE))))
 
 TableAvgStep3dpf$n_trials <- count(TableIndStep3dpf %>%
                                      filter(Num_Tracks_Up + Num_Tracks_Down >= Cutoff3dpf) %>%
@@ -357,8 +355,7 @@ AvgMaxStep3dpfWT <-
         max_Avg_Speed:max_STA5_Corr_Num_Tracks_Down,
         list(mean = ~mean(.x, na.rm = TRUE),
         sd = ~sd(.x, na.rm = TRUE),
-        se = ~sd(.x / sqrt(length(.x)), na.rm = TRUE)),
-        na.rm = TRUE)
+        se = ~sd(.x / sqrt(length(.x)), na.rm = TRUE)))
       )
 
 ###Regression model
@@ -578,7 +575,7 @@ TableAvgLongStep3dpf <- (
       across(Avg_Speed:PressInc,
         list(mean = ~mean(.x, na.rm = TRUE),
         sd = ~sd(.x, na.rm = TRUE),
-        se = ~sd(.x / sqrt(length(.x)), na.rm = TRUE)), na.rm = TRUE))
+        se = ~sd(.x / sqrt(length(.x)), na.rm = TRUE))))
 )
 
 TableAvgLongStep3dpf$n_trials <-
@@ -777,7 +774,8 @@ TableCiliaNonbinned$Pressure_Level <- factor(TableCiliaNonbinned$Pressure_Level,
 
 TableCiliaNonbinned$Period <- factor(TableCiliaNonbinned$Period,
                        levels = c("Before", "During_1", "During_2", "After"),
-                       labels = c("Before", "Stimulus", "Stimulus", "After"))
+                       labels = c("Before", "Stimulus", "During_2", "After")
+                       )
 
 TableCiliaNonbinned$Genotype <- factor(TableCiliaNonbinned$Genotype ,
                                        levels = c("WT", "Cops8bD"),
