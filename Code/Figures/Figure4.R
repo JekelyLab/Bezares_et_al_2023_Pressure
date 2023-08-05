@@ -33,7 +33,7 @@ gc() #free up memory and report the memory usage.
   
   #define ggplot theme--------------------------------------------------
   
-  theme_plot <- theme(
+  ThemePlot <- theme(
     axis.text.x = element_text(size = 7, angle = 90),
     axis.text.y = element_text(size = 7),
     legend.text = element_text(size = 7),
@@ -233,7 +233,7 @@ webshot2::webshot(url="Manuscript/pictures/visNetwork_INNOS.html",
 # CBF--------------------------------------------------
 
 ### read data
-  TableCBFTetAndCont <- read_csv("Data/TablesResults/CBF-Closure_CiliaryDynamics2dpf_TeTxLC-pLB253_nonbinned.csv")
+  TableCBFTetAndCont <- read_csv("Data/TablesResults/CBF_MODA-Closure_CiliaryDynamics_TetXLC.csv")
 
   ###define pressure levels
   TableCBFTetAndCont$Pressure_Level <- factor(TableCBFTetAndCont$Pressure_Level, 
@@ -244,7 +244,7 @@ webshot2::webshot(url="Manuscript/pictures/visNetwork_INNOS.html",
   
   TableCBFTetAndCont$Period <- factor(TableCBFTetAndCont$Period, 
                              levels = c("Before", "During_1","During_2", "After"),
-                             labels = c("Before", "Stimulus","During_2", "After")
+                             labels = c("Before", "Stimulus", "During_2", "After")
                              )
   
   TableCBFTetAndCont$Plasmid <- factor(TableCBFTetAndCont$Plasmid ,
@@ -258,10 +258,13 @@ webshot2::webshot(url="Manuscript/pictures/visNetwork_INNOS.html",
   ####SMA/STA-CBF
   TableCBFTetAndCont <- 
     TableCBFTetAndCont %>%
-    group_by(Trial_ID) %>% 
-    mutate(CBF_sma3 = rollmean(CBF, k = 3, na.pad = T),
-           CBF_sta3 = rollmean(rollmean(CBF, k =3, na.pad = T),
-                               k = 3, na.pad = T))
+    group_by(Trial_ID) %>%
+    mutate(CBF_sma3 = rollmean(CBF, k = 3, na.pad = TRUE),
+           CBF_sta3 = rollmean(rollmean(CBF, k = 3, na.pad = TRUE),
+                               k = 3, na.pad = TRUE),
+           CBFmoda_sma3 = rollmean(CBF_MODA, k = 3, na.pad = TRUE),
+           CBFmoda_sta3 = rollmean(rollmean(CBF_MODA, k = 3, na.pad = TRUE),
+                                   k = 3, na.pad = TRUE))
   
   
   ####dCBF value
@@ -270,17 +273,20 @@ webshot2::webshot(url="Manuscript/pictures/visNetwork_INNOS.html",
     TableCBFTetAndCont %>%
     ungroup() %>%
     filter(Period %in% "Before") %>%
-    group_by(Trial_ID,Larva_ID, Genotype) %>%
-    summarise(MeanPrior_staCBF= mean(CBF_sta3, na.rm = TRUE)) %>%
+    group_by(Trial_ID) %>%
+    summarise(MeanPrior_staCBF = mean(CBF_sta3[Beat == 1], na.rm = TRUE),
+              MeanPrior_staCBFmoda = mean(CBFmoda_sta3[Beat == 1], na.rm = TRUE)) %>%
     arrange(Trial_ID) %>%
     group_by(Trial_ID) 
   
   
   TableCBFTetAndCont <- 
     TableCBFTetAndCont %>%
-    group_by(Trial_ID) %>% 
-    mutate(dstaCBF= CBF - PriorCBFMean$MeanPrior_staCBF[cur_group_id()]) %>%
-    relocate(dstaCBF, CBF_sma3, CBF_sta3, .after = CBF)
+    group_by(Trial_ID) %>%
+    mutate(dstaCBF = CBF_sta3 - PriorCBFMean$MeanPrior_staCBF[cur_group_id()],
+           dstaCBFmoda = CBFmoda_sta3 - PriorCBFMean$MeanPrior_staCBFmoda[cur_group_id()]) %>%
+    relocate(dstaCBF, dstaCBFmoda, CBF_sma3, CBF_sta3,CBF_MODA, CBFmoda_sma3, CBFmoda_sta3, .after = CBF)
+  
   
 
   ####max.CBFs
@@ -290,22 +296,25 @@ webshot2::webshot(url="Manuscript/pictures/visNetwork_INNOS.html",
                Pressure_Level,
                Genotype,
                Trial_ID,
-               Period,
-               Plasmid) %>% 
+               Plasmid,
+               Period) %>%
       # filter(RelTime > 60 | RelTime <= 30) %>% (in case comparing same size intervals)
-      summarise(across(CBF:CBF_sta3, ~max(.x,na.rm = TRUE),.names = "max_{.col}")) %>%
+      summarise(across(CBF:CBFmoda_sta3, ~max(.x[Beat == 1], na.rm = TRUE), .names = "max_{.col}")) %>%
       arrange(Trial_ID)
   )
   
   MxCBF_Tet["max_CBF"][MxCBF_Tet["max_CBF"] == -Inf] <- NA
   MxCBF_Tet["max_dstaCBF"][MxCBF_Tet["max_dstaCBF"] == -Inf] <- NA
+  MxCBF_Tet["max_dstaCBFmoda"][MxCBF_Tet["max_dstaCBFmoda"] == -Inf] <- NA
   MxCBF_Tet["max_CBF_sma3"][MxCBF_Tet["max_CBF_sma3"] == -Inf] <- NA
   MxCBF_Tet["max_CBF_sta3"][MxCBF_Tet["max_CBF_sta3"] == -Inf] <- NA
+  MxCBF_Tet["max_CBFmoda_sta3"][MxCBF_Tet["max_CBFmoda_sta3"] == -Inf] <- NA
+  MxCBF_Tet["max_CBFmoda_sma3"][MxCBF_Tet["max_CBFmoda_sma3"] == -Inf] <- NA
   
   #### CBF relation to pressure stimulus
   
   Ref_period = "Stimulus"
-  metric = "max_CBF_sta3"
+  metric = "max_CBFmoda_sta3"
   MxCBF_Tet <-(MxCBF_Tet %>% 
              group_by(Trial_ID,
                       Pressure_Level,
@@ -318,14 +327,14 @@ webshot2::webshot(url="Manuscript/pictures/visNetwork_INNOS.html",
 
 
 ### Statistical test
-ggplot(MxCBF_Tet,aes(x =max_CBF_sta3)) + geom_histogram()
+ggplot(MxCBF_Tet,aes(x =max_CBFmoda_sta3)) + geom_histogram()
 ##### Testing differences between Periods for each pressure level(paired one tail wilcox)
 stat.testTet <- MxCBF_Tet %>% 
   filter(State %in% c("positive") & 
            Period %in% c("Stimulus","Before") &
            Pressure_Level %in% c("0","85","237.5","556","988")) %>%
   group_by(Pressure_Level, Plasmid) %>%
-  t_test(max_CBF_sta3 ~ Period, alternative = "less", paired = T) %>%
+  t_test(max_CBFmoda_sta3 ~ Period, alternative = "less", paired = T) %>%
   adjust_pvalue(method = "bonferroni") %>%
   add_significance()
   stat.testTet
@@ -333,7 +342,7 @@ print(stat.testTet, n = 100)
 
 stat.testTet <- stat.testTet %>% 
   add_xy_position(x = "Period")
-stat.testTet$p.adj <- round(stat.testTet$p.adj,2)
+#stat.testTet$p.adj <- round(stat.testTet$p.adj,2)
 
 ### Plotting with P-values
   
@@ -343,9 +352,9 @@ stat.testTet$p.adj <- round(stat.testTet$p.adj,2)
         filter(State %in% c("positive") &
                  Period %in% c("Before","Stimulus") &
                  Pressure_Level %in% c("0","85","237.5","556","988")),
-               aes(x = Period, y = max_CBF_sta3)
+               aes(x = Period, y = max_CBFmoda_sta3)
     )  +
-      theme_plot +
+      ThemePlot +
       theme(strip.text.x = element_text(size = 10),
             strip.background = element_blank()
       ) +
