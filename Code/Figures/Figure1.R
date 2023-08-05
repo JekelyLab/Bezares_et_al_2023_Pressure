@@ -629,8 +629,7 @@ AvgLongMaxStep3dpfWT <- (
         max_Avg_Speed:max_STA5_PressInc,
         list(mean = ~mean(.x, na.rm = TRUE),
         sd = ~sd(.x, na.rm = TRUE),
-        se = ~sd(.x / sqrt(length(.x)), na.rm = TRUE)),
-        na.rm = TRUE)
+        se = ~sd(.x / sqrt(length(.x)), na.rm = TRUE)))
       )
 )
 
