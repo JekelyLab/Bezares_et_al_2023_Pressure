@@ -50,7 +50,7 @@
   setwd(ProjectDir )
   
 #define ggplot theme--------------------------------------------------
-theme_plot <- theme(
+ThemePlot <- theme(
   axis.text.x = element_text(size = 7, angle = 90),
   axis.text.y = element_text(size = 7),
   legend.text = element_text(size = 7),
@@ -67,7 +67,7 @@ theme_plot <- theme(
 
  
   ### read data 2 dpf
-  TableCiliaNonbinned <- read_csv("Data/TablesResults/CBF_MODA-Closure_CiliaryDynamics_demo.csv")
+  TableCiliaNonbinned <- read_csv("Data/TablesResults/CBF_MODA-Closure_CiliaryDynamics_WTCops.csv")
   
   
   ###define pressure levels
@@ -140,13 +140,19 @@ theme_plot <- theme(
            Genotype,
            RelTime,
            Period) %>% 
-  summarise(across(PressVal:PcstaCBFmoda,
+  mutate(across(CBF:PcstaCBFmoda,
                    list(mean = ~mean(.x[Beat == 1], 
                                      na.rm = TRUE),
                         sd = ~sd(.x[Beat == 1],
                                  na.rm = TRUE),
                         se = ~sd(.x[Beat == 1]/sqrt(length(.x[Beat == 1])),
-                                 na.rm = TRUE))))
+                                 na.rm = TRUE)))) %>%
+    mutate(PressVal_mean = mean(PressVal, 
+                                       na.rm = TRUE),
+              PressVal_sd = sd(PressVal,
+                                   na.rm = TRUE),
+              PressVal_se = sd(PressVal/sqrt(length(PressVal)),
+                                   na.rm = TRUE))
   
   ####max.CBFs
   MxCBFbeat <- (
@@ -224,9 +230,9 @@ theme_plot <- theme(
   stat.testPcCBFpressLevelWT <- 
     stat.testPcCBFpressLevelWT %>% 
     add_y_position()
-  stat.testPcCBFpressLevelWT$p.adj <- round(stat.testPcCBFpressLevelWT$p.adj,4)
+  stat.testPcCBFpressLevelWT$p.adj <- round(stat.testPcCBFpressLevelWT$p.adj,6)
   
-  stat.testPcCBFpressLevelWT$y.position <- stat.testPcCBFpressLevelWT$y.position - 30
+  stat.testPcCBFpressLevelWT$y.position <- stat.testPcCBFpressLevelWT$y.position - 90
   
 
 #Plots-----------
@@ -239,7 +245,7 @@ PlotAveragePressureCBF <- (
   ggplot(TableAvgCilia %>%
            filter(Pressure_Level %in% c("3.125","85","237.5","556","988")),
          aes(RelTime,PressVal_mean,col = Pressure_Level)) +
-    theme_plot +
+    ThemePlot +
     theme(legend.position = "right", 
           legend.key.size = unit(0.3, 'cm'),
           legend.key.width= unit(0.1, 'cm')) +
@@ -282,7 +288,7 @@ MaxDCBFvsPress <- (
     ,
     aes(x = Pressure_Level, y = max_dstaCBFmoda, col = Pressure_Level)
   )  +
-    theme_plot +
+    ThemePlot +
     theme(legend.position = "right", 
           legend.key.size = unit(0.3, 'cm'),
           legend.key.width= unit(0.1, 'cm')) +
@@ -342,7 +348,7 @@ MaxPc_dCBFvsPress <- (
     ,
     aes(x = Pressure_Level, y = max_PcstaCBFmoda, col = Pressure_Level)
   )  +
-    theme_plot +
+    ThemePlot +
     theme(legend.position = "right", 
           legend.key.size = unit(0.3, 'cm'),
           legend.key.width= unit(0.1, 'cm')) +
@@ -371,7 +377,8 @@ MaxPc_dCBFvsPress <- (
       hide.ns = TRUE, 
       step.increase = 0, 
       label = "p.adj",
-      label.size = 3
+      label.size = 3,
+      alpha = 0.8
     ) +
     scale_y_continuous(
       breaks = seq(0, 100, 20), 
