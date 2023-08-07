@@ -50,7 +50,7 @@
   
   #define ggplot theme--------------------------------------------------
   
-  theme_plot <- theme(
+  ThemePlot <- theme(
     axis.text.x = element_text(size = 7, angle = 90),
     axis.text.y = element_text(size = 7),
     legend.text = element_text(size = 7),
@@ -93,8 +93,7 @@ TableAvgStepWTCops <- TableIndStepWTCops %>%
   summarise(across(Avg_Speed:Corr_Num_Tracks_Down,
                    list(mean = ~mean(.x, na.rm = TRUE),
                         sd = ~sd(.x, na.rm = TRUE),
-                        se = ~sd(.x/sqrt(length(.x)),na.rm = TRUE)),
-                   na.rm = TRUE))
+                        se = ~sd(.x/sqrt(length(.x)),na.rm = TRUE))))
 
 TableAvgStepWTCops$n_trials <- count(TableIndStepWTCops %>% 
                                        filter(Num_Tracks_Up + Num_Tracks_Down >= 50) %>%
@@ -133,7 +132,7 @@ PlotAveragePressureWTcops <- (
   ggplot(TableAvgStepWTCops %>%
            filter(!Pressure_Level %in% c("988")),
          aes(RelTime,PressVal_mean,col = Pressure_Level)) +
-    theme_plot +
+    ThemePlot +
     theme(strip.text.x = element_text(size = 10),
           strip.background = element_blank()
     ) +
@@ -177,7 +176,7 @@ PlotDispAvgWTCops <- (
     theme(strip.text.x = element_text(size = 10),
           strip.background = element_blank()
     ) +
-    theme_plot +
+    ThemePlot +
     background_grid(major = "none", minor = "none") +
     guides(colour = "none") +
     geom_point(aes(col = Genotype), 
@@ -222,7 +221,7 @@ PlotPriorSpeedWTCops <- (
   ggplot(AvgPriorSpeed,
          aes(Genotype, meanBatchSpeed, col = Genotype)
   ) +
-    theme_plot +
+    ThemePlot +
     theme(axis.text.x = element_text(size = 10, angle = 0, colour="black")) +
     background_grid(major = "none", minor = "none") +
     guides(colour = "none") +
@@ -259,7 +258,7 @@ ggsave("Manuscript/pictures/Panel_PriorbatchSpeed_WTCops.png",
 
 
 ### read data 2 dpf
-TableCiliaNonbinned <- read_csv("Data/TablesResults/CBF_MODA-Closure_CiliaryDynamics_demo.csv")
+TableCiliaNonbinned <- read_csv("Data/TablesResults/CBF_MODA-Closure_CiliaryDynamics_WTCops.csv")
 
 
 ###define pressure levels
@@ -271,7 +270,7 @@ TableCiliaNonbinned$Pressure_Level <- factor(TableCiliaNonbinned$Pressure_Level,
 
 TableCiliaNonbinned$Period <- factor(TableCiliaNonbinned$Period,
                                      levels = c("Before", "During_1", "During_2", "After"),
-                                     labels = c("Before", "Stimulus", "Stimulus", "After"))
+                                     labels = c("Before", "Stimulus", "During_2", "After"))
 
 TableCiliaNonbinned$Genotype <- factor(TableCiliaNonbinned$Genotype ,
                                        levels = c("WT", "Cops8bD"),
@@ -401,7 +400,7 @@ PriorCBFlarvaWTCops <- (
     PriorCBFMean,
     aes(Genotype, MeanMODA_staCBFlarva, col = Genotype)
   ) +
-    theme_plot +
+    ThemePlot +
     theme(axis.text.x = element_text(size = 10, angle = 0,  colour="black")) +
     geom_violin() +
     geom_point(alpha = 0.25,
@@ -489,7 +488,7 @@ Max_Pc_dCBFPlotCops <- (
     ,
     aes(x = Pressure_Level, y = max_PcstaCBFmoda, col = Pressure_Level)
   )  +
-    theme_plot +
+    ThemePlot +
     geom_violin(alpha = 0.7, size = 0.3,scale = "count",  width = 0.4) +
     geom_point(alpha = 0.3, size = 2 , shape = 20) +
     geom_line(aes(group = Larva_ID),alpha = 0.3) + 
@@ -513,7 +512,8 @@ Max_Pc_dCBFPlotCops <- (
       step.increase = 0, 
       #position = position_jitterdodge(dodge.width = 1), 
       label = "p.adj",
-      label.size = 3
+      label.size = 3,
+      alpha = 0.8
     ) +
     scale_y_continuous(
       breaks = seq(0, 100, 20), 
