@@ -1,14 +1,14 @@
 
 %Reading stimulus table
-StimulusTableName = "StimCBF_WTCops.csv";
+StimulusTableName = "CBF_Experimentsonlypositive.csv";
 ISTablpath = "/ebio/ag-jekely/share/Luis/Writing/Pressure_paper/publicRepo/Bezares_et_al_2023_Pressure/Data/InputTables/";
 FullIpath= strcat(ISTablpath, StimulusTableName);
 StimTable = readtable( FullIpath, 'ReadVariableNames',true);
 
-FOutdir = '/ebio/ag-jekely/share/Luis/Writing/Pressure_paper/publicRepo/Bezares_et_al_2023_Pressure/Data/Kymographs/CLAEHKymographs/CSV-CLAEH/FreqRidges/';
+FOutdir = '/ebio/ag-jekely/share/Luis/Writing/Pressure_paper/publicRepo/Bezares_et_al_2023_Pressure/Data/FreqRidges_CiliaBeating/';
 
 %dir read
-FIndir = '/ebio/ag-jekely/share/Luis/Writing/Pressure_paper/publicRepo/Bezares_et_al_2023_Pressure/Data/Kymographs/CLAEHKymographs/CSV-CLAEH/Input/';
+FIndir = '/ebio/ag-jekely/share/Luis/Writing/Pressure_paper/publicRepo/Bezares_et_al_2023_Pressure/Data/Kymographs/CLAEHKymographs/CSV-CLAEH/Input/TeTxLC/todo/';
 PatternFile = strcat(FIndir,'**/CLAEH*');
 Files=dir(PatternFile);
 ListFileNames = {Files.name};
