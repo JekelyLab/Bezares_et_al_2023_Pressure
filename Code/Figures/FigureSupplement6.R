@@ -51,7 +51,7 @@ setwd(ProjectDir )
 
 #define ggplot theme--------------------------------------------------
 
-theme_plot <- theme(
+ThemePlot <- theme(
   axis.text.x = element_text(size = 7, angle = 90),
   axis.text.y = element_text(size = 7),
   legend.text = element_text(size = 7),
@@ -128,8 +128,7 @@ AvgORRound <-
       mean = ~mean(.x, na.rm = TRUE),
       sd = ~sd(.x ,na.rm = TRUE),
       se = ~sd(.x/sqrt(length(.x)), na.rm = TRUE)
-    ),
-    na.rm = TRUE)
+    ))
   )
 
 
@@ -150,8 +149,7 @@ AvgORRoundcPRC <-
         mean = ~mean(.x, na.rm = TRUE),
         sd = ~sd(.x ,na.rm = TRUE),
         se = ~sd(.x/sqrt(length(.x)), na.rm = TRUE)
-      ),
-      na.rm = TRUE)
+      ))
   )
 
 
@@ -212,8 +210,7 @@ AvgORRoundMAxdR <-
         mean = ~mean(.x, na.rm = TRUE),
         sd = ~sd(.x, na.rm = TRUE),
         se = ~sd(.x/sqrt(length(.x)), na.rm = TRUE)
-      ),
-      na.rm = TRUE))
+      )))
 
 ####Counting sample number and adding to the table
 
@@ -262,7 +259,7 @@ PPresAvAllcPRC <- (ggplot(AvgORRoundcPRC %>%
                               aes(x = RoundRelTime,
                                   y = PressVal_mean,
                                   col = Pressure_Level)) +
-  theme_plot +
+  ThemePlot +
   theme(legend.position="right") + 
   background_grid(major = "none", minor = "none") +
   geom_line() +
@@ -315,7 +312,7 @@ PFluoAvR_cPRCs <- (
              y = dR_sta31_mean,
              col = Pressure_Level)
   ) +
-    theme_plot +
+    ThemePlot +
     theme(legend.position="none", 
           legend.key.size = unit(0.3, 'cm'),
           legend.key.width= unit(0.3, 'cm'),
@@ -366,7 +363,7 @@ PFluoAvR_cPRCsind <- (
          aes(x = RoundRelTime,
              y = dR_sta31)
   ) +
-    theme_plot +
+    ThemePlot +
     theme(legend.position="none", 
           legend.key.size = unit(0.3, 'cm'),
           legend.key.width= unit(0.3, 'cm'),
@@ -431,7 +428,7 @@ PressVSmaxdR_cPRCs <- (
          aes(PressVal,
              dR_sta31, col = Pressure_Level)
   ) +
-    theme_plot + 
+    ThemePlot + 
     background_grid(major = 'none',
                     minor = 'none') +
     geom_violin(aes(group = Pressure_Level),alpha = 0.7, size = 0.3,scale = "count", width = 0.4) +
@@ -493,8 +490,7 @@ AvgORRoundSNd <-
         mean = ~mean(.x, na.rm = TRUE),
         sd = ~sd(.x ,na.rm = TRUE),
         se = ~sd(.x/sqrt(length(.x)), na.rm = TRUE)
-      ),
-      na.rm = TRUE)
+      ))
   )
 
 OnlyRatio %>% ungroup() %>% 
@@ -516,7 +512,7 @@ PFluoInR_SN <- (
              y = dR,
              col = Pressure_Level)
   ) +
-    theme_plot +
+    ThemePlot +
     theme(legend.position= c(0.9, 0.8), 
           legend.key.size = unit(0.3, 'cm'),
           legend.key.width= unit(0.3, 'cm'),
@@ -566,6 +562,10 @@ PaneldRcPRCind <- ggdraw(PFluoAvR_cPRCsind) +
   draw_label("set pressure (mb)", x = 1, y = 0.5, angle = -90, size = Fontsize,color ="black", fontface = "plain") 
 
 
+PanelInR_SN <- ggdraw(PFluoInR_SN) +
+  draw_label(expression("SN"^{"d1_unp"}), x = 0.5, y = 0.9, size = Fontsize,color = "black") 
+  
+
   layout <- "
 AABBCCDD
 AABBCCDD
@@ -579,7 +579,7 @@ EEEEEEEE
     ggdraw(PPresAvAllcPRC) + 
     ggdraw(PFluoAvR_cPRCs) + 
     ggdraw(PressVSmaxdR_cPRCs) +
-    ggdraw(PFluoInR_SN) +
+    PanelInR_SN + 
     PaneldRcPRCind +
     plot_layout(design = layout, heights = c(1, 1)) + 
     plot_annotation(tag_levels = list(
