@@ -53,7 +53,7 @@ setwd(ProjectDir)
 
 
 ##Reading pressure log files-------
-IndirPressureCil <- "/ebio/ag-jekely/share/Luis/Behavioral_experiments/pressure_setup/Pressure_cilia/WT_Cops/PressureLogs/"
+IndirPressureCil <- "/ebio/ag-jekely/share/Luis/Behavioral_experiments/pressure_setup/Pressure_cilia/TeTxLC/PressureLogs/"
 
 TxtPattern  <-  ".txt"
 
@@ -63,12 +63,12 @@ FilesLog <-
 
 
 ## Reading stimulus table-------
-StimulusTable <- read.table("Data/InputTables/StimCBF_WTCops.csv", header = TRUE, sep = ",")
+StimulusTable <- read.table("Data/InputTables/CBF_Experimentsonlypositive.csv", header = TRUE, sep = ",")
 StimulusTable$Trial_ID <- str_replace(StimulusTable$Trial_ID, ".txt", "")
 StimulusTable$Pressure_Level <- as.character(StimulusTable$Pressure_Level)
 ## Creating table for all CBFs and closures per experiment-------
-InputPathKymo <- "/ebio/ag-jekely/share/Luis/Behavioral_experiments/pressure_setup/Pressure_cilia/WT_Cops/RecordingsMeasurements/"
-InputPathCBFMODA <- "/ebio/ag-jekely/share/Luis/Writing/Pressure_paper/publicRepo/Bezares_et_al_2023_Pressure/Data/Kymographs/CLAEHKymographs/CSV-CLAEH/FreqRidges/"
+InputPathKymo <- "/ebio/ag-jekely/share/Luis/Behavioral_experiments/pressure_setup/Pressure_cilia/TeTxLC/RecordingsMeasurements/"
+InputPathCBFMODA <- "/ebio/ag-jekely/share/Luis/Writing/Pressure_paper/publicRepo/Bezares_et_al_2023_Pressure/Data/FreqRidges_CiliaBeating/"
 
 ### Reading FFT files -------
 FinalCBFClos <- tibble(.rows = NULL)
@@ -78,8 +78,8 @@ for (a in seq_along(StimulusTable$Trial_ID)){
   TxtPattern  <- paste(StimulusTable[a, "Trial_ID"], "_Kymo-", sep = "") ##File format as output by CBFrollingAvgSubKimoUnsup.ijm
   FilesKym <- list.files(path = InputPathKymo, pattern = TxtPattern, recursive = TRUE)
   if (length(FilesKym) > 0) {
-    FilesKym <- mixedsort((Files), decreasing = TRUE)
-    NumFiles <- length(Files)
+    FilesKym <- mixedsort((FilesKym), decreasing = TRUE)
+    NumFiles <- length(FilesKym)
     FPS  <- StimulusTable[a, "Frame_rate"]
     TimeFrame  <- 1 / FPS
     Interval <- TimeFrame * StimulusTable[a, "Bin_size"]
@@ -96,8 +96,8 @@ for (a in seq_along(StimulusTable$Trial_ID)){
              Pressure_Level = StimulusTable[a, "Pressure_Level"],
              Plasmid = StimulusTable[a, "Plasmid"])
     SuperTable <-
-      lapply(Files, function(X) {
-        read.table(file = paste(InputPath, X, sep = ""),
+      lapply(FilesKym, function(X) {
+        read.table(file = paste(InputPathKymo, X, sep = ""),
                    header = TRUE,
                    na.strings = " ",
                    sep = "\t")
@@ -106,7 +106,7 @@ for (a in seq_along(StimulusTable$Trial_ID)){
     SuperTable <-
       tibble(R = map(SuperTable, "R"),
              Theta = map(SuperTable, "Theta"),
-             FileName = unlist(lapply(str_split(Files, pattern = "/"), tail, n = 1L))) # Or the same: SuperTable %>% transpose() %>% as_tibble() %>% mutate(FileName = unlist(lapply(str_split(Files,TxtPattern = "/"), tail,n = 1L)))
+             FileName = unlist(lapply(str_split(FilesKym, pattern = "/"), tail, n = 1L))) # Or the same: SuperTable %>% transpose() %>% as_tibble() %>% mutate(FileName = unlist(lapply(str_split(FilesKym,TxtPattern = "/"), tail,n = 1L)))
     Thetavals <- str_split(StimulusTable[a, "Theta_range"], pattern = "-")
     SuperTable <-
       SuperTable %>%
@@ -186,7 +186,7 @@ for (a in seq_along(StimulusTable$Trial_ID)){
 
 #Writing tables-------
 SavePath <- "Data/TablesResults/"
-FlNameCBFClos <- "CBF_MODA-Closure_CiliaryDynamics_demo.csv"
+FlNameCBFClos <- "CBF_MODA-Closure_CiliaryDynamics_TetXLC.csv"
 write.csv(tibble(FinalCBFClos), paste(SavePath, FlNameCBFClos, sep = ""), row.names = FALSE)
 
 SavePath <- "Data/TablesResults/"
