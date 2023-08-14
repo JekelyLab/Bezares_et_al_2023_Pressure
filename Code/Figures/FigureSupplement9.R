@@ -129,8 +129,7 @@ AvgORRound <-
         mean = ~mean(.x, na.rm = TRUE),
         sd = ~sd(.x ,na.rm = TRUE),
         se = ~sd(.x/sqrt(length(.x)), na.rm = TRUE)
-      ),
-      na.rm = TRUE)
+      ))
   )
 
 ####Counting sample number and adding to the table
