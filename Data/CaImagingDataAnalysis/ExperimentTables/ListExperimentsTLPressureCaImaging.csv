@@ -111,3 +111,10 @@ Experiment_ID,Pressure_Level,Larva_ID,Prior_Duration,Stimulation_Duration,Time_F
 091022_CaI_Platynereis_M2_L1_E008,100,091022_CaI_Platynereis_M2_L1,30,60,0.2064,YES,YES,3dpf,Titration
 091022_CaI_Platynereis_M2_L1_E009,1200,091022_CaI_Platynereis_M2_L1,30,60,0.1499,YES,YES,3dpf,Gradual
 091022_CaI_Platynereis_M2_L1_E010,750,091022_CaI_Platynereis_M2_L1,30,60,0.1499,YES,YES,3dpf,Other
+141222_CaI_Platynereis_M3_L1_E005-2,250,141222_CaI_Platynereis_M3_L1,30,60,0.2064,YES,YES,2dpf,Titration
+151222_CaI_Platynereis_M1_L1_E009-2,750,151222_CaI_Platynereis_M1_L1,30,60,0.2064,YES,YES,2dpf,Titration
+161222_CaI_Platynereis_M2_L1_E010-2,500,161222_CaI_Platynereis_M2_L1,30,60,0.1573,YES,YES,2dpf,Titration
+161222_CaI_Platynereis_M2_L1_E010-3,500,161222_CaI_Platynereis_M2_L1,30,60,0.1573,YES,YES,2dpf,Titration
+220423_CaI_Platynereis_M2_L1_E005,1000,220423_CaI_Platynereis_M2_L1,30,60,0.4129,YES,YES,2dpf,Titration
+220423_CaI_Platynereis_M2_L1_E006-2,100,220423_CaI_Platynereis_M2_L1,30,60,0.4129,YES,YES,2dpf,Titration
+220423_CaI_Platynereis_M2_L1_E008-2,750,220423_CaI_Platynereis_M2_L1,30,60,0.4129,YES,YES,2dpf,Titration
