@@ -391,6 +391,7 @@ stat.testTet <- stat.testTet %>%
         limits = c(0, 30), 
         expand = expansion(mult = c(0, 0.1))
       ) +
+      coord_cartesian(ylim = c(0, 25)) +
       facet_grid(vars(Plasmid),vars(Pressure_Level)) + 
       labs(color = str_wrap("CBF", width = 15)) +
       guides(color = guide_legend(keyheight = 0.3)) 
