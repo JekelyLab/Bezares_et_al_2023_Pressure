@@ -271,7 +271,7 @@ ggsave("Manuscript/pictures/Panel_prVSMaxdispInd-AVG_step2dpf.png",
 # CB ----------------------------------------------------------------------
 
 ### read data 2 dpf
-TableCiliaNonbinned <- read_csv("Data/TablesResults/CBF_MODA-Closure_CiliaryDynamics_demo.csv")
+TableCiliaNonbinned <- read_csv("Data/TablesResults/CBF_MODA-Closure_CiliaryDynamics_WTCops.csv")
 
 ###define levels
 TableCiliaNonbinned$Pressure_Level <- factor(TableCiliaNonbinned$Pressure_Level, 
@@ -388,7 +388,7 @@ print(stat.testCBFCops, n = 100)
 
 stat.testCBFCops <- stat.testCBFCops %>% 
   add_xy_position(x = "Period")
-stat.testCBFCops$p.adj <- round(stat.testCBFCops$p.adj,2)
+#stat.testCBFCops$p.adj <- round(stat.testCBFCops$p.adj,2)
 
 ### Plotting Max.CBF with P-values--------------------------------------------------
 
@@ -437,6 +437,7 @@ MaxPlotCops <- (
       limits = c(0, 30), 
       expand = expansion(mult = c(0, 0.1))
     ) +
+    coord_cartesian(ylim = c(0, 25)) +
     labs(color = str_wrap("CBF", width = 15)) +
     facet_wrap(~Pressure_Level, nrow = 1) +
     guides(color = guide_legend(keyheight = 0.3)) 
@@ -775,7 +776,7 @@ LengthBranchPlot
   
   CBFpriorduring <- ggdraw(MaxPlotCops) + 
     draw_label("set pressure (mb)", x = 0.45, y = 0.99, size = Fontsize,color ="black", fontface = "plain") +
-    draw_label(expression(italic(paste("c-ops-",1^{"∆8/∆8"}))), x = 0.87, y = 0.8, size = Fontsize,color ="black", fontface = "italic") 
+    draw_label(expression(italic(paste("c-ops-",1^{"∆8/∆8"}))), x = 0.87, y = 0.85, size = Fontsize,color ="black", fontface = "italic") 
 ###cPRC stain
 
     x_coord_1= 0.05
@@ -796,8 +797,8 @@ LengthBranchPlot
                   size = Fontsize,
                   color = "white",
                   hjust = 0.2) +
-       draw_label("α-cPRCcilia", x = x_coord_1,
-                  y = 0.16,
+       draw_label("NIT-GC2", x = x_coord_1,
+                  y = 0.2,
                   size = Fontsize,
                   color = "cyan",
                   hjust = 0.2) +
@@ -815,7 +816,7 @@ LengthBranchPlot
                   hjust = 0.2) +
        draw_label(paste("2", "\u00B5", "m", sep = ""), 
                   x = 0.93,
-                  y = 0.15,
+                  y = 0.21,
                   size = Fontsize,
                   color = "white")
 
@@ -823,24 +824,24 @@ LengthBranchPlot
 ###3d EMsnapshots
    ##EM composite
   {
-    x_bar1 = 0.22
-    x_bar2 = 0.46
-    x_bar3 = 0.71 
-    y_bar1 = 0.55
-    y_bar2 = 0.09
+    x_bar1 = 0.24
+    x_bar2 = 0.48
+    x_bar3 = 0.72 
+    y_bar1 = 0.54
+    y_bar2 = 0.12
     panel_cPRC_EM <- ggdraw() + 
     draw_image(imgEM, scale = 1) +
-    draw_label(expression(italic("WT")), angle = 90, x = 0 , y = 0.74, size = Fontsize,color = "black") +
-    draw_label(expression(italic(paste("c-ops-",1^{"∆8/∆8"}))),angle = 90, x = 0, y = 0.25, size = Fontsize,color = "black") +
+    draw_label(expression(italic("WT")), angle = 90, x = 0.015 , y = 0.74, size = Fontsize,color = "black") +
+    draw_label(expression(italic(paste("c-ops-",1^{"∆8/∆8"}))),angle = 90, x = 0.015, y = 0.25, size = Fontsize,color = "black") +
     draw_label("cb", x = 0.2, y = 0.9, size = Fontsize,color = "black") +
     draw_label("cb", x = 0.2, y = 0.46, size = Fontsize,color = "black") +
-    draw_label("n", x = 0.12, y = 0.92, size = Fontsize,color = "black") +
-    draw_label("bb", x = 0.04, y = 0.65, size = Fontsize,color = "black") +
-    draw_label("bb", x = 0.07, y = 0.22, size = Fontsize,color = "black") +
+    draw_label("n", x = 0.12, y = 0.91, size = Fontsize,color = "black") +
+    draw_label("bb", x = 0.065, y = 0.65, size = Fontsize,color = "black") +
+    draw_label("bb", x = 0.085, y = 0.25, size = Fontsize,color = "black") +
     draw_label(paste("2", "\u00B5", "m", sep = ""), 
                  x = x_bar1, y = y_bar1, size = Fontsize, color = "black") +
     draw_label(paste("2", "\u00B5", "m", sep = ""), 
-                 x = 0.22, y = y_bar2, size = Fontsize, color = "black") +
+                 x = x_bar1, y = y_bar2, size = Fontsize, color = "black") +
     draw_label(paste("2", "\u00B5", "m", sep = ""), 
                x = x_bar2, y = y_bar1, size = Fontsize, color = "black") +
     draw_label(paste("2", "\u00B5", "m", sep = ""), 
@@ -848,14 +849,14 @@ LengthBranchPlot
     draw_label("500 nm", 
              x = x_bar3, y = y_bar1, size = Fontsize, color = "black") +
     draw_label("500 nm", 
-               x = 0.7, y = y_bar2, size = Fontsize, color = "black") +
+               x = x_bar3, y = y_bar2, size = Fontsize, color = "black") +
       draw_label("seg. type", x = 0.8, y = 0.23, size = Fontsize,color = "black") +
-      draw_label("terminal", x = 0.78, y = 0.11, size = Fontsize,color = CbbPalette[1]) +
-      draw_label("internal", x = 0.78, y = 0.15, size = Fontsize,color = CbbPalette[2]) +
-      draw_label("basal", x = 0.78, y = 0.19, size = Fontsize,color = CbbPalette[3]) +
-      draw_label("bb", x = 0.79, y = 0.88, size = Fontsize,color = "black") +
-      draw_label("cb", x = 0.94, y = 0.9, size = Fontsize,color = "black") +
-      draw_label("bb", x = 0.81, y = 0.32, size = Fontsize,color = "black") +
+      draw_label("terminal", x = 0.8, y = 0.11, size = Fontsize,color = CbbPalette[1]) +
+      draw_label("internal", x = 0.8, y = 0.15, size = Fontsize,color = CbbPalette[2]) +
+      draw_label("basal", x = 0.8, y = 0.19, size = Fontsize,color = CbbPalette[3]) +
+      draw_label("bb", x = 0.83, y = 0.78, size = Fontsize,color = "black") +
+      draw_label("cb", x = 0.97, y = 0.88, size = Fontsize,color = "black") +
+      draw_label("bb", x = 0.79, y = 0.38, size = Fontsize,color = "black") +
       draw_label("cb", x = 0.9, y = 0.42, size = Fontsize,color = "black") +
       draw_label(paste("2", "\u00B5", "m", sep = ""), 
                  x = 0.96, y = y_bar1, size = Fontsize, color = "black") +
@@ -871,6 +872,7 @@ LengthBranchPlot
     AABBB
     CCDDD
     CCDDD
+    #####
     EEEEE
     EEEEE
     EEEEE
@@ -887,7 +889,7 @@ LengthBranchPlot
        panel_cPRC_EM +
        ggdraw(PlotCiliaLength) +
        ggdraw(LengthBranchPlot) +
-     plot_layout(design = layout, heights = c(1,1,1,1,0.1,1,1,1,1,1,1)) +
+     plot_layout(design = layout, heights = c(1,1,1,1,0.01,1,1,1,1,1,1)) +
     plot_annotation(tag_levels = list(
       c("A", "B", "C", "D", "E", "F", "G"))) &
     theme(plot.tag = element_text(size = 12, face = "plain"))
