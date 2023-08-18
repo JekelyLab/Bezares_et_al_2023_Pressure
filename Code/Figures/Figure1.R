@@ -761,7 +761,7 @@ ggsave("Manuscript/pictures/PanelPcIncvsDisp_Long3dpf.png",
 # CB ----------------------------------------------------------------------
 
 ### read data 2 dpf
-TableCiliaNonbinned <- read_csv("Data/TablesResults/CBF_MODA-Closure_CiliaryDynamics_demo.csv")
+TableCiliaNonbinned <- read_csv("Data/TablesResults/CBF_MODA-Closure_CiliaryDynamics_WTCops.csv")
 
 
 ###define pressure levels
