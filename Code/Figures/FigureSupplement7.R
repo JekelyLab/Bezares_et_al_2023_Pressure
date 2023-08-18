@@ -131,7 +131,7 @@ stat.testSpeed$p <- round(stat.testSpeed$p,3)
 PlotAveragePressureWTcops <- (
   ggplot(TableAvgStepWTCops %>%
            filter(!Pressure_Level %in% c("988")),
-         aes(RelTime,PressVal_mean,col = Pressure_Level)) +
+         aes(RelTime, PressVal_mean, col = Pressure_Level)) +
     ThemePlot +
     theme(strip.text.x = element_text(size = 10),
           strip.background = element_blank()
@@ -373,6 +373,41 @@ MxCBFbeat["max_CBFmoda_sma3"][MxCBFbeat["max_CBFmoda_sma3"] == -Inf] <- NA
 MxCBFbeat["max_PcstaCBF"][MxCBFbeat["max_PcstaCBF"] == -Inf] <- NA
 MxCBFbeat["max_PcstaCBFmoda"][MxCBFbeat["max_PcstaCBFmoda"] == -Inf] <- NA
 
+### Statistical test dCBF----
+ggplot(MxCBFbeat,aes(x = max_dstaCBFmoda)) + geom_histogram()
+
+##### Pc_dCBF for Cops mutants for each pressure level(non-paired one tail wilcox)
+stat.testPc_dCBFpressLevelCops <- MxCBFbeat %>%
+  group_by(Period)  %>%
+  filter(!Pressure_Level %in% c("0") &
+           Genotype %in% c('italic(paste("c-ops-", 1^{\n    "∆8/∆8"\n}))')  &
+           Period %in% c("Stimulus")) %>%
+  drop_na () %>%
+  t_test(max_PcstaCBFmoda ~ Pressure_Level, alternative = "less", paired = F) %>%
+  adjust_pvalue(method = "bonferroni") %>%
+  add_significance()
+stat.testPc_dCBFpressLevelCops
+print(stat.testPc_dCBFpressLevelCops, n = 100)
+
+stat.testPc_dCBFpressLevelCops <- stat.testPc_dCBFpressLevelCops %>% 
+  add_y_position()
+stat.testPc_dCBFpressLevelCops$y.position = stat.testPc_dCBFpressLevelCops$y.position-60
+stat.testPc_dCBFpressLevelCops$p.adj <- round(stat.testPc_dCBFpressLevelCops$p.adj,4)
+
+#### Comparison WT vs C-ops Pc_dCBF
+
+stat.testWTvsCopsPc_dCBF <- MxCBFbeat %>%
+  group_by(Pressure_Level)  %>%
+  filter(!Pressure_Level %in% c("0","32.5") &
+           Period %in% c("Stimulus")) %>%
+  drop_na () %>%
+  t_test(max_PcstaCBFmoda ~ Genotype, alternative = "greater", paired = F) %>%
+  adjust_pvalue(method = "bonferroni") %>%
+  add_significance()
+stat.testWTvsCopsPc_dCBF
+print(stat.testWTvsCopsPc_dCBF, n = 100)
+stat.testWTvsCopsPc_dCBF <- stat.testWTvsCopsPc_dCBF %>% 
+  add_y_position()
 
 
 ####Test CBF differences between WT and Cops prior to stimulus
@@ -382,7 +417,7 @@ stat.test_CBFprior <- PriorCBFMean %>%
   ungroup() %>% 
   select(Larva_ID,Genotype,MeanMODA_staCBFlarva ,MeanMODA_smaCBFlarva) %>% 
   distinct() %>%
-  wilcox_test(MeanMODA_staCBFlarva ~ Genotype, alternative = "less", paired = F) %>%
+  wilcox_test(MeanMODA_staCBFlarva ~ Genotype, alternative = "greater", paired = F) %>%
   add_significance()
 stat.test_CBFprior
 print(stat.test_CBFprior, n = 100)
@@ -392,6 +427,7 @@ stat.test_CBFprior <- stat.test_CBFprior %>%
 stat.test_CBFprior$p <- round(stat.test_CBFprior$p,3)
 
 ###Plots--------
+GlabelsCB <-  parse(text=unique(as.character(TableCiliaNonbinned$Genotype)))
 
 ####avg. prior CBF
 
@@ -421,7 +457,7 @@ PriorCBFlarvaWTCops <- (
       tip.length = 0,
       step.increase = 0.05,
       label = "p") +   
-    scale_x_discrete(labels= Glabels) +
+    scale_x_discrete(labels= GlabelsCB) +
     labs(
       x = "",
       y = " avg. CBF"
@@ -437,47 +473,8 @@ ggsave("Manuscript/pictures/Panel_priormeanCBF_WTCops.png",
 )
 
 
-### Statistical test dCBF----
-ggplot(MxCBFbeat,aes(x =max_dstaCBFmoda )) + geom_histogram()
 
-##### dCBF for Cops mutants for each pressure level(non-paired one tail wilcox)
-stat.testdCBFpressLevelCops <- MxCBFbeat %>%
-  group_by(Period)  %>%
-  filter(!Pressure_Level %in% c("0") &
-           Genotype %in% c('italic(paste("c-ops-", 1^{\n    "∆8/∆8"\n}))') &
-           Period %in% c("Stimulus")) %>%
-  drop_na () %>%
-  t_test(max_dstaCBFmoda ~ Pressure_Level, alternative = "less", paired = F) %>%
-  adjust_pvalue(method = "bonferroni") %>%
-  add_significance()
-stat.testdCBFpressLevelCops
-print(stat.testdCBFpressLevelCops, n = 100)
-
-stat.testdCBFpressLevelCops <- stat.testdCBFpressLevelCops %>% 
-  add_y_position()
-stat.testdCBFpressLevelCops$y.position = stat.testdCBFpressLevelCops$y.position-3
-stat.testdCBFpressLevelCops$p.adj <- round(stat.testdCBFpressLevelCops$p.adj,3)
-
-##### Pc_dCBF for Cops mutants for each pressure level(non-paired one tail wilcox)
-stat.testPc_dCBFpressLevelCops <- MxCBFbeat %>%
-  group_by(Period)  %>%
-  filter(!Pressure_Level %in% c("0") &
-           Genotype %in% c('italic(paste("c-ops-", 1^{\n    "∆8/∆8"\n}))')  &
-           Period %in% c("Stimulus")) %>%
-  drop_na () %>%
-  t_test(max_PcstaCBFmoda ~ Pressure_Level, alternative = "less", paired = F) %>%
-  adjust_pvalue(method = "bonferroni") %>%
-  add_significance()
-stat.testPc_dCBFpressLevelCops
-print(stat.testPc_dCBFpressLevelCops, n = 100)
-
-stat.testPc_dCBFpressLevelCops <- stat.testPc_dCBFpressLevelCops %>% 
-  add_y_position()
-stat.testPc_dCBFpressLevelCops$y.position = stat.testPc_dCBFpressLevelCops$y.position-60
-stat.testPc_dCBFpressLevelCops$p.adj <- round(stat.testPc_dCBFpressLevelCops$p.adj,4)
-
-
-#### maxPc_dCBF vs Pressure
+#### Plot maxPc_dCBF vs Pressure
 
 Max_Pc_dCBFPlotCops <- (
   ggplot(
@@ -521,10 +518,54 @@ Max_Pc_dCBFPlotCops <- (
       expand = expansion(mult = c(0, 0.1))
     ) +
     coord_cartesian(ylim = c(0,100)) 
-  # facet_grid( ~ Genotype)
 )
 
 Max_Pc_dCBFPlotCops
+
+#Plot Pc_dCBF WT vs Cops
+
+Max_Pc_dCBFPlotWTvsCops <- (
+  ggplot(
+    MxCBFbeat %>% 
+      filter(Period %in% c("Stimulus") &
+               Pressure_Level %in% c("3.125","85","237.5","556","988"))
+    ,
+    aes(x = Genotype, y = max_PcstaCBFmoda, col = Genotype)
+  )  +
+    ThemePlot +                                                              
+    theme(strip.text.x = element_text(size = 7)) +
+    geom_violin(alpha = 0.7, size = 0.3,scale = "count",  width = 0.4) +
+    geom_point(alpha = 0.3, size = 2 , shape = 20) +
+    scale_color_manual(values = cbbPalette) +
+    labs(
+      x = "",
+      y = expression(paste("max. %",Delta," CBF",sep = "")),
+      color = str_wrap("", width = 20)
+    ) +
+    background_grid(major = "none", minor = "none") +
+    geom_hline(yintercept = 0) +
+    guides(color = "none") +
+    stat_pvalue_manual(
+      stat.testWTvsCopsPc_dCBF,
+      bracket.nudge.y = 0, 
+      tip.length = 0, 
+      hide.ns = TRUE, 
+      step.increase = 0, 
+      label = "p.adj",
+      label.size = 3,
+      alpha = 0.8
+    ) +
+    scale_x_discrete(labels= GlabelsCB) +
+    scale_y_continuous(
+      breaks = seq(0, 100, 20), 
+      limits = c(0,100), 
+      expand = expansion(mult = c(0, 0.1))
+    ) +
+    coord_cartesian(ylim = c(0,100)) +
+    facet_grid( ~ Pressure_Level) 
+)
+
+Max_Pc_dCBFPlotWTvsCops
 
 ##### Saving PNG of plot
 
@@ -566,7 +607,7 @@ ggsave("Manuscript/pictures/Panel_MaxPc_dCBF_WTCops.png",
     draw_label(expression(italic("WT")), angle = 90, x = 0.01 , y = 0.7, size = Fontsize,color = "black") +
     draw_label(expression(italic(paste("c-ops-",1^{"∆8/∆8"}))),angle = 90, x = 0.01, y = 0.3, size = Fontsize,color = "black") +
     draw_label("AcTub", x = x_coord_1, y = 0.11, size = Fontsize,color = "white", hjust = 1) +
-    draw_label("α-cPRCcilia", x = x_coord_1, y = 0.16, size = Fontsize,color = "cyan") +
+    draw_label("NIT-GC2", x = x_coord_1 - 0.02, y = 0.16, size = Fontsize,color = "cyan") +
     draw_label(paste("2 ", "\u00B5", "m", sep = ""), 
              x = 0.95, y = 0.12, size = Fontsize, color = "white") +
     draw_grob(Rect1) +
@@ -580,13 +621,13 @@ ggsave("Manuscript/pictures/Panel_MaxPc_dCBF_WTCops.png",
     
     
    layout <- "
-  AB
-  CC
-  CC
-  DE
-  DE
-  FF
-  FF
+  AAABBB
+  CCCCCC
+  CCCCCC
+  DDEEFF
+  DDEEFF
+  GGGGGG
+  GGGGGG
   "
   
   
@@ -596,10 +637,11 @@ ggsave("Manuscript/pictures/Panel_MaxPc_dCBF_WTCops.png",
      PanelAvgWTCopsDisp +
      ggdraw(PriorCBFlarvaWTCops) +
      PanelPcdCBF +
+     ggdraw(Max_Pc_dCBFPlotWTvsCops) +
      ggdraw(panel_cPRC_collage) +
      plot_layout(design = layout, heights = c(1, 1, 1, 1, 0.8, 1, 1)) +
      plot_annotation(tag_levels = list(
-       c("A", "B", "C", "D", "E","F"))) &
+       c("A", "B", "C", "D", "E","F", "G"))) &
      theme(plot.tag = element_text(size = 12, face = "plain"))
   
   ggsave(
@@ -617,3 +659,5 @@ ggsave("Manuscript/pictures/Panel_MaxPc_dCBF_WTCops.png",
   
  
 
+
+  
