@@ -54,7 +54,7 @@
   
   #define ggplot theme--------------------------------------------------
   
-  theme_plot <- theme(
+  ThemePlot <- theme(
     axis.text.x = element_text(size = 7, angle = 90),
     axis.text.y = element_text(size = 7),
     legend.text = element_text(size = 7),
@@ -173,7 +173,7 @@ PFluoAvR_MCsind <- (
          aes(x = RoundRelTime,
              y = dR_sta31)
   ) +
-    theme_plot +
+    ThemePlot +
     theme(legend.position="none", 
           legend.key.size = unit(0.3, 'cm'),
           legend.key.width= unit(0.3, 'cm'),
@@ -262,7 +262,7 @@ CorrPlot <-
   ) +
   background_grid(major = "none", minor = "none") +
   geom_hline(yintercept = 0) +
-  theme_plot + 
+  ThemePlot + 
   theme(axis.text.x =  element_text(angle = 0) ) +
   geom_violin(alpha = 0.7, size = 0.3,scale = "count",  width = 0.4) +
   geom_point(alpha = 0.3, size = 2 , shape = 20) +
@@ -283,7 +283,7 @@ PFluocPRc_MC <- (
              y = dR_sta31,
              col = Cell)
   ) +
-    theme_plot +
+    ThemePlot +
     theme(
       legend.key.size = unit(0.3, 'cm'),
       legend.key.width= unit(0.3, 'cm'),
@@ -321,7 +321,186 @@ PFluocPRc_MC <- (
 
 PFluocPRc_MC
 
+# CBF--------------------------------------------------
 
+### read data
+TableCBFTetAndCont <- read_csv("Data/TablesResults/CBF_MODA-Closure_CiliaryDynamics_TetXLC.csv")
+
+###define pressure levels
+TableCBFTetAndCont$Pressure_Level <- factor(TableCBFTetAndCont$Pressure_Level, 
+                                            levels = c("0", "3.125", "32.5",
+                                                       "85", "237.5",
+                                                       "556", "988")
+)
+
+TableCBFTetAndCont$Period <- factor(TableCBFTetAndCont$Period, 
+                                    levels = c("Before", "During_1","During_2", "After"),
+                                    labels = c("Before", "Stimulus", "During_2", "After")
+)
+
+TableCBFTetAndCont$Plasmid <- factor(TableCBFTetAndCont$Plasmid ,
+                                     levels = c("pLB253", "pLB316"),
+                                     labels = c("TPHp::tdT","TPHp::tdT-P2A-TeTxLC")
+)
+
+
+
+### Calculating metrics
+####SMA/STA-CBF
+TableCBFTetAndCont <- 
+  TableCBFTetAndCont %>%
+  group_by(Trial_ID) %>%
+  mutate(CBF_sma3 = rollmean(CBF, k = 3, na.pad = TRUE),
+         CBF_sta3 = rollmean(rollmean(CBF, k = 3, na.pad = TRUE),
+                             k = 3, na.pad = TRUE),
+         CBFmoda_sma3 = rollmean(CBF_MODA, k = 3, na.pad = TRUE),
+         CBFmoda_sta3 = rollmean(rollmean(CBF_MODA, k = 3, na.pad = TRUE),
+                                 k = 3, na.pad = TRUE))
+
+
+####dCBF value
+
+PriorCBFMean <- 
+  TableCBFTetAndCont %>%
+  ungroup() %>%
+  filter(Period %in% "Before") %>%
+  group_by(Trial_ID,
+           Plasmid,
+           Larva_ID) %>%
+  summarise(MeanPrior_staCBF = mean(CBF_sta3[Beat == 1], na.rm = TRUE),
+            MeanPrior_staCBFmoda = mean(CBFmoda_sta3[Beat == 1], na.rm = TRUE)) %>%
+  group_by(Larva_ID) %>%
+  mutate(Mean_staCBFlarva = mean(MeanPrior_staCBF,  na.rm = TRUE),
+         MeanMODA_staCBFlarva = mean(MeanPrior_staCBFmoda,  na.rm = TRUE)) %>%
+  arrange(Trial_ID) %>%
+  ungroup() %>%
+  group_by(Trial_ID) %>%
+  arrange(Trial_ID) %>%
+  group_by(Trial_ID) 
+
+
+TableCBFTetAndCont <- 
+  TableCBFTetAndCont %>%
+  group_by(Trial_ID) %>%
+  mutate(dstaCBF = CBF_sta3 - PriorCBFMean$MeanPrior_staCBF[cur_group_id()],
+         dstaCBFmoda = CBFmoda_sta3 - PriorCBFMean$MeanPrior_staCBFmoda[cur_group_id()],
+         PcstaCBF = (100*
+                       (CBF_sta3 - PriorCBFMean$MeanPrior_staCBF[cur_group_id()])
+                     /
+                       (PriorCBFMean$MeanPrior_staCBF[cur_group_id()])),
+         PcstaCBFmoda = (100*
+                           (CBFmoda_sta3 - PriorCBFMean$MeanPrior_staCBFmoda[cur_group_id()])
+                         /
+                           (PriorCBFMean$MeanPrior_staCBFmoda[cur_group_id()]))) %>%
+  relocate(dstaCBF, dstaCBFmoda, CBF_sma3, CBF_sta3,CBF_MODA, CBFmoda_sma3, CBFmoda_sta3, .after = CBF)
+
+
+
+####max.CBFs
+MxCBF_Tet <- (
+  TableCBFTetAndCont %>% 
+    group_by(State,
+             Pressure_Level,
+             Genotype,
+             Trial_ID,
+             Plasmid,
+             Period) %>%
+    # filter(RelTime > 60 | RelTime <= 30) %>% (in case comparing same size intervals)
+    summarise(across(CBF:PcstaCBFmoda, ~max(.x[Beat == 1], na.rm = TRUE), .names = "max_{.col}")) %>%
+    arrange(Trial_ID)
+)
+
+MxCBF_Tet["max_CBF"][MxCBF_Tet["max_CBF"] == -Inf] <- NA
+MxCBF_Tet["max_dstaCBF"][MxCBF_Tet["max_dstaCBF"] == -Inf] <- NA
+MxCBF_Tet["max_dstaCBFmoda"][MxCBF_Tet["max_dstaCBFmoda"] == -Inf] <- NA
+MxCBF_Tet["max_CBF_sma3"][MxCBF_Tet["max_CBF_sma3"] == -Inf] <- NA
+MxCBF_Tet["max_CBF_sta3"][MxCBF_Tet["max_CBF_sta3"] == -Inf] <- NA
+MxCBF_Tet["max_CBFmoda_sta3"][MxCBF_Tet["max_CBFmoda_sta3"] == -Inf] <- NA
+MxCBF_Tet["max_CBFmoda_sma3"][MxCBF_Tet["max_CBFmoda_sma3"] == -Inf] <- NA
+MxCBF_Tet["max_PcstaCBF"][MxCBF_Tet["max_PcstaCBF"] == -Inf] <- NA
+MxCBF_Tet["max_PcstaCBFmoda"][MxCBF_Tet["max_PcstaCBFmoda"] == -Inf] <- NA
+
+#### CBF relation to pressure stimulus
+
+Ref_period = "Stimulus"
+metric = "max_CBFmoda_sta3"
+MxCBF_Tet <-(MxCBF_Tet %>% 
+               group_by(Trial_ID,
+                        Pressure_Level,
+                        Genotype) %>% 
+               filter(all(!is.na(max_CBF_sta3))) %>% 
+               group_modify(~DirectionCBF(.,Ref_period,metric))
+)
+
+
+
+
+### Statistical test
+### dCBF
+
+ggplot(MxCBF_Tet,aes(x = max_PcstaCBFmoda)) + geom_histogram()
+
+##### Pc_dCBF for Cops mutants for each pressure level(non-paired one tail wilcox)
+stat.testPc_dCBFpressLevelPlasmid <- MxCBF_Tet %>%
+  group_by(Pressure_Level)  %>%
+  filter(Period %in% "Stimulus") %>%
+  drop_na () %>%
+  t_test(max_PcstaCBFmoda ~ Plasmid, alternative = "greater", paired = F) %>%
+  adjust_pvalue(method = "bonferroni") %>%
+  add_significance()
+stat.testPc_dCBFpressLevelPlasmid
+print(stat.testPc_dCBFpressLevelPlasmid, n = 100)
+
+stat.testPc_dCBFpressLevelPlasmid <- stat.testPc_dCBFpressLevelPlasmid %>% 
+  add_y_position()
+
+###Plots--------
+GlabelsCB <-  rev(parse(text=unique(as.character(MxCBF_Tet$Plasmid))))
+
+Max_Pc_dCBFPlotContVsTetx <- (
+  ggplot(
+    MxCBF_Tet %>% 
+      filter(Period %in% c("Stimulus"))
+    ,
+    aes(x = Plasmid, y = max_PcstaCBFmoda, col = Pressure_Level)
+  )  +
+    ThemePlot +                                                              
+    theme(strip.text.x = element_text(size = 7)) +
+    geom_violin(alpha = 0.7, size = 0.3,scale = "count",  width = 0.4) +
+    geom_point(alpha = 0.3, size = 2 , shape = 20) + 
+    scale_colour_viridis(discrete = TRUE, 
+                         option = 'D', 
+                         direction = 1,
+                         end = 0.5) +
+    labs(
+      x = "",
+      y = expression(paste("max. %",Delta," CBF",sep = "")),
+      color = str_wrap("", width = 20)
+    ) +
+    background_grid(major = "none", minor = "none") +
+    geom_hline(yintercept = 0) +
+    guides(color = "none") +
+    stat_pvalue_manual(
+      stat.testPc_dCBFpressLevelPlasmid,
+      bracket.nudge.y = 0, 
+      tip.length = 0, 
+      hide.ns = TRUE, 
+      step.increase = 0, 
+      label = "p.adj",
+      label.size = 3,
+      alpha = 0.8
+    ) +
+    scale_x_discrete(labels= GlabelsCB) +
+    scale_y_continuous(
+      breaks = seq(0, 100, 20), 
+      limits = c(0,100), 
+      expand = expansion(mult = c(0, 0.1))
+    ) +
+    coord_cartesian(ylim = c(0,100)) +
+    facet_grid( ~ Pressure_Level) 
+)
+
+Max_Pc_dCBFPlotContVsTetx
 
 # generate figure composite panel grid ------------------------------------
   img1 <- readPNG("Manuscript/pictures/CorrProjSnapshotnolabs.png")
