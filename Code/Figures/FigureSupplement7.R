@@ -373,8 +373,28 @@ MxCBFbeat["max_CBFmoda_sma3"][MxCBFbeat["max_CBFmoda_sma3"] == -Inf] <- NA
 MxCBFbeat["max_PcstaCBF"][MxCBFbeat["max_PcstaCBF"] == -Inf] <- NA
 MxCBFbeat["max_PcstaCBFmoda"][MxCBFbeat["max_PcstaCBFmoda"] == -Inf] <- NA
 
-### Statistical test dCBF----
-ggplot(MxCBFbeat,aes(x = max_dstaCBFmoda)) + geom_histogram()
+### Statistical tests CBF----
+
+
+####Test CBF differences between WT and Cops prior to stimulus
+ggplot(PriorCBFMean,aes(x =MeanMODA_staCBFlarva )) + geom_histogram()
+
+stat.test_CBFprior <- PriorCBFMean %>%
+  ungroup() %>% 
+  select(Larva_ID,Genotype,MeanMODA_staCBFlarva ,MeanMODA_smaCBFlarva) %>% 
+  distinct() %>%
+  wilcox_test(MeanMODA_staCBFlarva ~ Genotype, alternative = "greater", paired = F) %>%
+  add_significance()
+stat.test_CBFprior
+print(stat.test_CBFprior, n = 100)
+
+stat.test_CBFprior <- stat.test_CBFprior %>% 
+  add_y_position()
+stat.test_CBFprior$p <- round(stat.test_CBFprior$p,3)
+
+### dCBF
+
+ggplot(MxCBFbeat,aes(x = max_PcstaCBFmoda)) + geom_histogram()
 
 ##### Pc_dCBF for Cops mutants for each pressure level(non-paired one tail wilcox)
 stat.testPc_dCBFpressLevelCops <- MxCBFbeat %>%
@@ -409,22 +429,6 @@ print(stat.testWTvsCopsPc_dCBF, n = 100)
 stat.testWTvsCopsPc_dCBF <- stat.testWTvsCopsPc_dCBF %>% 
   add_y_position()
 
-
-####Test CBF differences between WT and Cops prior to stimulus
-ggplot(PriorCBFMean,aes(x =MeanMODA_staCBFlarva )) + geom_histogram()
-
-stat.test_CBFprior <- PriorCBFMean %>%
-  ungroup() %>% 
-  select(Larva_ID,Genotype,MeanMODA_staCBFlarva ,MeanMODA_smaCBFlarva) %>% 
-  distinct() %>%
-  wilcox_test(MeanMODA_staCBFlarva ~ Genotype, alternative = "greater", paired = F) %>%
-  add_significance()
-stat.test_CBFprior
-print(stat.test_CBFprior, n = 100)
-
-stat.test_CBFprior <- stat.test_CBFprior %>% 
-  add_y_position()
-stat.test_CBFprior$p <- round(stat.test_CBFprior$p,3)
 
 ###Plots--------
 GlabelsCB <-  parse(text=unique(as.character(TableCiliaNonbinned$Genotype)))
