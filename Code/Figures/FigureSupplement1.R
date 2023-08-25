@@ -52,7 +52,7 @@ project_dir <- here()
 setwd(project_dir)
 #define ggplot theme--------------------------------------------------
 
-theme_plot <- theme(
+ThemePlot <- theme(
   axis.text.x = element_text(size = 7, angle = 90),
   axis.text.y = element_text(size = 7),
   legend.text = element_text(size = 7),
@@ -158,7 +158,7 @@ AvgMaxStep2dpfWT <-
 PlotAveragePressure2dpf <-(
   ggplot(TableAvgStep2dpf,
          aes(RelTime, PressVal_mean, col = Pressure_Level)) +
-  theme_plot +
+  ThemePlot +
   background_grid(major = 'none', minor = 'none') +
   geom_line() +
   geom_hline(yintercept = 0) +
@@ -196,7 +196,7 @@ PlotSpeedAvg2dpf <- (
   ggplot(TableAvgStep2dpf,aes(RelTime,
                               Avg_Speed_mean,
                               col = Pressure_Level)) +
-    theme_plot +
+    ThemePlot +
     background_grid(major = 'none', minor = 'none') +
     guides(colour = "none") +
     scale_colour_viridis(discrete = TRUE, option = 'D', direction = 1,end = 0.5) +
@@ -226,7 +226,7 @@ PlotCorSpeedAvg2dpf <- (
   ggplot(TableAvgStep2dpf,aes(RelTime,
                               Corr_Avg_Speed_mean,
                               col = Pressure_Level)) +
-    theme_plot +
+    ThemePlot +
     background_grid(major = 'none', minor = 'none') +
     guides(colour = "none") +
     scale_colour_viridis(discrete = TRUE, option = 'D', direction = 1,end = 0.5) +
@@ -241,7 +241,8 @@ PlotCorSpeedAvg2dpf <- (
     geom_errorbar(data = TableAvgStep2dpf,
                   aes(ymin = Corr_Avg_Speed_mean, ymax = Corr_Avg_Speed_mean+Corr_Avg_Speed_se),
                   linewidth = 0.2) +
-    labs(x = "time after stimulus (s)",y = " ∆ mean speed (mm/s)", color = str_wrap("pressure (mb)",width = 20)) +
+    labs(x = "time after stimulus (s)", y = str_wrap(" ∆ mean speed (mm/s)",
+                                                    width = 15), color = str_wrap("pressure (mb)",width = 20)) +
     geom_vline(xintercept = 60,color = "gray",linetype = 2))
   
 PlotCorSpeedAvg2dpf
@@ -257,7 +258,7 @@ ggsave("Manuscript/pictures/PanelChangeAvgSpeed_step2dpf.png",plot = PlotCorSpee
 
 PlotMovAvg2dpf <- 
   (ggplot(TableAvgStep2dpf,aes(RelTime,Avg_Y_movement_mean,col = Pressure_Level)) +
-     theme_plot +
+     ThemePlot +
      background_grid(major = 'none', minor = 'none') +
      guides(colour = "none") +
      scale_colour_viridis(discrete = TRUE, option = 'D', direction = 1,end = 0.5) +
@@ -271,7 +272,8 @@ PlotMovAvg2dpf <-
        data = TableAvgStep2dpf,
        aes(ymin = Avg_Y_movement_mean, ymax = Avg_Y_movement_mean+Avg_Y_movement_se),
        linewidth = 0.2) +
-     labs(x = "time after stimulus (s)",y = "mean vert. mov. (mm/s)", color = str_wrap("pressure (mb)",width = 20)) +
+     labs(x = "time after stimulus (s)",y = str_wrap("mean vert. mov. (mm/s)",
+                                                     width = 15), color = str_wrap("pressure (mb)",width = 20)) +
      geom_vline(xintercept = 60,color = "gray",linetype = 2))
 
 PlotMovAvg2dpf
@@ -286,7 +288,7 @@ ggsave("Manuscript/pictures/PanelAvgVmov_step2dpf.png",plot = PlotMovAvg2dpf,
 
 PlotTorAvg2dpf <- 
   (ggplot(TableAvgStep2dpf,aes(RelTime,Tortuosity_mean,col = Pressure_Level)) +
-     theme_plot +
+     ThemePlot +
      background_grid(major = 'none', minor = 'none') +
      guides(colour = "none") +
      scale_colour_viridis(discrete = TRUE, option = 'D', direction = 1,end = 0.5) +
@@ -300,7 +302,8 @@ PlotTorAvg2dpf <-
        data = TableAvgStep2dpf,
        aes(ymin = Tortuosity_mean, ymax = Tortuosity_mean+Tortuosity_se),
        linewidth = 0.2) +
-     labs(x = "time after stimulus (s)",y = "straightness index", color = str_wrap("pressure (mb)",width = 20)) +
+     labs(x = "time after stimulus (s)",y = str_wrap("straightness index",
+                                                     width = 15), color = str_wrap("pressure (mb)",width = 20)) +
      geom_vline(xintercept = 60,color = "gray",linetype = 2)) 
 
 PlotTorAvg2dpf
@@ -314,7 +317,7 @@ ggsave("Manuscript/pictures/PanelAvgTor_step2dpf.png",plot = PlotTorAvg2dpf,
 
 PlotVertStraightAvg2dpf <- 
   (ggplot(TableAvgStep2dpf,aes(RelTime,Straightness_Y_mean,col = Pressure_Level)) +
-     theme_plot +
+     ThemePlot +
      background_grid(major = 'none', minor = 'none') +
      guides(colour = "none") +
      scale_colour_viridis(discrete = TRUE, option = 'D', direction = 1,end = 0.5) +
@@ -342,7 +345,7 @@ ggsave("Manuscript/pictures/PanelAvgvertStraight_step2dpf.png",plot = PlotVertSt
 
 PlotAvgRatioTracks2dpf <- 
   (ggplot(TableAvgStep2dpf,aes(RelTime,LarvaNumRatio_mean, col = Pressure_Level))+
-     theme_plot +
+     ThemePlot +
      background_grid(major = 'none', minor = 'none') +
      guides(colour = "none") +
      scale_colour_viridis(discrete = TRUE, option = 'D', direction = 1,end = 0.5) +
@@ -355,7 +358,8 @@ PlotAvgRatioTracks2dpf <-
        data = TableAvgStep2dpf,
        aes(ymin = LarvaNumRatio_mean, ymax = LarvaNumRatio_mean + LarvaNumRatio_se),
        linewidth = 0.2) +
-     labs(x = "time after stimulus (s)",y = "upward track index",color = str_wrap("pressure (mb)",width = 20)) +
+     labs(x = "time after stimulus (s)",y = str_wrap("upward track index",
+                                                     width = 15),color = str_wrap("pressure (mb)",width = 20)) +
      geom_vline(xintercept = 60,color = "gray",linetype = 2))
 
 PlotAvgRatioTracks2dpf
@@ -472,7 +476,7 @@ PlotAveragePressure3dpf <-(
                                         "85", "137.5" ,"237.5",
                                         "556","778","988")),
          aes(RelTime,PressVal_mean,col = Pressure_Level)) +
-    theme_plot +
+    ThemePlot +
     background_grid(major = 'none', minor = 'none') +
     geom_line() +
     geom_hline(yintercept = 0) +
@@ -509,7 +513,7 @@ PlotSpeedAvg3dpf <- (
   ggplot(TableAvgStep3dpf,aes(RelTime,
                               Avg_Speed_mean,
                               col = Pressure_Level)) +
-    theme_plot +
+    ThemePlot +
     background_grid(major = 'none', minor = 'none') +
     guides(colour = "none") +
     scale_colour_viridis(discrete = TRUE, option = 'D', direction = 1,end = 0.5) +
@@ -540,7 +544,7 @@ PlotCorSpeedAvg3dpf <- (
   ggplot(TableAvgStep3dpf,aes(RelTime,
                               Corr_Avg_Speed_mean,
                               col = Pressure_Level)) +
-    theme_plot +
+    ThemePlot +
     background_grid(major = 'none', minor = 'none') +
     guides(colour = "none") +
     scale_colour_viridis(discrete = TRUE, option = 'D', direction = 1,end = 0.5) +
@@ -556,7 +560,8 @@ PlotCorSpeedAvg3dpf <- (
     geom_errorbar(data = TableAvgStep3dpf,
                   aes(ymin = Corr_Avg_Speed_mean, ymax = Corr_Avg_Speed_mean+Corr_Avg_Speed_se),
                   linewidth = 0.2) +
-    labs(x = "time after stimulus (s)",y =  " ∆ mean speed (mm/s)", color = str_wrap("pressure (mb)",width = 20)) +
+    labs(x = "time after stimulus (s)",y = str_wrap(" ∆ mean speed (mm/s)",
+                                                    width = 15), color = str_wrap("pressure (mb)",width = 20)) +
     geom_vline(xintercept = 60,color = "gray",linetype = 2))
 
 PlotCorSpeedAvg3dpf
@@ -572,7 +577,7 @@ ggsave("Manuscript/pictures/PanelChangeAvgSpeed_step3dpf.png",plot = PlotCorSpee
 
 PlotMovAvg3dpf <- 
   ggplot(TableAvgStep3dpf,aes(RelTime,Avg_Y_movement_mean,col = Pressure_Level)) +
-     theme_plot +
+     ThemePlot +
      background_grid(major = 'none', minor = 'none') +
      guides(colour = "none") +
      scale_colour_viridis(discrete = TRUE, option = 'D', direction = 1,end = 0.5) +
@@ -591,7 +596,8 @@ PlotMovAvg3dpf <-
        linewidth = 0.2) +
      labs(
        x = "time after stimulus (s)",
-       y = "mean vert. mov. (mm/s)", 
+       y = str_wrap("mean vert. mov. (mm/s)",
+                    width = 15), 
        width = 10, 
        color = str_wrap("pressure (mb)")) +
      geom_vline(xintercept = 60,color = "gray",linetype = 2) 
@@ -608,7 +614,7 @@ ggsave("Manuscript/pictures/PanelAvgVmov_step3dpf.png",plot = PlotMovAvg3dpf,
 
 PlotTorAvg3dpf <- 
   (ggplot(TableAvgStep3dpf,aes(RelTime,Tortuosity_mean,col = Pressure_Level)) +
-     theme_plot +
+     ThemePlot +
      background_grid(major = 'none', minor = 'none') +
      guides(colour = "none") +
      scale_colour_viridis(discrete = TRUE, option = 'D', direction = 1,end = 0.5) +
@@ -622,7 +628,8 @@ PlotTorAvg3dpf <-
        data = TableAvgStep3dpf,
        aes(ymin = Tortuosity_mean, ymax = Tortuosity_mean + Tortuosity_se),
        linewidth = 0.2) +
-     labs(x = "time after stimulus (s)",y = "straightness index", color = str_wrap("pressure (mb)",width = 10)) +
+     labs(x = "time after stimulus (s)",y = str_wrap("straightness index",
+                                                     width = 15), color = str_wrap("pressure (mb)",width = 10)) +
      geom_vline(xintercept = 60,color = "gray",linetype = 2)) 
 
 PlotTorAvg3dpf
@@ -636,7 +643,7 @@ ggsave("Manuscript/pictures/PanelAvgTor_step3dpf.png",plot = PlotTorAvg3dpf,
 
 PlotVertStraightAvg3dpf <- 
   (ggplot(TableAvgStep3dpf,aes(RelTime,Straightness_Y_mean,col = Pressure_Level)) +
-     theme_plot +
+     ThemePlot +
      background_grid(major = 'none', minor = 'none') +
      guides(colour = "none") +
      scale_colour_viridis(discrete = TRUE, option = 'D', direction = 1,end = 0.5) +
@@ -665,7 +672,7 @@ ggsave("Manuscript/pictures/PanelAvgvertStraight_step3dpf.png",plot = PlotVertSt
 
 PlotAvgRatioTracks3dpf <- 
   (ggplot(TableAvgStep3dpf,aes(RelTime,LarvaNumRatio_mean, col = Pressure_Level))+
-     theme_plot +
+     ThemePlot +
      background_grid(major = 'none', minor = 'none') +
      guides(colour = "none") +
      scale_colour_viridis(discrete = TRUE, option = 'D', direction = 1,end = 0.5) +
@@ -678,7 +685,9 @@ PlotAvgRatioTracks3dpf <-
        data = TableAvgStep3dpf,
        aes(ymin = LarvaNumRatio_mean, ymax = LarvaNumRatio_mean + LarvaNumRatio_se),
        linewidth = 0.2) +
-     labs(x = "time after stimulus (s)",y = "upward track index",color = str_wrap("pressure (mb)",width = 20)) +
+     labs(x = "time after stimulus (s)",y = str_wrap("upward track index",
+                                                     width = 15),
+          color = str_wrap("pressure (mb)",width = 20)) +
      geom_vline(xintercept = 60,color = "gray",linetype = 2))
 
 PlotAvgRatioTracks3dpf
@@ -686,32 +695,158 @@ PlotAvgRatioTracks3dpf
 
 # generate figure composite panel grid ------------------------------------
 
-ImgTraj <- readPNG("Manuscript/pictures/Trajectories_panel.png")
+
+rectCoor <- -0.054
+rectW <- 5.6
+rectH <- 28.95
+Rect1 <- rectGrob(
+  x = rectCoor,
+  y = 0.13,
+  width = unit(rectW, "mm"),
+  height = unit(rectH, "mm"),
+  hjust = 0, vjust = 0,
+  gp = gpar(fill = NULL, alpha = 1 ,lwd = 1.5))
+
+Rect2 <- rectGrob(
+  x = rectCoor,
+  y = 0.501,
+  width = unit(rectW, "mm"),
+  height = unit(rectH, "mm"),
+  hjust = 0, vjust = 0,
+  gp = gpar(fill = NULL, alpha = 1 ,lwd = 1.5))
+
+rectCoor2 <- 0
+rectW2 <- 119
+rectH2 <- 5.6
+Rect3 <- rectGrob(
+  x = rectCoor2,
+  y = 0.055,
+  width = unit(rectW2, "mm"),
+  height = unit(rectH2, "mm"),
+  hjust = 0, vjust = 0,
+  gp = gpar(fill = NULL, alpha = 1 ,lwd = 1.5))
+
+rectCoorY <- 0.875
+rectCoor3 <- 0
+rectW3 <- 29.5
+rectH3 <- 5.6
+Rect4 <- rectGrob(
+  x = rectCoor3,
+  y = rectCoorY,
+  width = unit(rectW3, "mm"),
+  height = unit(rectH3, "mm"),
+  hjust = 0, vjust = 0,
+  gp = gpar(fill = NULL, alpha = 1 ,lwd = 1.5))
+
+rectCoor4 <- 0.254
+rectW3 <- 29
+rectH3 <- 5.6
+Rect5 <- rectGrob(
+  x = rectCoor4,
+  y = rectCoorY,
+  width = unit(rectW3, "mm"),
+  height = unit(rectH3, "mm"),
+  hjust = 0, vjust = 0,
+  gp = gpar(fill = NULL, alpha = 1 ,lwd = 1.5))
+
+rectCoor5 <- 0.501
+rectW3 <- 29
+rectH3 <- 5.6
+Rect6 <- rectGrob(
+  x = rectCoor5,
+  y = rectCoorY,
+  width = unit(rectW3, "mm"),
+  height = unit(rectH3, "mm"),
+  hjust = 0, vjust = 0,
+  gp = gpar(fill = NULL, alpha = 1 ,lwd = 1.5))
+
+rectCoor6 <- 0.754
+rectW3 <- 29
+rectH3 <- 5.6
+Rect7 <- rectGrob(
+  x = rectCoor6,
+  y = rectCoorY,
+  width = unit(rectW3, "mm"),
+  height = unit(rectH3, "mm"),
+  hjust = 0, vjust = 0,
+  gp = gpar(fill = NULL, alpha = 1 ,lwd = 1.5))
+
+posTmeLab <- 0.91
+
+ImgTrajPeriod_2d <- readPNG("Manuscript/pictures/TrajectoriesbyPeriod_panel2d.png")
 Fontsize = 10
-PanelTraj <- ggdraw() +
-  draw_image(ImgTraj) +
+PanelTrajPer_2d <- ggdraw() +
+  draw_image(ImgTrajPeriod_2d) +
   draw_label(paste("1 ", "mm", sep = ""),
-             x = 0.9, y = 0.5, color = "white",
+             x = 0.965, y = 0.19, color = "white",
              fontfamily = "sans", size = 7) +
-  draw_label("12.5 mb", x = 0.04, y = 0.47, size = Fontsize, color = "white", fontface = "plain") +
-  draw_label("32 mb", x = 0.29, y = 0.47, size = Fontsize, color = "white", fontface = "plain") +
-  draw_label("85 mb", x = 0.54, y = 0.47, size = Fontsize, color = "white", fontface = "plain") +
-  draw_label("500 mb", x = 0.79, y = 0.47, size = Fontsize, color = "white", fontface = "plain") +
-  draw_label("35 mb", x = 0.04, y = 0.97, size = Fontsize, color = "white", fontface = "plain") +
-  draw_label("85 mb", x = 0.29, y = 0.97, size = Fontsize, color = "white", fontface = "plain") +
-  draw_label("250 mb", x = 0.54, y = 0.97, size = Fontsize, color = "white", fontface = "plain") +
-  draw_label("1000 mb", x = 0.79, y = 0.97, size = Fontsize, color = "white", fontface = "plain") +
-  draw_label("2 dpf", angle = 90, x = 0 , y = 0.74, size = Fontsize,color = "black") +
-  draw_label("3 dpf",angle = 90, x = 0, y = 0.25, size = Fontsize,color = "black") 
-  
+  draw_label("t ->",
+             x = 0.04, y = 0.19, color = "white",
+             fontfamily = "sans", size = 7) +
+  draw_label("85 mb",, angle = 90, x = -0.028, y = 0.66, size = Fontsize, color = "black", fontface = "plain") +
+  draw_label("778 mb", angle = 90, x = -0.028, y = 0.32, size = Fontsize, color = "black", fontface = "plain") +
+  draw_label("2 dpf", angle = 0, x = 0.5 , y = 0.09, size = Fontsize,color = "black") +
+  draw_label("-10 s", angle = 0, x = 0.12 , y = posTmeLab, size = Fontsize,color = "black") +
+  draw_label("10 s", angle = 0, x = 0.38 , y = posTmeLab, size = Fontsize,color = "black") +
+  draw_label("20 s", angle = 0, x = 0.63 , y = posTmeLab, size = Fontsize,color = "black") +
+  draw_label("30 s", angle = 0, x = 0.88 , y = posTmeLab, size = Fontsize,color = "black") +
+  draw_grob(Rect1) +
+  draw_grob(Rect2) +
+  draw_grob(Rect3) +
+  draw_grob(Rect4) +
+  draw_grob(Rect5) +
+  draw_grob(Rect6) +
+  draw_grob(Rect7)
 
-  
 
+ImgTrajPeriod_3d <- readPNG("Manuscript/pictures/TrajectoriesbyPeriod_panel3d.png")
+
+PanelTrajPer_3d <- ggdraw() +
+  draw_image(ImgTrajPeriod_3d) +
+  draw_label(paste("1 ", "mm", sep = ""),
+             x = 0.965, y = 0.19, color = "white",
+             fontfamily = "sans", size = 7) +
+  draw_label("t ->",
+             x = 0.04, y = 0.19, color = "white",
+             fontfamily = "sans", size = 7) +
+  draw_label("85 mb",, angle = 90, x = -0.028, y = 0.66, size = Fontsize, color = "black", fontface = "plain") +
+  draw_label("500 mb", angle = 90, x = -0.028, y = 0.32, size = Fontsize, color = "black", fontface = "plain") +
+  draw_label("3 dpf", angle = 0, x = 0.5 , y = 0.09, size = Fontsize,color = "black") +
+  draw_label("-10 s", angle = 0, x = 0.12 , y = posTmeLab, size = Fontsize,color = "black") +
+  draw_label("10 s", angle = 0, x = 0.38 , y = posTmeLab, size = Fontsize,color = "black") +
+  draw_label("20 s", angle = 0, x = 0.63 , y = posTmeLab, size = Fontsize,color = "black") +
+  draw_label("30 s", angle = 0, x = 0.88 , y = posTmeLab, size = Fontsize,color = "black") +
+  draw_grob(Rect1) +
+  draw_grob(Rect2) +
+  draw_grob(Rect3) +
+  draw_grob(Rect4) +
+  draw_grob(Rect5) +
+  draw_grob(Rect6) +
+  draw_grob(Rect7)
+# ImgTraj <- readPNG("Manuscript/pictures/Trajectories_panel.png")
+# Fontsize = 10
+# PanelTraj <- ggdraw() +
+#   draw_image(ImgTraj) +
+#   draw_label(paste("1 ", "mm", sep = ""),
+#              x = 0.9, y = 0.5, color = "white",
+#              fontfamily = "sans", size = 7) +
+#   draw_label("12.5 mb", x = 0.04, y = 0.47, size = Fontsize, color = "white", fontface = "plain") +
+#   draw_label("32 mb", x = 0.29, y = 0.47, size = Fontsize, color = "white", fontface = "plain") +
+#   draw_label("85 mb", x = 0.54, y = 0.47, size = Fontsize, color = "white", fontface = "plain") +
+#   draw_label("500 mb", x = 0.79, y = 0.47, size = Fontsize, color = "white", fontface = "plain") +
+#   draw_label("35 mb", x = 0.04, y = 0.97, size = Fontsize, color = "white", fontface = "plain") +
+#   draw_label("85 mb", x = 0.29, y = 0.97, size = Fontsize, color = "white", fontface = "plain") +
+#   draw_label("250 mb", x = 0.54, y = 0.97, size = Fontsize, color = "white", fontface = "plain") +
+#   draw_label("1000 mb", x = 0.79, y = 0.97, size = Fontsize, color = "white", fontface = "plain") +
+#   draw_label("2 dpf", angle = 90, x = 0 , y = 0.74, size = Fontsize,color = "black") +
+#   draw_label("3 dpf",angle = 90, x = 0, y = 0.25, size = Fontsize,color = "black") 
+ 
 layout <- "
-AABBCCDDEE
-FFGGHHIIJJ
-KKKKKKKKKK
-KKKKKKKKKK
+#AAABBCCDDEE
+############
+#FFFGGHHIIJJ
+#KKKKK#LLLLL
+#KKKKK#LLLLL
 "
 
 FigSuppl1 <- 
@@ -721,18 +856,20 @@ FigSuppl1 <-
   ggdraw(PlotAveragePressure3dpf) + ggdraw(PlotCorSpeedAvg3dpf) +  
   ggdraw(PlotMovAvg3dpf) + ggdraw(PlotTorAvg3dpf) + 
   ggdraw(PlotAvgRatioTracks3dpf) + 
-  PanelTraj +
-  plot_layout(design = layout, heights = c(1, 1), guides = 'collect') +
+  PanelTrajPer_2d +
+  PanelTrajPer_3d +
+  plot_layout(design = layout, heights = c(1, 0.1,1,1,1), widths = c(0.2,1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5), guides = 'collect') +
   plot_annotation(tag_levels = "A") &
   theme(plot.tag = element_text(size = 12, face = "plain"))
+
 
 ####Saving Figure
 ggsave(
   filename = "Manuscript/Figures/FigureSupplement_1.pdf",
-  FigSuppl1, width = 3100, height = 3000, units = "px"
+  FigSuppl1, width = 3200, height = 2000, units = "px"
 )
 ggsave(
   filename = "Manuscript/Figures/FigureSupplement_1.png",
-  FigSuppl1, width = 3100, height = 3000, units = "px"
+  FigSuppl1, width = 3200, height = 2000, units = "px"
 )
 
