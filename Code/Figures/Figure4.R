@@ -342,7 +342,6 @@ print(stat.testTet, n = 100)
 
 stat.testTet <- stat.testTet %>% 
   add_xy_position(x = "Period")
-#stat.testTet$p.adj <- round(stat.testTet$p.adj,2)
 
 ### Plotting with P-values
   
