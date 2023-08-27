@@ -786,16 +786,17 @@ LengthBranchPlot
 ###cPRC stain
 
     x_coord_1= 0.05
-    x_coord_2 = 0.55  
+    x_coord_2 = 0.55
+    genotCoord = 0.85
      panel_cPRC_staining <- ggdraw() +
        draw_image(imgLM) +
        draw_label(expression(italic("WT")),
                   x = x_coord_1,
-                  y = 0.9,
+                  y = genotCoord,
                   size = Fontsize,color = "white") +
        draw_label(expression(italic(paste("c-ops-",1^{"∆8/∆8"}))),
                   x = 0.62,
-                  y = 0.9,
+                  y = genotCoord,
                   size = Fontsize,
                   color = "white") +
        draw_label("AcTub", x = x_coord_1,
@@ -861,7 +862,7 @@ LengthBranchPlot
       draw_label("internal", x = 0.8, y = 0.15, size = Fontsize,color = CbbPalette[2]) +
       draw_label("basal", x = 0.8, y = 0.19, size = Fontsize,color = CbbPalette[3]) +
       draw_label("bb", x = 0.81, y = 0.82, size = Fontsize,color = "black") +
-      draw_label("n", x = 0.96, y = 0.92, size = Fontsize,color = "black") +
+      draw_label("n", x = 0.97, y = 0.91, size = Fontsize,color = "black") +
       draw_label("bb", x = 0.795, y = 0.38, size = Fontsize,color = "black") +
       draw_label("cb", x = 0.95, y = 0.44, size = Fontsize,color = "black") +
       draw_label(paste("2", "\u00B5", "m", sep = ""), 
