@@ -32,6 +32,7 @@
   library(catmaid)
   library(cowplot)
   library(dplyr)
+  library(ggh4x)
   library(ggplot2)
   library(ggpubr)
   library(here)
@@ -762,7 +763,12 @@ LengthBranchPlot <- (
     theme(
       strip.background = element_blank()
     )
-)
+) + facetted_pos_scales(y = list(
+  Tag == "basal" ~ scale_y_continuous(limits = c(0, 17)),
+  Tag == "internal" ~ scale_y_continuous(limits = c(0, 35)),
+  Tag == "terminal" ~ scale_y_continuous(limits = c(0, 102))
+  )
+  )
 LengthBranchPlot
 
 
@@ -810,7 +816,7 @@ LengthBranchPlot
                   hjust = 0.2) +
        draw_label("cPRC cilia",
                   x = 0.6,
-                  y = 0.2,
+                  y = 0.25,
                   size = Fontsize,
                   color = "white",
                   hjust = 0.2) +
@@ -827,17 +833,17 @@ LengthBranchPlot
     x_bar1 = 0.24
     x_bar2 = 0.48
     x_bar3 = 0.72 
-    y_bar1 = 0.54
-    y_bar2 = 0.12
+    y_bar1 = 0.55
+    y_bar2 = 0.08
     panel_cPRC_EM <- ggdraw() + 
     draw_image(imgEM, scale = 1) +
     draw_label(expression(italic("WT")), angle = 90, x = 0.015 , y = 0.74, size = Fontsize,color = "black") +
     draw_label(expression(italic(paste("c-ops-",1^{"∆8/∆8"}))),angle = 90, x = 0.015, y = 0.25, size = Fontsize,color = "black") +
-    draw_label("cb", x = 0.2, y = 0.9, size = Fontsize,color = "black") +
+    draw_label("cb", x = 0.21, y = 0.95, size = Fontsize,color = "black") +
     draw_label("cb", x = 0.2, y = 0.46, size = Fontsize,color = "black") +
-    draw_label("n", x = 0.12, y = 0.91, size = Fontsize,color = "black") +
-    draw_label("bb", x = 0.065, y = 0.65, size = Fontsize,color = "black") +
-    draw_label("bb", x = 0.085, y = 0.25, size = Fontsize,color = "black") +
+    draw_label("n", x = 0.12, y = 0.95, size = Fontsize,color = "black") +
+    draw_label("bb", x = 0.065, y = 0.66, size = Fontsize,color = "black") +
+    draw_label("bb", x = 0.085, y = 0.24, size = Fontsize,color = "black") +
     draw_label(paste("2", "\u00B5", "m", sep = ""), 
                  x = x_bar1, y = y_bar1, size = Fontsize, color = "black") +
     draw_label(paste("2", "\u00B5", "m", sep = ""), 
@@ -854,14 +860,14 @@ LengthBranchPlot
       draw_label("terminal", x = 0.8, y = 0.11, size = Fontsize,color = CbbPalette[1]) +
       draw_label("internal", x = 0.8, y = 0.15, size = Fontsize,color = CbbPalette[2]) +
       draw_label("basal", x = 0.8, y = 0.19, size = Fontsize,color = CbbPalette[3]) +
-      draw_label("bb", x = 0.83, y = 0.78, size = Fontsize,color = "black") +
-      draw_label("cb", x = 0.97, y = 0.88, size = Fontsize,color = "black") +
-      draw_label("bb", x = 0.79, y = 0.38, size = Fontsize,color = "black") +
-      draw_label("cb", x = 0.9, y = 0.42, size = Fontsize,color = "black") +
+      draw_label("bb", x = 0.81, y = 0.82, size = Fontsize,color = "black") +
+      draw_label("n", x = 0.96, y = 0.92, size = Fontsize,color = "black") +
+      draw_label("bb", x = 0.795, y = 0.38, size = Fontsize,color = "black") +
+      draw_label("cb", x = 0.95, y = 0.44, size = Fontsize,color = "black") +
       draw_label(paste("2", "\u00B5", "m", sep = ""), 
-                 x = 0.96, y = y_bar1, size = Fontsize, color = "black") +
+                 x = 0.97, y = y_bar1, size = Fontsize, color = "black") +
       draw_label(paste("2", "\u00B5", "m", sep = ""), 
-                 x = 0.97, y = y_bar2, size = Fontsize, color = "black") 
+                 x = 0.98, y = y_bar2, size = Fontsize, color = "black") 
     
      }
 
@@ -898,12 +904,12 @@ LengthBranchPlot
    
     ggsave(
       filename = "Manuscript/Figures/Figure3.pdf", 
-      Fig3, width = 3500, height = 5000,
+      Fig3, width = 3500, height = 4500,
       units = "px"
     )
     ggsave(
       filename = "Manuscript/Figures/Figure3.png", 
-      Fig3, width = 3500, height = 5000,
+      Fig3, width = 3500, height = 4500,
       units = "px"
     )
   }
