@@ -287,10 +287,11 @@ PFluocPRc_MC <- (
     theme(
       legend.key.size = unit(0.3, 'cm'),
       legend.key.width= unit(0.3, 'cm'),
+      legend.justification="right",
       legend.box.spacing = unit(0.03, 'cm'),
       legend.spacing.x = unit(2, 'mm'),
       strip.background = element_blank(),
-      strip.text.x = element_blank()
+      #strip.text.x = element_blank()
     ) +
     background_grid(major = "none", minor = "none") +
     geom_line(aes(col = Cell), 
@@ -315,8 +316,9 @@ PFluocPRc_MC <- (
       xintercept = 60, color = "gray",
       linetype = 2
     ) +
-    facet_wrap(~Pressure_Level + ExperimentID) +
-    guides(color = guide_legend(keyheight = 1, nrow = 1,title = element_blank()))
+    facet_wrap(~ Pressure_Level + ExperimentID,
+               labeller = labeller(ExperimentID = function(x) {rep("", length(x))})) +
+    guides(color = guide_legend(keyheight = 1, nrow = 3,title = element_blank()))
 )
 
 PFluocPRc_MC
@@ -455,8 +457,6 @@ stat.testPc_dCBFpressLevelPlasmid <- stat.testPc_dCBFpressLevelPlasmid %>%
   add_y_position()
 
 ###Plots--------
-GlabelsCB <-  rev(parse(text=unique(as.character(MxCBF_Tet$Plasmid))))
-
 Max_Pc_dCBFPlotContVsTetx <- (
   ggplot(
     MxCBF_Tet %>% 
@@ -487,17 +487,16 @@ Max_Pc_dCBFPlotContVsTetx <- (
       hide.ns = TRUE, 
       step.increase = 0, 
       label = "p.adj",
-      label.size = 3,
+      label.size = 2,
       alpha = 0.8
     ) +
-    scale_x_discrete(labels= GlabelsCB) +
     scale_y_continuous(
       breaks = seq(0, 100, 20), 
       limits = c(0,100), 
       expand = expansion(mult = c(0, 0.1))
     ) +
     coord_cartesian(ylim = c(0,100)) +
-    facet_grid( ~ Pressure_Level) 
+    facet_grid(~ Pressure_Level) 
 )
 
 Max_Pc_dCBFPlotContVsTetx
@@ -510,8 +509,8 @@ Max_Pc_dCBFPlotContVsTetx
   PaneldRMC <- ggdraw(PFluoAvR_MCsind) +
     draw_label("set pressure (mb)", angle = -90, x = 1 , y = 0.5, size = Fontsize,color = "black")
   
-  x_coord_1 = 0.22
-  x_coord_2 = 0.86  
+  x_coord_1 = 0.15
+  x_coord_2 = 1 
   panel_pearson <- ggdraw() + 
     draw_image(img1) +
     geom_segment(aes(x = x_coord_1,
@@ -539,18 +538,18 @@ Max_Pc_dCBFPlotContVsTetx
     draw_label("-0.5", x = x_coord_2, y = 0.27, size = Fontsize ,color = "black") +
     draw_label("-0.75", x = x_coord_2, y = 0.14, size = Fontsize ,color = "black") +
     draw_label("-1", x = x_coord_2, y = 0.01, size = Fontsize ,color = "black") +
-    draw_label("MC", x = 0.37, y = 0.52, size = Fontsize,color = "black") +
-    draw_label("cPRC_l2", x = 0.7, y = 0.5, size = Fontsize,color = "black") +
+    draw_label("MC", x = 0.31, y = 0.52, size = Fontsize,color = "black") +
+    draw_label("cPRC_l2", x = 0.75, y = 0.5, size = Fontsize,color = "black") +
     draw_label(paste("25 ", "\u00B5", "m", sep = ""), 
-               x = 0.68, y = 0.09, size = Fontsize, color = "black")
+               x = 0.73, y = 0.09, size = Fontsize, color = "black")
   
     
   
   layout <- "
-  AA#BB
-  AA#BB
-  #####
-  CC#DD
+  AA#BBBB
+  AA#BBBB
+  #######
+  CC##DEE
   "
   
   
@@ -559,9 +558,9 @@ Max_Pc_dCBFPlotContVsTetx
     ggdraw(shift_legend(PFluocPRc_MC)) +
     panel_pearson + 
     ggdraw(CorrPlot) + 
-    plot_layout(design = layout, heights = c(1, 1, 0.05, 1), widths = c(0.05,1) ) +
-    plot_annotation(tag_levels = list(
-      c("A", "B" ,"C" , "D"))) &
+    ggdraw(Max_Pc_dCBFPlotContVsTetx) +
+    plot_layout(design = layout, heights = c(1, 1, 0.05, 1), widths = c(1,1,0.1,0.1,1,1,1,1) ) +
+    plot_annotation(tag_levels = "A") &
     theme(plot.tag = element_text(size = 12, face = "plain"))
   
   ggsave(
