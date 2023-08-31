@@ -510,7 +510,7 @@ Max_Pc_dCBFPlotContVsTetx
     draw_label("set pressure (mb)", angle = -90, x = 1 , y = 0.5, size = Fontsize,color = "black")
   
   x_coord_1 = 0.15
-  x_coord_2 = 1 
+  x_coord_2 = 0.95
   panel_pearson <- ggdraw() + 
     draw_image(img1) +
     geom_segment(aes(x = x_coord_1,
