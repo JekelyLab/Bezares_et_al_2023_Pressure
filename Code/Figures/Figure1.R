@@ -869,7 +869,6 @@ print(StatTestCBF, n = 100)
 
 StatTestCBF <- StatTestCBF %>%
   add_xy_position(x = "Period")
-StatTestCBF$p.adj <- round(StatTestCBF$p.adj, 3)
 
 
 
