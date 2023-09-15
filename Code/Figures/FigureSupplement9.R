@@ -396,6 +396,16 @@ TableCBFTetAndCont <-
                            (PriorCBFMean$MeanPrior_staCBFmoda[cur_group_id()]))) %>%
   relocate(dstaCBF, dstaCBFmoda, CBF_sma3, CBF_sta3,CBF_MODA, CBFmoda_sma3, CBFmoda_sta3, .after = CBF)
 
+### Time lapse CBF mean
+
+TableCiliaTetMean <- TableCBFTetAndCont %>%
+  group_by(RelTime,
+           Pressure_Level,
+           Genotype,
+           Plasmid) %>%
+  filter(Beat == 1 & State %in% ("positive")) %>%
+  summarise(meanCBFmodaSTA3 = mean(CBFmoda_sta3, na.rm = TRUE)) %>%
+  relocate(meanCBFmodaSTA3) %>% print(n = 1000)
 
 
 ####max.CBFs
@@ -403,7 +413,6 @@ MxCBF_Tet <- (
   TableCBFTetAndCont %>% 
     group_by(State,
              Pressure_Level,
-             Genotype,
              Trial_ID,
              Plasmid,
              Period) %>%
@@ -501,6 +510,51 @@ Max_Pc_dCBFPlotContVsTetx <- (
 
 Max_Pc_dCBFPlotContVsTetx
 
+
+## Plot CBF time lapse
+
+
+
+PlotCBFTetTime <- ggplot(
+  TableCBFTetAndCont %>%
+    filter(State %in% c("positive") &
+             Pressure_Level %in% c("0", "85", "237.5", "556", "988") &
+             Beat == 1),
+  aes(x = RelTime, y = CBFmoda_sta3, col = Pressure_Level)
+)  +
+  ThemePlot +
+  theme(strip.text.x = element_text(size = 10),
+        strip.background = element_blank()
+  ) +
+  background_grid(major = "none", minor = "none") +
+  geom_line(aes(group = Trial_ID, col = Pressure_Level), 
+            alpha = 0.25,
+            size = 0.5) +
+  scale_colour_viridis(
+    discrete = TRUE, 
+    option = "D", 
+    direction = 1, 
+    end = 0.5
+  ) +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) + 
+  geom_vline(
+    xintercept = 60, color = "gray",
+    linetype = 2
+  ) +
+  geom_line(data = TableCiliaTetMean %>%
+              filter(Pressure_Level %in% c("0", "85", "237.5", "556", "988")), 
+            aes(y = meanCBFmodaSTA3 ,col = Pressure_Level),
+            size = 1) +
+  labs(x = "time after stimulus (s)",
+       y = "CBF",
+       color =  str_wrap("set pressure (mbar)", width = 15)) +
+  facet_grid(vars(Plasmid),vars(Pressure_Level))
+
+
+PlotCBFTetTime
+
+
 # generate figure composite panel grid ------------------------------------
   img1 <- readPNG("Manuscript/pictures/CorrProjSnapshotnolabs.png")
   
@@ -549,7 +603,8 @@ Max_Pc_dCBFPlotContVsTetx
   AA#BBBB
   AA#BBBB
   #######
-  CC##DEE
+  CCC#DDD
+  EEE#FFF
   "
   
   
@@ -559,6 +614,7 @@ Max_Pc_dCBFPlotContVsTetx
     panel_pearson + 
     ggdraw(CorrPlot) + 
     ggdraw(Max_Pc_dCBFPlotContVsTetx) +
+    ggdraw(PlotCBFTetTime) + 
     plot_layout(design = layout, heights = c(1, 1, 0.05, 1), widths = c(1,1,0.1,0.1,1,1,1,1) ) +
     plot_annotation(tag_levels = "A") &
     theme(plot.tag = element_text(size = 12, face = "plain"))
@@ -571,6 +627,6 @@ Max_Pc_dCBFPlotContVsTetx
   
   ggsave(
     filename = "Manuscript/Figures/FigureSupplement_9.png", 
-    FigSupp9, width = 2800, height = 2400,
+    FigSupp9, width = 2800, height = 2800,
     units = "px"
   )
