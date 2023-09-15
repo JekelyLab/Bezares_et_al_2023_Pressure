@@ -161,7 +161,6 @@ ThemePlot <- theme(
              Pressure_Level,
              Genotype) %>%
     filter(Beat == 1) %>%
-   # drop_na() %>%
     summarise(meanCBFmodaSTA3 = mean(CBFmoda_sta3, na.rm = TRUE)) %>%
     relocate(meanCBFmodaSTA3) %>% print(n = 1000)
   
