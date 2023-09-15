@@ -47,7 +47,7 @@
 
   #switch to project directory
   ProjectDir  <- here()
-  setwd(ProjectDir )
+  setwd(ProjectDir)
   
 #define ggplot theme--------------------------------------------------
 ThemePlot <- theme(
@@ -154,7 +154,19 @@ ThemePlot <- theme(
               PressVal_se = sd(PressVal/sqrt(length(PressVal)),
                                    na.rm = TRUE))
   
-  ####max.CBFs
+### Time lapse CBF mean
+  
+  TableCiliaMean <- TableCiliaNonbinned %>%
+    group_by(RelTime,
+             Pressure_Level,
+             Genotype) %>%
+    filter(Beat == 1) %>%
+   # drop_na() %>%
+    summarise(meanCBFmodaSTA3 = mean(CBFmoda_sta3, na.rm = TRUE)) %>%
+    relocate(meanCBFmodaSTA3) %>% print(n = 1000)
+  
+  
+####max.CBFs
   MxCBFbeat <- (
     TableCiliaNonbinned %>%
       group_by(Pressure_Level,
@@ -400,6 +412,49 @@ ggsave(
 )
 
 
+## Plot CBF time lapse
+
+
+
+PlotCBFtime <- ggplot(
+  TableCiliaNonbinned %>%
+    filter(Genotype %in% c("WT") &
+             Pressure_Level %in% c("3.125", "85", "237.5", "556", "988") &
+             Beat == 1),
+  aes(x = RelTime, y = CBFmoda_sta3, col = Pressure_Level)
+)  +
+  ThemePlot +
+  theme(strip.text.x = element_text(size = 10),
+        strip.background = element_blank()
+  ) +
+  background_grid(major = "none", minor = "none") +
+  geom_line(aes(group = Trial_ID, col = Pressure_Level), 
+            alpha = 0.25,
+            size = 0.5) +
+  scale_colour_viridis(
+    discrete = TRUE, 
+    option = "D", 
+    direction = 1, 
+    end = 0.5
+  ) +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) + 
+  geom_vline(
+    xintercept = 60, color = "gray",
+    linetype = 2
+  ) +
+  geom_line(data = TableCiliaMean %>%
+              filter(Genotype %in% c("WT") &
+                       Pressure_Level %in% c("3.125", "85", "237.5", "556", "988")), 
+            aes(y = meanCBFmodaSTA3 ,col = Pressure_Level ),
+            size = 1) +
+  labs(x = "time after stimulus (s)",
+       y = "CBF",
+       color =  str_wrap("set pressure (mbar)", width = 15)) +
+  facet_wrap(~Pressure_Level, nrow = 1)
+
+
+PlotCBFtime
 
 
 
@@ -442,14 +497,18 @@ ggsave(
     
 
   layout <- "
-  ABC
+  AB
+  CD
   "
     
   
-  FigSupp4 <- panel_assay + ggdraw(PlotAveragePressureCBF) + ggdraw(MaxPc_dCBFvsPress) +
+  FigSupp4 <- panel_assay +
+    ggdraw(PlotAveragePressureCBF) +
+    ggdraw(MaxPc_dCBFvsPress) +
+    ggdraw(PlotCBFtime) +
      plot_layout(design = layout, heights = c(1, 1)) + 
     plot_annotation(tag_levels = list(
-      c("A", "B", "C"))) &
+      c("A", "B", "C", "D"))) &
     theme(plot.tag = element_text(size = 12, face = "plain"))
 
 ####Saving Figure-
@@ -459,7 +518,7 @@ ggsave(
 )
   ggsave(
     filename = "Manuscript/Figures/FigureSupplement_4.png", 
-    FigSupp4, width = 2500, height = 1000,
+    FigSupp4, width = 2500, height = 2500,
     units = "px"
   )
 
