@@ -932,7 +932,7 @@ MaxPlot
 
 ggsave(
   "Manuscript/pictures/PanelPeriodvsmaxCBF_2dpf.png",
-  width = 2000, height = 600, units = "px", device = "png", bg = "white"
+  width = 2000, height = 1000, units = "px", device = "png", bg = "white"
 )
 
 
@@ -1036,7 +1036,6 @@ Panel3d <- ggdraw(PlotDispAvg3dpf)  +
   draw_label("p", x = Xcoord3, y = 0.5, size = Fontsize, color = "black")
 
 Panel3dDose <- ggdraw(PlotAVGPressVSMaxDisp3dpf)
-
 
 PanelLongDisp <- ggdraw(PlotDisp3dpfLong) +
   draw_label("acclimation pressure (mb)", x = 0.45, y = 0.99, size = Fontsize, color = "black", fontface = "plain")
