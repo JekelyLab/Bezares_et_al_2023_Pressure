@@ -144,7 +144,6 @@ TableCBFTetAndCont <-
 TableCiliaTetMean <- TableCBFTetAndCont %>%
   group_by(RelTime,
            Pressure_Level,
-           Genotype,
            Plasmid) %>%
   filter(Beat == 1 & State %in% ("positive")) %>%
   summarise(meanCBFmodaSTA3 = mean(CBFmoda_sta3, na.rm = TRUE)) %>%
