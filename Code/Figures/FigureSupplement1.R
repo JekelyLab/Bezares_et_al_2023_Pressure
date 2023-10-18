@@ -32,6 +32,7 @@
   library(cowplot)
   library(ggplot2)
   library(ggpubr)
+  library(grid)
   library(here)
   library(magick)
   library(png)
@@ -696,12 +697,12 @@ PlotAvgRatioTracks3dpf
 # generate figure composite panel grid ------------------------------------
 
 
-rectCoor <- -0.054
+rectCoor <- -0.045
 rectW <- 5.6
-rectH <- 28.95
+rectH <- 33.5
 Rect1 <- rectGrob(
   x = rectCoor,
-  y = 0.13,
+  y = 0.151,
   width = unit(rectW, "mm"),
   height = unit(rectH, "mm"),
   hjust = 0, vjust = 0,
@@ -716,19 +717,19 @@ Rect2 <- rectGrob(
   gp = gpar(fill = NULL, alpha = 1 ,lwd = 1.5))
 
 rectCoor2 <- 0
-rectW2 <- 119
+rectW2 <- 134
 rectH2 <- 5.6
 Rect3 <- rectGrob(
   x = rectCoor2,
-  y = 0.055,
+  y = 0.09,
   width = unit(rectW2, "mm"),
   height = unit(rectH2, "mm"),
   hjust = 0, vjust = 0,
   gp = gpar(fill = NULL, alpha = 1 ,lwd = 1.5))
 
-rectCoorY <- 0.875
+rectCoorY <- 0.85
 rectCoor3 <- 0
-rectW3 <- 29.5
+rectW3 <- 33
 rectH3 <- 5.6
 Rect4 <- rectGrob(
   x = rectCoor3,
@@ -739,8 +740,6 @@ Rect4 <- rectGrob(
   gp = gpar(fill = NULL, alpha = 1 ,lwd = 1.5))
 
 rectCoor4 <- 0.254
-rectW3 <- 29
-rectH3 <- 5.6
 Rect5 <- rectGrob(
   x = rectCoor4,
   y = rectCoorY,
@@ -750,8 +749,6 @@ Rect5 <- rectGrob(
   gp = gpar(fill = NULL, alpha = 1 ,lwd = 1.5))
 
 rectCoor5 <- 0.501
-rectW3 <- 29
-rectH3 <- 5.6
 Rect6 <- rectGrob(
   x = rectCoor5,
   y = rectCoorY,
@@ -761,8 +758,6 @@ Rect6 <- rectGrob(
   gp = gpar(fill = NULL, alpha = 1 ,lwd = 1.5))
 
 rectCoor6 <- 0.754
-rectW3 <- 29
-rectH3 <- 5.6
 Rect7 <- rectGrob(
   x = rectCoor6,
   y = rectCoorY,
@@ -771,21 +766,22 @@ Rect7 <- rectGrob(
   hjust = 0, vjust = 0,
   gp = gpar(fill = NULL, alpha = 1 ,lwd = 1.5))
 
-posTmeLab <- 0.91
-
+posTmeLab <- 0.876
+scalepos <- 0.21
+stagelab <- 0.12
 ImgTrajPeriod_2d <- readPNG("Manuscript/pictures/TrajectoriesbyPeriod_panel2d.png")
 Fontsize = 10
 PanelTrajPer_2d <- ggdraw() +
   draw_image(ImgTrajPeriod_2d) +
   draw_label(paste("1 ", "mm", sep = ""),
-             x = 0.965, y = 0.19, color = "white",
+             x = 0.965, y = scalepos, color = "white",
              fontfamily = "sans", size = 7) +
   draw_label("t ->",
-             x = 0.04, y = 0.19, color = "white",
+             x = 0.04, y = scalepos, color = "white",
              fontfamily = "sans", size = 7) +
-  draw_label("85 mb",, angle = 90, x = -0.028, y = 0.66, size = Fontsize, color = "black", fontface = "plain") +
-  draw_label("778 mb", angle = 90, x = -0.028, y = 0.32, size = Fontsize, color = "black", fontface = "plain") +
-  draw_label("2 dpf", angle = 0, x = 0.5 , y = 0.09, size = Fontsize,color = "black") +
+  draw_label("85 mb",, angle = 90, x = -0.025, y = 0.66, size = Fontsize, color = "black", fontface = "plain") +
+  draw_label("778 mb", angle = 90, x = -0.025, y = 0.32, size = Fontsize, color = "black", fontface = "plain") +
+  draw_label("2 dpf", angle = 0, x = 0.5 , y = stagelab, size = Fontsize,color = "black") +
   draw_label("-10 s", angle = 0, x = 0.12 , y = posTmeLab, size = Fontsize,color = "black") +
   draw_label("10 s", angle = 0, x = 0.38 , y = posTmeLab, size = Fontsize,color = "black") +
   draw_label("20 s", angle = 0, x = 0.63 , y = posTmeLab, size = Fontsize,color = "black") +
@@ -804,14 +800,14 @@ ImgTrajPeriod_3d <- readPNG("Manuscript/pictures/TrajectoriesbyPeriod_panel3d.pn
 PanelTrajPer_3d <- ggdraw() +
   draw_image(ImgTrajPeriod_3d) +
   draw_label(paste("1 ", "mm", sep = ""),
-             x = 0.965, y = 0.19, color = "white",
+             x = 0.965, y = scalepos , color = "white",
              fontfamily = "sans", size = 7) +
   draw_label("t ->",
-             x = 0.04, y = 0.19, color = "white",
+             x = 0.04, y = scalepos, color = "white",
              fontfamily = "sans", size = 7) +
   draw_label("85 mb",, angle = 90, x = -0.028, y = 0.66, size = Fontsize, color = "black", fontface = "plain") +
   draw_label("500 mb", angle = 90, x = -0.028, y = 0.32, size = Fontsize, color = "black", fontface = "plain") +
-  draw_label("3 dpf", angle = 0, x = 0.5 , y = 0.09, size = Fontsize,color = "black") +
+  draw_label("3 dpf", angle = 0, x = 0.5 , y = stagelab, size = Fontsize,color = "black") +
   draw_label("-10 s", angle = 0, x = 0.12 , y = posTmeLab, size = Fontsize,color = "black") +
   draw_label("10 s", angle = 0, x = 0.38 , y = posTmeLab, size = Fontsize,color = "black") +
   draw_label("20 s", angle = 0, x = 0.63 , y = posTmeLab, size = Fontsize,color = "black") +
@@ -870,6 +866,6 @@ ggsave(
 )
 ggsave(
   filename = "Manuscript/Figures/FigureSupplement_1.png",
-  FigSuppl1, width = 3200, height = 2000, units = "px"
+  FigSuppl1, width = 3600, height = 2400, units = "px"
 )
 
