@@ -373,7 +373,6 @@ stat.testTet <- stat.testTet %>%
         tip.length = 0, 
         hide.ns = TRUE, 
         step.increase = 0, 
-        #position = position_jitterdodge(dodge.width = 1), 
         label = "p.adj",
         label.size = 3
       ) +
