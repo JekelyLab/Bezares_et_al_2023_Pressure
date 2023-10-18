@@ -537,7 +537,9 @@ Max_Pc_dCBFPlotWTvsCops <- (
     aes(x = Genotype, y = max_PcstaCBFmoda, col = Genotype)
   )  +
     ThemePlot +                                                              
-    theme(strip.text.x = element_text(size = 7)) +
+    theme(strip.text.x = element_text(size = 10),
+          strip.background = element_blank()
+    ) +
     geom_violin(alpha = 0.7, size = 0.3,scale = "count",  width = 0.4) +
     geom_point(alpha = 0.3, size = 2 , shape = 20) +
     scale_color_manual(values = cbbPalette) +
@@ -585,13 +587,14 @@ ggsave("Manuscript/pictures/Panel_MaxPc_dCBF_WTCops.png",
 
   Fontsize = 10
   img1 <- readPNG("Manuscript/pictures/cPRCciliaWTCops_collagenolabs.png")
-  x_coord_1 = 0.085
-  rectCoor <- -0.008
+  x_coord_1 = 0.11
+  rectCoor <- 0.02
+  genotlab <- 0.035
   rectW <- 5.7
-  rectH <- 34.12
+  rectH <- 36.7
   Rect1 <- rectGrob(
     x = rectCoor,
-    y = 0.062,
+    y = 0.03,
     width = unit(rectW, "mm"),
     height = unit(rectH, "mm"),
     hjust = 0, vjust = 0,
@@ -599,7 +602,7 @@ ggsave("Manuscript/pictures/Panel_MaxPc_dCBF_WTCops.png",
   )
   Rect2 <- rectGrob(
     x = rectCoor,
-    y = 0.505,
+    y = 0.501,
     width = unit(rectW, "mm"),
     height = unit(rectH, "mm"),
     hjust = 0, vjust = 0,
@@ -608,22 +611,25 @@ ggsave("Manuscript/pictures/Panel_MaxPc_dCBF_WTCops.png",
   
   panel_cPRC_collage <- ggdraw() + 
     draw_image(img1,scale = 0.95) +
-    draw_label(expression(italic("WT")), angle = 90, x = 0.01 , y = 0.7, size = Fontsize,color = "black") +
-    draw_label(expression(italic(paste("c-ops-",1^{"∆8/∆8"}))),angle = 90, x = 0.01, y = 0.3, size = Fontsize,color = "black") +
-    draw_label("AcTub", x = x_coord_1, y = 0.11, size = Fontsize,color = "white", hjust = 1) +
-    draw_label("NIT-GC2", x = x_coord_1 - 0.02, y = 0.16, size = Fontsize,color = "cyan") +
+    draw_label(expression(italic("WT")), angle = 90, x = genotlab , y = 0.7, size = Fontsize,color = "black") +
+    draw_label(expression(italic(paste("c-ops-",1^{"∆8/∆8"}))),angle = 90, x = genotlab, y = 0.3, size = Fontsize,color = "black") +
+    draw_label("AcTub", x = x_coord_1, y = 0.06, size = Fontsize,color = "white", hjust = 1) +
+    draw_label("NIT-GC2", x = x_coord_1 - 0.02, y = 0.1, size = Fontsize,color = "cyan") +
     draw_label(paste("2 ", "\u00B5", "m", sep = ""), 
-             x = 0.95, y = 0.12, size = Fontsize, color = "white") +
+             x = 0.925, y = 0.099, size = Fontsize, color = "white") +
     draw_grob(Rect1) +
     draw_grob(Rect2)
 
     PanelPcdCBF <- ggdraw(Max_Pc_dCBFPlotCops) +
-      draw_label(expression(italic(paste("c-ops-",1^{"∆8/∆8"}))), x = 0.5, y = 0.9, size = Fontsize,color ="black", fontface = "italic") 
+      draw_label(expression(italic(paste("c-ops-",1^{"∆8/∆8"}))), x = 0.7, y = 0.95, size = Fontsize,color ="black", fontface = "italic") 
     
     PanelAvgWTCopsDisp <- ggdraw(PlotDispAvgWTCops)  +
       draw_label("set pressure (mb)", x = 0.5, y = 0.99, size = Fontsize, color ="black", fontface = "plain") 
     
-    
+  
+  Panel_dCBFWTvsCops <-  ggdraw(Max_Pc_dCBFPlotWTvsCops) +
+    draw_label("set pressure (mb)", x = 0.55, y = 1, size = Fontsize,color ="black", fontface = "plain")
+  
    layout <- "
   AAABBB
   CCCCCC
@@ -641,7 +647,7 @@ ggsave("Manuscript/pictures/Panel_MaxPc_dCBF_WTCops.png",
      PanelAvgWTCopsDisp +
      ggdraw(PriorCBFlarvaWTCops) +
      PanelPcdCBF +
-     ggdraw(Max_Pc_dCBFPlotWTvsCops) +
+     Panel_dCBFWTvsCops +
      ggdraw(panel_cPRC_collage) +
      plot_layout(design = layout, heights = c(1, 1, 1, 1, 0.8, 1, 1)) +
      plot_annotation(tag_levels = list(
@@ -656,7 +662,7 @@ ggsave("Manuscript/pictures/Panel_MaxPc_dCBF_WTCops.png",
   
   ggsave(
     filename = "Manuscript/Figures/FigureSupplement_7.png", 
-    FigSupp7, width = 2200, height = 3200,
+    FigSupp7, width = 2500, height = 3200,
     units = "px"
   )
   

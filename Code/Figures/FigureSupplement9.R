@@ -180,7 +180,7 @@ metric = "max_CBFmoda_sta3"
 MxCBF_Tet <-(MxCBF_Tet %>% 
                group_by(Trial_ID,
                         Pressure_Level,
-                        Genotype) %>% 
+                        Plasmid) %>% 
                filter(all(!is.na(max_CBF_sta3))) %>% 
                group_modify(~DirectionCBF(.,Ref_period,metric))
 )
@@ -216,7 +216,8 @@ Max_Pc_dCBFPlotContVsTetx <- (
     aes(x = Plasmid, y = max_PcstaCBFmoda, col = Pressure_Level)
   )  +
     ThemePlot +                                                              
-    theme(strip.text.x = element_text(size = 7)) +
+    theme(strip.text.x = element_text(size = 10),
+          strip.background = element_blank()) +
     geom_violin(alpha = 0.7, size = 0.3,scale = "count",  width = 0.4) +
     geom_point(alpha = 0.3, size = 2 , shape = 20) + 
     scale_colour_viridis(discrete = TRUE, 
@@ -298,16 +299,23 @@ PlotCBFTetTime
 
 
 # generate figure composite panel grid ------------------------------------
- 
+Fontsize = 10
+PanelMaxdCBF <-  ggdraw(Max_Pc_dCBFPlotContVsTetx) +
+  draw_label("set pressure (mb)", x = 0.45, y = 0.99, size = Fontsize,color ="black", fontface = "plain")
+
+PanelCBFtime <-
+  ggdraw(PlotCBFTetTime) +
+  draw_label("set pressure (mb)", x = 0.45, y = 0.99, size = Fontsize,color ="black", fontface = "plain")
+
   layout <- "
   AABB
   "
   
   
   FigSupp9 <- 
-  ggdraw(Max_Pc_dCBFPlotContVsTetx) +
-  ggdraw(PlotCBFTetTime) + 
-    plot_layout(design = layout, heights = c(1, 1, 0.05, 1), widths = c(1,1,0.1,0.1,1,1,1,1) ) +
+    PanelMaxdCBF +
+    PanelCBFtime + 
+    plot_layout(design = layout, heights = c(1, 1), widths = c(1,1) ) +
     plot_annotation(tag_levels = "A") &
     theme(plot.tag = element_text(size = 12, face = "plain"))
   
@@ -319,6 +327,6 @@ PlotCBFTetTime
   
   ggsave(
     filename = "Manuscript/Figures/FigureSupplement_9.png", 
-    FigSupp9, width = 2800, height = 2800,
+    FigSupp9, width = 2500, height = 1000,
     units = "px"
   )
