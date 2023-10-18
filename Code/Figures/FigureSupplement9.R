@@ -298,65 +298,15 @@ PlotCBFTetTime
 
 
 # generate figure composite panel grid ------------------------------------
-  img1 <- readPNG("Manuscript/pictures/CorrProjSnapshotnolabs.png")
-  
-  Fontsize = 10
-  
-  PaneldRMC <- ggdraw(PFluoAvR_MCsind) +
-    draw_label("set pressure (mb)", angle = -90, x = 1 , y = 0.5, size = Fontsize,color = "black")
-  
-  x_coord_1 = 0.15
-  x_coord_2 = 0.95
-  panel_pearson <- ggdraw() + 
-    draw_image(img1) +
-    geom_segment(aes(x = x_coord_1,
-                     y = 0.93,
-                     xend = x_coord_1,
-                     yend = 0.85,
-                     color = "black"),
-                 arrow = arrow(type = 'closed', length = unit(2, "mm")),
-                 color = "black") +
-    geom_segment(aes(x = x_coord_1,
-                     y = 0.85,
-                     xend = x_coord_1,
-                     yend = 0.93,
-                     color = "black"),
-                 arrow = arrow(type = 'closed', length = unit(2, "mm")),
-                 color = "black") + 
-    draw_label("a", x = x_coord_1, y = 0.96, size = Fontsize ,color = "black") +
-    draw_label("p", x = x_coord_1, y = 0.83, size = Fontsize,color = "black") + 
-    draw_label("1", x = x_coord_2, y = 1, size = Fontsize ,color = "black") +
-    draw_label("0.75", x = x_coord_2, y = 0.87, size = Fontsize ,color = "black") +
-    draw_label("0.5", x = x_coord_2, y = 0.75, size = Fontsize ,color = "black") +
-    draw_label("0.25", x = x_coord_2, y = 0.63, size = Fontsize ,color = "black") +
-    draw_label("0", x = x_coord_2, y = 0.5, size = Fontsize ,color = "black") +
-    draw_label("-0.25", x = x_coord_2, y = 0.38, size = Fontsize ,color = "black") +
-    draw_label("-0.5", x = x_coord_2, y = 0.27, size = Fontsize ,color = "black") +
-    draw_label("-0.75", x = x_coord_2, y = 0.14, size = Fontsize ,color = "black") +
-    draw_label("-1", x = x_coord_2, y = 0.01, size = Fontsize ,color = "black") +
-    draw_label("MC", x = 0.31, y = 0.52, size = Fontsize,color = "black") +
-    draw_label("cPRC_l2", x = 0.75, y = 0.5, size = Fontsize,color = "black") +
-    draw_label(paste("25 ", "\u00B5", "m", sep = ""), 
-               x = 0.73, y = 0.09, size = Fontsize, color = "black")
-  
-    
-  
+ 
   layout <- "
-  AA#BBBB
-  AA#BBBB
-  #######
-  CCC#DDD
-  EEE#FFF
+  AABB
   "
   
   
   FigSupp9 <- 
-    PaneldRMC +
-    ggdraw(shift_legend(PFluocPRc_MC)) +
-    panel_pearson + 
-    ggdraw(CorrPlot) + 
-    ggdraw(Max_Pc_dCBFPlotContVsTetx) +
-    ggdraw(PlotCBFTetTime) + 
+  ggdraw(Max_Pc_dCBFPlotContVsTetx) +
+  ggdraw(PlotCBFTetTime) + 
     plot_layout(design = layout, heights = c(1, 1, 0.05, 1), widths = c(1,1,0.1,0.1,1,1,1,1) ) +
     plot_annotation(tag_levels = "A") &
     theme(plot.tag = element_text(size = 12, face = "plain"))
