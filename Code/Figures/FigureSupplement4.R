@@ -465,13 +465,13 @@ ggsave(
 
   img1 <- readPNG("Manuscript/pictures/CBF_assaySchematic4nolabs.png")
   Fontsize = 10
-  arrow_Xpos = 0.04
+  arrow_Xpos = 0.07
+  labScaleY <- 0.05
   panel_assay <-  ggdraw() + 
     draw_image(img1) +
-    draw_label("glue", x = 0.07, y = 0.09, size = Fontsize,color = "black") +
-    draw_label("glue", x = 0.79, y = 0.69, size = Fontsize,color = "black") +
+    draw_label("glue", x = 0.08, y = 0.04, size = Fontsize,color = "black") +
     draw_label("ciliary band", x = 0.65, y = 0.46, size = Fontsize,color = "white") +
-    draw_label("eyespot", x = 0.39, y = 0.31, size = Fontsize,color = "black") +
+    draw_label("es", x = 0.4, y = 0.3, size = Fontsize,color = "black") +
     draw_label("pressure \n vessel", x = 0.26, y = 0.92, size = Fontsize,color = "black") +
     draw_label("larva", x = 0.1, y = 0.73, size = Fontsize,color = "black") +
     draw_label("air\ninlet/outlet", x = 0.60, y = 0.97, size = Fontsize,color = "black") +
@@ -494,22 +494,25 @@ ggsave(
     draw_label("d", x = arrow_Xpos, y = 0.45, size = Fontsize ,color = "black") +
     draw_label("v", x = arrow_Xpos, y = 0.33, size = Fontsize,color = "black") +
     draw_label(paste("50", "\u00B5", "m", sep = ""), 
-               x = 0.4, y = 0.1, size = Fontsize, color = "black") +
+               x = 0.42, y = labScaleY, size = Fontsize, color = "black") +
     draw_label(paste("50", "\u00B5", "m", sep = ""), 
-               x = 0.92, y = 0.1, size = Fontsize, color = "white")
-    
+               x = 0.9, y = labScaleY, size = Fontsize, color = "white")
+   
+  Panel_CBFtime <-  ggdraw(PlotCBFtime) +
+    draw_label("set pressure (mb)", x = 0.5, y = 1, size = Fontsize,color ="black", fontface = "plain") 
 
   layout <- "
   AB
+  ##
   CD
   "
     
   
   FigSupp4 <- panel_assay +
     ggdraw(PlotAveragePressureCBF) +
+    Panel_CBFtime +
     ggdraw(MaxPc_dCBFvsPress) +
-    ggdraw(PlotCBFtime) +
-     plot_layout(design = layout, heights = c(1, 1)) + 
+       plot_layout(design = layout, heights = c(1, 0.1,1)) + 
     plot_annotation(tag_levels = list(
       c("A", "B", "C", "D"))) &
     theme(plot.tag = element_text(size = 12, face = "plain"))
