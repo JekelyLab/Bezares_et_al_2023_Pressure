@@ -455,6 +455,10 @@ PlotCBFtime <- ggplot(
 
 PlotCBFtime
 
+ggsave(
+  "Manuscript/pictures/PanelReltvsCBF2dpf.png",
+  width = 2000, height = 1000, units = "px", device = "png", bg = "white"
+)
 
 
 # generate figure composite panel grid ------------------------------------
