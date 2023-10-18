@@ -800,7 +800,7 @@ LengthBranchPlot
                   size = Fontsize,
                   color = "white") +
        draw_label("AcTub", x = x_coord_1,
-                  y = 0.1,
+                  y = 0.15,
                   size = Fontsize,
                   color = "white",
                   hjust = 0.2) +
