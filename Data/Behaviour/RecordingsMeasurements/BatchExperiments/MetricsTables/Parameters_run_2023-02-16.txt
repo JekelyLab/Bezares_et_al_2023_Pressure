@@ -1,0 +1,5 @@
+"mm","px","frame_rate","file"
+80,NA,NA,NA
+NA,742.667,NA,NA
+NA,NA,10,NA
+NA,NA,NA,"Data/Behaviour/RecordingsMeasurements/BatchExperiments/ExtractedTrackCoordinates/011020_E001T_2.txt"
