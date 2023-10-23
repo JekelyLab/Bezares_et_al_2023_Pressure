@@ -43,18 +43,18 @@ setwd(ProjectDir )
   
 
   
-  FigSupp5 <- 
+  Fig2Supp1 <- 
     panel_GC_noPvsP 
   
   ggsave(
     filename = "Manuscript/Figures/Figure2-FigureSupplement1.pdf", 
-    FigSupp5, width = 2305, height = 2305,
+    Fig2Supp1, width = 2305, height = 2305,
     units = "px"
   )
   
   ggsave(
     filename = "Manuscript/Figures/Figure2-FigureSupplement1.png", 
-    FigSupp5, width = 2305, height = 2305,
+    Fig2Supp1, width = 2305, height = 2305,
     units = "px"
   )
 

@@ -641,7 +641,7 @@ ggsave("Manuscript/pictures/Panel_MaxPc_dCBF_WTCops.png",
   "
   
   
-  FigSupp7 <-
+  Fig3Supp1 <-
      ggdraw(PlotAveragePressureWTcops) +
      ggdraw(PlotPriorSpeedWTCops) +
      PanelAvgWTCopsDisp +
@@ -656,13 +656,13 @@ ggsave("Manuscript/pictures/Panel_MaxPc_dCBF_WTCops.png",
   
   ggsave(
     filename = "Manuscript/Figures/Figure3-FigureSupplement1.pdf", 
-    FigSupp7, width = 2200, height = 3200,
+    Fig3Supp1, width = 2200, height = 3200,
     units = "px"
   )
   
   ggsave(
     filename = "Manuscript/Figures/Figure3-FigureSupplement1.png", 
-    FigSupp7, width = 2500, height = 3200,
+    Fig3Supp1, width = 2500, height = 3200,
     units = "px"
   )
   

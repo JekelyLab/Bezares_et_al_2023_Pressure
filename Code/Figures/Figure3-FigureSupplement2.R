@@ -58,7 +58,7 @@ panel_EMWTvsCops <-ggdraw() +
   AAAAAA
   "
   
-  FigSupp8 <- panel_EMWTvsCops +
+  Fig3Supp2 <- panel_EMWTvsCops +
     plot_layout(design = layout) +
     plot_annotation(tag_levels = list(
       c("A"))) &
@@ -68,12 +68,12 @@ panel_EMWTvsCops <-ggdraw() +
     
   ggsave(
     filename = "Manuscript/Figures/Figure3-FigureSupplement2.pdf", 
-    FigSupp8, width = 1850, height = 1000,
+    Fig3Supp2, width = 1850, height = 1000,
     units = "px"
   )
   ggsave(
     filename = "Manuscript/Figures/Figure3-FigureSupplement2.png", 
-    FigSupp8, width = 1850, height = 1000,
+    Fig3Supp2, width = 1850, height = 1000,
     units = "px"
   )
 

@@ -692,7 +692,7 @@ BasalVSMinDisp
     draw_label("acclimation pressure (mb)", x = 0.5, y = 1, size = Fontsize,color ="black", fontface = "plain") 
   
   
-  FigSupp3 <- ggdraw(PlotAveragePressureLinear3dpf) +
+  Fig1Supp3 <- ggdraw(PlotAveragePressureLinear3dpf) +
     ggdraw(PlotDispAvgLinear3dpf) +
     PlotRatePress +
     PanelPressLong +
@@ -709,12 +709,12 @@ BasalVSMinDisp
 
 ggsave(
   filename = "Manuscript/Figures/Figure1-FigureSupplement3.pdf", 
-  FigSupp3, width = 3500, height = 3000,
+  Fig1Supp3, width = 3500, height = 3000,
   units = "px"
 )
 ggsave(
   filename = "Manuscript/Figures/Figure1-FigureSupplement3.png", 
-  FigSupp3, width = 3500, height = 3000,
+  Fig1Supp3, width = 3500, height = 3000,
   units = "px"
 )
 

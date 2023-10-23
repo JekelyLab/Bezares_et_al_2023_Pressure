@@ -845,7 +845,7 @@ layout <- "
 #KKKKK#LLLLL
 "
 
-FigSuppl1 <- 
+Fig1Supp1 <- 
   ggdraw(PlotAveragePressure2dpf) + ggdraw(PlotCorSpeedAvg2dpf) +  
   ggdraw(PlotMovAvg2dpf) + ggdraw(PlotTorAvg2dpf) + 
   ggdraw(PlotAvgRatioTracks2dpf) +
@@ -862,10 +862,10 @@ FigSuppl1 <-
 ####Saving Figure
 ggsave(
   filename = "Manuscript/Figures/Figure1-FigureSupplement1.pdf",
-  FigSuppl1, width = 3200, height = 2000, units = "px"
+  Fig1Supp1, width = 3200, height = 2000, units = "px"
 )
 ggsave(
   filename = "Manuscript/Figures/Figure1-FigureSupplement1.png",
-  FigSuppl1, width = 3600, height = 2400, units = "px"
+  Fig1Supp1, width = 3600, height = 2400, units = "px"
 )
 

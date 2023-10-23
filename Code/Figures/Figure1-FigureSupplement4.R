@@ -508,7 +508,7 @@ ggsave(
   "
     
   
-  FigSupp4 <- panel_assay +
+  Fig1Supp4 <- panel_assay +
     ggdraw(PlotAveragePressureCBF) +
     Panel_CBFtime +
     ggdraw(MaxPc_dCBFvsPress) +
@@ -520,11 +520,11 @@ ggsave(
 ####Saving Figure-
 ggsave(
   filename = "Manuscript/Figures/Figure1-FigureSupplement4.pdf",
-  FigSupp4, width = 2500, height = 1000,units = "px"
+  Fig1Supp4, width = 2500, height = 1000,units = "px"
 )
   ggsave(
     filename = "Manuscript/Figures/Figure1-FigureSupplement4.png", 
-    FigSupp4, width = 2500, height = 2500,
+    Fig1Supp4, width = 2500, height = 2500,
     units = "px"
   )
 

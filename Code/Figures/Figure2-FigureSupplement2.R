@@ -575,7 +575,7 @@ EEEEEEEE
 EEEEEEEE
   "
   
-  FigSupp6 <- 
+  Fig2Supp2 <- 
     ggdraw(PPresAvAllcPRC) + 
     ggdraw(PFluoAvR_cPRCs) + 
     ggdraw(PressVSmaxdR_cPRCs) +
@@ -588,13 +588,13 @@ EEEEEEEE
   
   ggsave(
     filename = "Manuscript/Figures/Figure2-FigureSupplement2.pdf", 
-    FigSupp6, width = 3000, height = 3000,
+    Fig2Supp2, width = 3000, height = 3000,
     units = "px"
   )
   
   ggsave(
     filename = "Manuscript/Figures/Figure2-FigureSupplement2.png", 
-    FigSupp6, width = 4000, height = 3500,
+    Fig2Supp2, width = 4000, height = 3500,
     units = "px"
   )
 

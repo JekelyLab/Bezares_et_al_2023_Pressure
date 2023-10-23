@@ -390,7 +390,7 @@ ggsave(
      DDEE"
 
 
-FigSupp2 <- 
+Fig1Supp2 <- 
   ggdraw(PlotAveragePressure1dpf) +
   panel_1dpf + 
   panel_chamber +
@@ -403,13 +403,13 @@ FigSupp2 <-
 
 ggsave(
   filename = "Manuscript/Figures/Figure1-FigureSupplement2.pdf", 
-  FigSupp2, width = 2600, height = 2400,
+  Fig1Supp2, width = 2600, height = 2400,
   units = "px"
 )
 
 ggsave(
   filename = "Manuscript/Figures/Figure1-FigureSupplement2.png", 
-  FigSupp2, width = 2600, height = 2400,
+  Fig1Supp2, width = 2600, height = 2400,
   units = "px"
 )
 
