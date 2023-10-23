@@ -313,8 +313,8 @@ PanelCBFtime <-
   
   
   Fig4Supp1 <- 
+    PanelCBFtime +
     PanelMaxdCBF +
-    PanelCBFtime + 
     plot_layout(design = layout, heights = c(1, 1), widths = c(1,1) ) +
     plot_annotation(tag_levels = "A") &
     theme(plot.tag = element_text(size = 12, face = "plain"))
