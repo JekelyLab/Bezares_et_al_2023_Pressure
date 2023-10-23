@@ -185,10 +185,6 @@ for (a in seq_along(StimulusTable$Trial_ID)){
 }
 
 #Writing tables-------
-SavePath <- "Data/TablesResults/"
-FlNameCBFClos <- "CBF_MODA-Closure_CiliaryDynamics_TetXLC.csv"
+SavePath <- "Data/SourceData_elife/"
+FlNameCBFClos <- "Figure4-SourceData1.csv"
 write.csv(tibble(FinalCBFClos), paste(SavePath, FlNameCBFClos, sep = ""), row.names = FALSE)
-
-SavePath <- "Data/TablesResults/"
-FlNameDurCl <- "ClosureDuration_CiliaryDynamics_demo.csv"
-write.csv(FinalCloseDur %>% unnest(ListDurationClosure), paste(SavePath, FlNameDurCl, sep = ""), row.names = FALSE)
