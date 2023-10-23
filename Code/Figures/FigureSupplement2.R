@@ -71,7 +71,7 @@ theme_plot <- theme(
 
 ### read data
 
-TableIndStep1dpf <- read_csv("Data/TablesResults/BigChamber4WTstep_metrics1dpf.csv")
+TableIndStep1dpf <- read_csv("Data/SourceData_elife/Figure1-SourceData5.csv")
 
 
 ###define pressure levels
@@ -104,9 +104,7 @@ TableAvgStep1dpf <- TableIndStep1dpf %>%
   summarise(across(Avg_Speed:Corr_Num_Tracks_Down,
                    list(mean = ~mean(.x, na.rm = TRUE),
                         sd = ~sd(.x, na.rm = TRUE),
-                        se = ~sd(.x/sqrt(length(.x)), na.rm = TRUE)),
-                   na.rm = TRUE),
-            na.rm = TRUE
+                        se = ~sd(.x/sqrt(length(.x)), na.rm = TRUE)))
   )
 
 TableAvgStep1dpf$n_trials <- count(TableIndStep1dpf %>%
@@ -199,7 +197,7 @@ ggsave("Manuscript/pictures/PanelTvsAVGDisp_step1dpf.png",
 #Hose----------
 ### read data
 
-  TableIndHose3dpf <- read_csv("Data/TablesResults/Hosestep_metrics3dpf.csv")
+  TableIndHose3dpf <- read_csv("Data/SourceData_elife/Figure1-SourceData6.csv")
   
   
   ##Visually assessing track number to decide cut off
@@ -234,8 +232,7 @@ ggsave("Manuscript/pictures/PanelTvsAVGDisp_step1dpf.png",
     group_by(Pressure_Level,Type_Experiment,Genotype,RelTime) %>% 
     summarise(across(Avg_Speed:STA5_Corr_Num_Tracks_Down,list(mean = ~mean(.x, na.rm = T),
                                                          sd = ~sd(.x,na.rm = T),
-                                                         se = ~sd(.x/sqrt(length(.x)),na.rm = T)),
-                     na.rm = TRUE))
+                                                         se = ~sd(.x/sqrt(length(.x)),na.rm = T))))
   TableAvgHose3dpf$n_trials <- count(TableIndHose3dpf %>% 
                                        filter(Num_Tracks_Up + Num_Tracks_Down >= cutoffHose) %>%
                                        group_by(Pressure_Level,Type_Experiment,Genotype,RelTime))$n
@@ -263,8 +260,7 @@ ggsave("Manuscript/pictures/PanelTvsAVGDisp_step1dpf.png",
     summarise(across(max_Avg_Speed:max_STA5_Corr_Num_Tracks_Down,
                      list(mean = ~mean(.x, na.rm = TRUE),
                           sd = ~sd(.x, na.rm = TRUE),
-                          se = ~sd(.x/sqrt(length(.x)), na.rm = TRUE)),
-                     na.rm = TRUE))
+                          se = ~sd(.x/sqrt(length(.x)), na.rm = TRUE))))
   
 
 
@@ -406,13 +402,13 @@ FigSupp2 <-
   theme(plot.tag = element_text(size = 12, face = "plain"))
 
 ggsave(
-  filename = "Manuscript/Figures/FigureSupplement_2.pdf", 
+  filename = "Manuscript/Figures/Figure1-FigureSupplement2.pdf", 
   FigSupp2, width = 2600, height = 2400,
   units = "px"
 )
 
 ggsave(
-  filename = "Manuscript/Figures/FigureSupplement_2.png", 
+  filename = "Manuscript/Figures/Figure1-FigureSupplement2.png", 
   FigSupp2, width = 2600, height = 2400,
   units = "px"
 )

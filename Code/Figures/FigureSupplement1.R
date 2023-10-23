@@ -70,7 +70,7 @@ ThemePlot <- theme(
 ##2dpf--------------------------------------------------
 
 ### read data
-TableIndStep2dpf <- read_csv("Data/TablesResults/BigChamber4WTstep_metrics2dpf.csv")
+TableIndStep2dpf <- read_csv("Data/SourceData_elife/Figure1-SourceData1.csv")
 
 
 ###Ratio Up/Down tracks
@@ -379,7 +379,7 @@ ggsave("Manuscript/pictures/PanelTvsIndDispBP_step2dpf.png",
 
 ### read data
 
-TableIndStep3dpf <- read_csv("Data/TablesResults/BigChamber4WTstep_metrics3dpf.csv")
+TableIndStep3dpf <- read_csv("Data/SourceData_elife/Figure1-SourceData2.csv")
 
 ###Ratio Up/Down tracks
 TableIndStep3dpf <- 
@@ -861,11 +861,11 @@ FigSuppl1 <-
 
 ####Saving Figure
 ggsave(
-  filename = "Manuscript/Figures/FigureSupplement_1.pdf",
+  filename = "Manuscript/Figures/Figure1-FigureSupplement1.pdf",
   FigSuppl1, width = 3200, height = 2000, units = "px"
 )
 ggsave(
-  filename = "Manuscript/Figures/FigureSupplement_1.png",
+  filename = "Manuscript/Figures/Figure1-FigureSupplement1.png",
   FigSuppl1, width = 3600, height = 2400, units = "px"
 )
 

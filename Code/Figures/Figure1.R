@@ -72,7 +72,7 @@ ThemePlot <- theme(
 
 ### read data
 
-TableIndStep2dpf <- read_csv("Data/TablesResults/BigChamber4WTstep_metrics2dpf.csv")
+TableIndStep2dpf <- read_csv("Data/SourceData_elife/Figure1-SourceData1.csv")
 
 ###define pressure levels
 
@@ -280,7 +280,7 @@ ggsave("Manuscript/pictures/Panel_prVSMaxAVGdisp_step2dpf.png",
 #3 dpf --------------------------------------------------
 ### read data 3 dpf
 
-TableIndStep3dpf <- read.csv("Data/TablesResults/BigChamber4WTstep_metrics3dpf.csv",
+TableIndStep3dpf <- read.csv("Data/SourceData_elife/Figure1-SourceData2.csv",
                              header = TRUE, sep = ",")
 TableIndStep3dpf <- as_tibble(TableIndStep3dpf)
 
@@ -508,7 +508,7 @@ ggsave(
 
 # Long displacement 3dpf -----
 ### read data
-TableIndLongDisp <- read_csv("Data/TablesResults/BigChamber4WTstepLong_metrics3dpf.csv")
+TableIndLongDisp <- read_csv("Data/SourceData_elife/Figure1-SourceData3.csv")
 
 ##Visually assessing track number to decide cut off
 CutoffLong <- 100
@@ -761,7 +761,7 @@ ggsave("Manuscript/pictures/PanelPcIncvsDisp_Long3dpf.png",
 # CB ----------------------------------------------------------------------
 
 ### read data 2 dpf
-TableCiliaNonbinned <- read_csv("Data/TablesResults/CBF_MODA-Closure_CiliaryDynamics_WTCops.csv")
+TableCiliaNonbinned <- read_csv("Data/SourceData_elife/Figure1-SourceData4.csv")
 
 
 ###define pressure levels
@@ -939,8 +939,8 @@ ggsave(
 # generate figure composite panel grid ------------------------------------
 
 Imgchamb <- readPNG("Manuscript/pictures/ChamberDiagramplaty_Paper1nolabs.png")
-Img3dpf <- readPNG("Manuscript/pictures/snapshots_larvae/2023-04-06_fert030406-1137_L3_F003-crRGBSB.png")
-Img2dpf <- readPNG("Manuscript/pictures/snapshots_larvae/2023-04-26_fert240406-1200_L1_F006-crRGBSB.png")
+Img3dpf <- readPNG("Manuscript/pictures/snapshots_larvae/2022-01-26_Batch2022-01-23_3dpf_Experiment-13_s20SB_50um.png")
+Img2dpf <- readPNG("Manuscript/pictures/snapshots_larvae/2022-01-23_Batch2022-01-21_2dpf_Snap-77_crSB50.png")
 
 
 Xcoord1 <- 0

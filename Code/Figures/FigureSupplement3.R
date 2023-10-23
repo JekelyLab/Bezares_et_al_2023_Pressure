@@ -32,6 +32,7 @@
   library(ggplot2)
   library(ggpmisc)
   library(ggpubr)
+  library(here)
   library(magick)
   library(png)
   library(patchwork)
@@ -70,7 +71,7 @@ theme_plot <- theme(
 
   ### read data 
   
-TableLinearIndDisp <- read_csv("Data/TablesResults/Linear_metrics3dpf.csv")
+TableLinearIndDisp <- read_csv("Data/SourceData_elife/Figure1-SourceData7.csv")
 
 
 ##Visually assessing track number to decide cut off
@@ -98,8 +99,7 @@ TableAvgLinear3dpf <- TableLinearIndDisp %>%
   group_by(Type_Experiment,Genotype,RelTime,Category_stimulus) %>% 
   summarise(across(PressVal:Corr_Num_Tracks_Down,list(mean = ~mean(.x, na.rm = TRUE),
                                                        sd = ~sd(.x, na.rm = TRUE),
-                                                       se = ~sd(.x/sqrt(length(.x)),na.rm = TRUE)),
-                   na.rm = TRUE))
+                                                       se = ~sd(.x/sqrt(length(.x)),na.rm = TRUE))))
 TableAvgLinear3dpf$n_trials <- count(TableLinearIndDisp %>% 
                                        filter(Num_Tracks_Up + Num_Tracks_Down >= cutoffLin) %>%
                                        group_by(Category_stimulus,Type_Experiment,Genotype,RelTime))$n
@@ -329,7 +329,7 @@ ggsave(
 
 ### read data 
 
-TableIndLongDisp <- read_csv("Data/TablesResults/BigChamber4WTstepLong_metrics3dpf.csv")
+TableIndLongDisp <- read_csv("Data/SourceData_elife/Figure1-SourceData3.csv")
 
 ##Visually assessing track number to decide cut off
 cutoffLong = 100
@@ -409,7 +409,7 @@ TableAvgLongStep3dpf <- (
       across(Avg_Speed:PressInc,
              list(mean = ~mean(.x, na.rm = T),
                   sd = ~sd(.x, na.rm = T),
-                  se = ~sd(.x/sqrt(length(.x)), na.rm = T)), na.rm = T))
+                  se = ~sd(.x/sqrt(length(.x)), na.rm = T))))
 )
 
 TableAvgLongStep3dpf$n_trials <- 
@@ -465,8 +465,7 @@ AvgLongminStep3dpfWT <- (
         min_Avg_Speed:min_STA5_PressInc,
         list(mean = ~mean(.x, na.rm = TRUE),
              sd = ~sd(.x,na.rm = TRUE),
-             se = ~sd(.x/sqrt(length(.x)),na.rm = TRUE)),
-        na.rm = TRUE)
+             se = ~sd(.x/sqrt(length(.x)),na.rm = TRUE)))
     )
 )
 
@@ -575,15 +574,6 @@ PlotLongPartDispPressureBox3dpf <- (
      scale_color_manual(values = cbbPalette) +
     scale_y_continuous(breaks = seq(0,100,20),limits = c(0,45)) +
      geom_hline(yintercept = 0,color = "black") +
-    # stat_pvalue_manual(
-    #   stat.testDpart,
-    #   bracket.nudge.y = 0, 
-    #   tip.length = 0, 
-    #   hide.ns = TRUE, 
-    #   step.increase = 0.05, 
-    #   label = "p.adj",
-    #   label.size = 3
-    # ) +
     labs(x = "Bin",
           y = "avg. % larvae",
           color = str_wrap("acclimation pressure (mb)",width = 20)) +
@@ -719,12 +709,12 @@ BasalVSMinDisp
   theme(plot.tag = element_text(size = 12, face = "plain"))
 
 ggsave(
-  filename = "Manuscript/Figures/FigureSupplement_3.pdf", 
+  filename = "Manuscript/Figures/Figure1-FigureSupplement3.pdf", 
   FigSupp3, width = 3500, height = 3000,
   units = "px"
 )
 ggsave(
-  filename = "Manuscript/Figures/FigureSupplement_3.png", 
+  filename = "Manuscript/Figures/Figure1-FigureSupplement3.png", 
   FigSupp3, width = 3500, height = 3000,
   units = "px"
 )

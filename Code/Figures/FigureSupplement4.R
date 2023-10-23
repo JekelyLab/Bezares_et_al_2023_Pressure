@@ -67,7 +67,7 @@ ThemePlot <- theme(
 
  
   ### read data 2 dpf
-  TableCiliaNonbinned <- read_csv("Data/TablesResults/CBF_MODA-Closure_CiliaryDynamics_WTCops.csv")
+  TableCiliaNonbinned <- read_csv("Data/SourceData_elife/Figure1-SourceData4.csv")
   
   
   ###define pressure levels
@@ -519,11 +519,11 @@ ggsave(
 
 ####Saving Figure-
 ggsave(
-  filename = "Manuscript/Figures/FigureSupplement_4.pdf",
+  filename = "Manuscript/Figures/Figure1-FigureSupplement4.pdf",
   FigSupp4, width = 2500, height = 1000,units = "px"
 )
   ggsave(
-    filename = "Manuscript/Figures/FigureSupplement_4.png", 
+    filename = "Manuscript/Figures/Figure1-FigureSupplement4.png", 
     FigSupp4, width = 2500, height = 2500,
     units = "px"
   )
