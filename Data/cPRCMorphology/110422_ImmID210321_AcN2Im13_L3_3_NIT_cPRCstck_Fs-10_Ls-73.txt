@@ -1,2 +1,0 @@
-Volume	Surface	Intensity	Centre X	Centre Y	Centre Z	Centre int X	Centre int Y	Centre int Z
-255.340	0.441	50.336	6.680	7.168	6.596	6.666	7.169	6.460
