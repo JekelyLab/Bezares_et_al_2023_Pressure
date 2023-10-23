@@ -622,8 +622,7 @@ PlotDisp3Long0 <-
      geom_errorbar(aes(x = RelTime, ymin = Corr_Avg_Y_displacement_mean, ymax = Corr_Avg_Y_displacement_mean + Corr_Avg_Y_displacement_se, col = Basal_pressure)) +
      geom_errorbar(aes(x = PressVal_mean/scale, ymin = PressVal_mean/scale, ymax = PressVal_mean/scale + PressVal_se/scale, col = Basal_pressure)) +
      labs(x = "time after stimulus (s)",y = str_wrap(" ∆ vertical displacement (mm/s)",width = 20), color = str_wrap("acclimation pressure (mb)",width = 20)) +
-     geom_vline(xintercept = 60,color = "gray",linetype = 2)# +
-    # guides(color = guide_legend(keyheight = 0.3))
+     geom_vline(xintercept = 60,color = "gray",linetype = 2)
    )
 PlotDisp3Long0
 

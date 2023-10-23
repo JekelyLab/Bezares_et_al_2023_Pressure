@@ -1,6 +1,6 @@
 ########################################
 ##
-## Title:FigureSupplement9.R
+## Title:Figure4-FigureSupplement1.R
 ##
 ##########################################
 ##
@@ -66,10 +66,10 @@
     panel.background = element_blank()
   )
   
-# CBF--------------------------------------------------
+# CB--------------------------------------------------
 
 ### read data
-TableCBFTetAndCont <- read_csv("Data/TablesResults/CBF_MODA-Closure_CiliaryDynamics_TetXLC.csv")
+TableCBFTetAndCont <- read_csv("Data/SourceData_elife/Figure4-SourceData1.csv")
 
 ###define pressure levels
 TableCBFTetAndCont$Pressure_Level <- factor(TableCBFTetAndCont$Pressure_Level, 
@@ -312,7 +312,7 @@ PanelCBFtime <-
   "
   
   
-  FigSupp9 <- 
+  Fig4Supp1 <- 
     PanelMaxdCBF +
     PanelCBFtime + 
     plot_layout(design = layout, heights = c(1, 1), widths = c(1,1) ) +
@@ -320,13 +320,13 @@ PanelCBFtime <-
     theme(plot.tag = element_text(size = 12, face = "plain"))
   
   ggsave(
-    filename = "Manuscript/Figures/FigureSupplement_9.pdf", 
-    FigSupp9, width = 2800, height = 2400,
+    filename = "Manuscript/Figures/Figure4-FigureSupplement1.pdf", 
+    Fig4Supp1, width = 2800, height = 2400,
     units = "px"
   )
   
   ggsave(
-    filename = "Manuscript/Figures/FigureSupplement_9.png", 
-    FigSupp9, width = 2500, height = 1000,
+    filename = "Manuscript/Figures/Figure4-FigureSupplement1.png", 
+    Fig4Supp1, width = 2500, height = 1000,
     units = "px"
   )

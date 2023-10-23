@@ -1,6 +1,6 @@
 ########################################
 ##
-## Title:FigureSupplement1.R
+## Title:Figure1-FigureSupplement1.R
 ##
 ##########################################
 ##
@@ -8,7 +8,7 @@
 ##
 ## Last Date modified: 2023-03-25
 ##
-## Description: Code to generate Figure Supplement 1.Descriptive statistics  of the pressure response and swimming trajectories of 2 and 3 day-old larvae.
+## Description: Code to generate Figure1-FigureSupplement1.Descriptive statistics  of the pressure response and swimming trajectories of 2 and 3 day-old larvae.
 ##
 ## Input files: 
 ##

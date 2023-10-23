@@ -230,10 +230,10 @@ webshot2::webshot(url="Manuscript/pictures/visNetwork_INNOS.html",
   
 
 
-# CBF--------------------------------------------------
+# CB--------------------------------------------------
 
 ### read data
-  TableCBFTetAndCont <- read_csv("Data/TablesResults/CBF_MODA-Closure_CiliaryDynamics_TetXLC.csv")
+  TableCBFTetAndCont <- read_csv("Data/SourceData_elife/Figure4-SourceData1.csv")
 
   ###define pressure levels
   TableCBFTetAndCont$Pressure_Level <- factor(TableCBFTetAndCont$Pressure_Level, 
