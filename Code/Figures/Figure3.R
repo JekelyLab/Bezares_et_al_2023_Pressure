@@ -75,7 +75,7 @@
 
 ### read data
 
-TableIndStepWTCops <- read_csv("Data/TablesResults/SmallChamber1WTvs1Copsstep_metrics3dpf.csv")
+TableIndStepWTCops <- read_csv("Data/SourceData_elife/Figure3-SourceData1.csv")
 
 
 ### Smoothing curves to get maximal values
@@ -272,7 +272,7 @@ ggsave("Manuscript/pictures/Panel_prVSMaxdispInd-AVG_step2dpf.png",
 # CB ----------------------------------------------------------------------
 
 ### read data 2 dpf
-TableCiliaNonbinned <- read_csv("Data/TablesResults/CBF_MODA-Closure_CiliaryDynamics_WTCops.csv")
+TableCiliaNonbinned <- read_csv("Data/SourceData_elife/Figure1-SourceData4.csv")
 
 ###define levels
 TableCiliaNonbinned$Pressure_Level <- factor(TableCiliaNonbinned$Pressure_Level, 
@@ -458,7 +458,7 @@ ggsave(
 #Volume analysis cPRCs --------------------------------------------------
 
 ### read data cPRC volumes
-TableVols <- read_csv("Data/TablesResults/cPRCcilia_AcTub_VolcPRC_WT-Cops_Table.csv")
+TableVols <- read_csv("Data/SourceData_elife/Figure3-SourceData2.csv")
 
 ###define levels
 
