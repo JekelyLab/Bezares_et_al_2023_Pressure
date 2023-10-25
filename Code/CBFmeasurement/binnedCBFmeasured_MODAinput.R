@@ -53,7 +53,7 @@ setwd(ProjectDir)
 
 
 ##Reading pressure log files-------
-IndirPressureCil <- "/ebio/ag-jekely/share/Luis/Behavioral_experiments/pressure_setup/Pressure_cilia/TeTxLC/PressureLogs/"
+IndirPressureCil <- "/ebio/ag-jekely/share/Luis/Behavioral_experiments/pressure_setup/Pressure_cilia/WT_Cops/PressureLogs/"
 
 TxtPattern  <-  ".txt"
 
@@ -63,11 +63,11 @@ FilesLog <-
 
 
 ## Reading stimulus table-------
-StimulusTable <- read.table("Data/InputTables/CBF_Experimentsonlypositive.csv", header = TRUE, sep = ",")
+StimulusTable <- read.table("Data/InputTables/StimCBF_WTCops.csv", header = TRUE, sep = ",")
 StimulusTable$Trial_ID <- str_replace(StimulusTable$Trial_ID, ".txt", "")
 StimulusTable$Pressure_Level <- as.character(StimulusTable$Pressure_Level)
 ## Creating table for all CBFs and closures per experiment-------
-InputPathKymo <- "/ebio/ag-jekely/share/Luis/Behavioral_experiments/pressure_setup/Pressure_cilia/TeTxLC/RecordingsMeasurements/"
+InputPathKymo <- "/ebio/ag-jekely/share/Luis/Behavioral_experiments/pressure_setup/Pressure_cilia/WT_Cops/RecordingsMeasurements/"
 InputPathCBFMODA <- "/ebio/ag-jekely/share/Luis/Writing/Pressure_paper/publicRepo/Bezares_et_al_2023_Pressure/Data/FreqRidges_CiliaBeating/"
 
 ### Reading FFT files -------
@@ -186,7 +186,7 @@ for (a in seq_along(StimulusTable$Trial_ID)){
 
 #Writing tables-------
 SavePath <- "Data/TablesResults/"
-FlNameCBFClos <- "CBF_MODA-Closure_CiliaryDynamics_TetXLC.csv"
+FlNameCBFClos <- "CBF_MODA-Closure_CiliaryDynamics_WTCops.csv"
 write.csv(tibble(FinalCBFClos), paste(SavePath, FlNameCBFClos, sep = ""), row.names = FALSE)
 
 SavePath <- "Data/TablesResults/"
