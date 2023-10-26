@@ -26,13 +26,18 @@ rm(list = ls(all.names = TRUE)) #will clear all objects includes hidden objects.
 gc() #free up memory and report the memory usage.
 
 #Setting up libraries----
-  library(dplyr)
-  library(ggplot2) # For plotting results
-  library(pspline) # For calculating rates of change
-  library(readr)
-  library(reshape2) # for creating melted tables
-  library(stringr)
-  library(tidyr)
+library(dplyr)
+library(ggplot2) # For plotting results
+library(here)
+library(pspline) # For calculating rates of change
+library(readr)
+library(reshape2) # for creating melted tables
+library(stringr)
+library(tidyr)
+
+#switch to project directory
+ProjectDir  <- here()
+setwd(ProjectDir)
 
 #Part1 Analysis of metrics-----
 ##Defining  input directories ####
@@ -64,7 +69,7 @@ FilesPressLog <- list.files(path = INDirPressure,
 StartProgramdelay <- 5
 
 ## Reading stimulus table####
-StimulusTable <- read.table("Data/InputTables/StepWT3dfpBatchExperiments.csv", header = TRUE, sep = ",")
+StimulusTable <- read.table("Data/InputTables/StepWT3dpfBatchExperiments.csv", header = TRUE, sep = ",")
 StimulusTable$Trial_ID <- str_replace(StimulusTable$Trial_ID, ".txt", "")
 StimulusTable$Stimulus_Level <- as.character(StimulusTable$Stimulus_Level)
 StimulusTable$Category_stimulus <- as.character(StimulusTable$Category_stimulus)
