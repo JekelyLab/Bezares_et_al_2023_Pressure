@@ -43,7 +43,7 @@ FilePathsXY <- fs::dir_ls(TableINdirXY, regexp = "\\.txt$")
 TableOUtdirMetrics <- "Data/Behaviour/RecordingsMeasurements/BatchExperiments/MetricsTables/"
 
 ## Reading stimulus table-----
-StimulusTable <- read.table("Data/InputTables/StepWT3dfpBatchExperiments.csv", header = TRUE, sep = ",")
+StimulusTable <- read.table("Data/InputTables/StepWT3dpfBatchExperiments.csv", header = TRUE, sep = ",")
 StimulusTable$Trial_ID <- str_replace(StimulusTable$Trial_ID, ".txt", "")
 StimulusTable$Stimulus_Level <- as.character(StimulusTable$Stimulus_Level)
 StimulusTable$Category_stimulus <- as.character(StimulusTable$Category_stimulus)
@@ -75,7 +75,7 @@ for (j in seq_along(FilePathsXY)) {
     FinaltabSplit <- XYcoords %>%
       group_by(TimeSec) %>%
       drop_na() %>%
-      filter(if (length(unique(TrackID)) > MaxTracks2Analyse)
+      filter(if (length(unique(TrackID)) > MaxTracks2Analyse)  # if there are more tracks than the limit number, only a subsample of the limit size is taken at random.
         TrackID %in% sample(unique(TrackID), MaxTracks2Analyse)
         else TrackID %in% unique(TrackID)) %>%
       ungroup() %>%
