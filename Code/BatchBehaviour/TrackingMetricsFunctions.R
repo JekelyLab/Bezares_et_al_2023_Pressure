@@ -16,7 +16,7 @@ MetricCalc <- function(TabXYcoord,mp,fr){
   
   tablNetDispPxFr <- TabXYcoord %>% group_by(TrackID) %>% group_modify(NetDispPerTrack) 
   
-  tableTortuosPerTrack <- tablTotalDispPxFr %>% rowwise() %>% summarise(across(X,~ tablNetDispPxFr[[cur_column()]][cur_group_id()]/.x,na.rm = TRUE))  #Accoriding to  Codling et al, 2008
+  tableTortuosPerTrack <- tablTotalDispPxFr %>% rowwise() %>% summarise(across(X,~ tablNetDispPxFr[[cur_column()]][cur_group_id()]/.x))  #Accoriding to  Codling et al, 2008
   MeanTortuos =  mean(tableTortuosPerTrack$X)
     
   tablVertDispPxFr <- TabXYcoord %>% group_by(TrackID) %>% group_modify(YdispPerTrack) 
