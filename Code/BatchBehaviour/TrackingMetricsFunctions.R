@@ -2,7 +2,9 @@
 
 
 MetricCalc <- function(TabXYcoord,mp,fr){
-  
+  TabXYcoord = FinaltabSplit[[k]]
+  mp = Mmpx1
+  fr =  FrameRate
   NumFrames <- length(unique(TabXYcoord$Frame)) #Obtaining the number of frames in the second analysed..
   NumTracks <- length(unique(TabXYcoord$TrackID)) #Obtaining the number of tracks in the second analysed.
   tablTotalDispPxFr <- TabXYcoord %>% group_by(TrackID) %>% group_modify(TotalDispPerTrack) # Calculating the total XY displacement per track for the  
@@ -19,17 +21,16 @@ MetricCalc <- function(TabXYcoord,mp,fr){
   tableTortuosPerTrack <- tablTotalDispPxFr %>% rowwise() %>% summarise(across(X,~ tablNetDispPxFr[[cur_column()]][cur_group_id()]/.x))  #Accoriding to  Codling et al, 2008
   MeanTortuos =  mean(tableTortuosPerTrack$X)
   
-  tablVertDispPxFr <- TabXYcoord %>% group_by(TrackID) %>% group_modify(YdispPerTrack) 
-  tablVertDispPxFr <- tablVertDispPxFr %>% mutate(DirectionTrack_vert =  case_when(Y>0 ~ "Downward",Y<0 ~ "Upward",Y == 0 ~ "Quiet"))
-  
-  tablHoriDispPxFr <- TabXYcoord %>% group_by(TrackID) %>% group_modify(XdispPerTrack) 
-  tablHoriDispPxFr <- tablHoriDispPxFr %>% mutate(DirectionTrack_Hori =  case_when(X>0 ~ "Rightward",X<0 ~ "Leftward",X == 0 ~ "Quiet"))
   
   #VertDisplMetrics
+  
+  tablVertDispPxFr <- TabXYcoord %>% group_by(TrackID) %>% group_modify(YdispPerTrack) 
+  tablVertDispPxFr <- tablVertDispPxFr %>% mutate(DirectionDispVert =  case_when(Y>0 ~ "Downward",Y<0 ~ "Upward",Y == 0 ~ "Quiet"))
+  
   AllTracksVertDisp = (sum(tablVertDispPxFr$Y)/(NumFrames*NumTracks))*mp*fr
   AllTracksVertDisp = AllTracksVertDisp*-1 #0 is at the top of cuvette.
-  UpTracksVD <- filter(tablVertDispPxFr,grepl("Upward",DirectionTrack_vert))
-  DownTracksVD <- filter(tablVertDispPxFr,grepl("Downward",DirectionTrack_vert))
+  UpTracksVD <- filter(tablVertDispPxFr,grepl("Upward",DirectionDispVert))
+  DownTracksVD <- filter(tablVertDispPxFr,grepl("Downward",DirectionDispVert))
   NumUpTracks <- length(UpTracksVD$TrackID)
   NumDownTracks <- length(DownTracksVD$TrackID)
   UpTracksVertDisp = (sum(UpTracksVD$Y)/(NumFrames*NumUpTracks))*mp*fr
@@ -37,15 +38,22 @@ MetricCalc <- function(TabXYcoord,mp,fr){
   UpTracksVertDisp = UpTracksVertDisp*-1
   DownTracksVertDisp = DownTracksVertDisp*-1
   
-  tablVertMov <- TabXYcoord %>% group_by(TrackID) %>% group_modify(YMovPerTrack) 
-  VertMov = (sum(tablVertMov$Y)/(NumTracks))*mp*fr
+  TableVertMov <- TabXYcoord %>% group_by(TrackID) %>% group_modify(YMovPerTrack) 
+  TableVertMov <- TableVertMov %>% mutate(DirectionMovVert =  case_when(Y>0 ~ "Downward",Y<0 ~ "Upward",Y == 0 ~ "Quiet"))
+  
+  
+  VertMov = (sum(TableVertMov$Y)/(NumTracks))*mp*fr
   VertMov = VertMov*-1
   
   #Horizontal DisplMetrics
+  
+  tablHoriDispPxFr <- TabXYcoord %>% group_by(TrackID) %>% group_modify(XdispPerTrack) 
+  tablHoriDispPxFr <- tablHoriDispPxFr %>% mutate(DirectionDispHori =  case_when(X>0 ~ "Rightward",X<0 ~ "Leftward",X == 0 ~ "Quiet"))
+  
+  
   AllTracksHoriDisp = (sum(tablHoriDispPxFr$X)/(NumFrames*NumTracks))*mp*fr
-  AllTracksHoriDisp = AllTracksHoriDisp #0 is at the left of cuvette.
-  LeftTracksHD <- filter(tablHoriDispPxFr,grepl("Leftward",DirectionTrack_Hori))
-  RightTracksHD <- filter(tablHoriDispPxFr,grepl("Rightward",DirectionTrack_Hori))
+  LeftTracksHD <- filter(tablHoriDispPxFr,grepl("Leftward",DirectionDispHori))
+  RightTracksHD <- filter(tablHoriDispPxFr,grepl("Rightward",DirectionDispHori))
   NumLeftTracks <- length(LeftTracksHD$TrackID)
   NumRightTracks <- length(RightTracksHD$TrackID)
   LeftTracksHoriDisp = (sum(LeftTracksHD$X)/(NumFrames*NumLeftTracks))*mp*fr
@@ -53,10 +61,19 @@ MetricCalc <- function(TabXYcoord,mp,fr){
   LeftTracksHoriDisp = LeftTracksHoriDisp
   RightTracksHoriDisp = RightTracksHoriDisp
   
-  tablHoriMov <- TabXYcoord %>% group_by(TrackID) %>% group_modify(XMovPerTrack) 
-  HoriMov = (sum(tablHoriMov$X)/(NumTracks))*mp*fr
+ 
+  TableHoriMov <- TabXYcoord %>% group_by(TrackID) %>% group_modify(XMovPerTrack) 
+  TableHoriMov <- TableHoriMov %>% mutate(DirectionMovHori =  case_when(X>0 ~ "Rightward",X<0 ~ "Leftward",X == 0 ~ "Quiet"))
+  
+  HoriMov = (sum(TableHoriMov$X)/(NumTracks))*mp*fr
   HoriMov = HoriMov
   
+  TabXYcoord <- TabXYcoord %>%
+    nest(data = -TrackID) %>%
+    mutate(DirectionDispVert = tablVertDispPxFr$DirectionDispVert,
+           DirectionDispHori = tablHoriDispPxFr$DirectionDispHori,
+           TableVertMov =TableVertMov$DirectionMovVert,
+           TableHoriMov = TableHoriMov$DirectionMovHori)
   
   return(c(Speed,
            AllTracksVertDisp,
