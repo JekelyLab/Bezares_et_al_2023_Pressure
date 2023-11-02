@@ -16,16 +16,20 @@ MetricCalc <- function(TabXYcoord,mp,fr){
   
   tablNetDispPxFr <- TabXYcoord %>% group_by(TrackID) %>% group_modify(NetDispPerTrack) 
   
-  tableTortuosPerTrack <- tablTotalDispPxFr %>% rowwise() %>% summarise(across(X,~ tablNetDispPxFr[[cur_column()]][cur_group_id()]/.x,na.rm = TRUE))  #Accoriding to  Codling et al, 2008
+  tableTortuosPerTrack <- tablTotalDispPxFr %>% rowwise() %>% summarise(across(X,~ tablNetDispPxFr[[cur_column()]][cur_group_id()]/.x))  #Accoriding to  Codling et al, 2008
   MeanTortuos =  mean(tableTortuosPerTrack$X)
-    
-  tablVertDispPxFr <- TabXYcoord %>% group_by(TrackID) %>% group_modify(YdispPerTrack) 
-  tablVertDispPxFr <- tablVertDispPxFr %>% mutate(DirectionTrack =  case_when(Y>0 ~ "Downward",Y<0 ~ "Upward",Y == 0 ~ "Quiet"))
   
+  tablVertDispPxFr <- TabXYcoord %>% group_by(TrackID) %>% group_modify(YdispPerTrack) 
+  tablVertDispPxFr <- tablVertDispPxFr %>% mutate(DirectionTrack_vert =  case_when(Y>0 ~ "Downward",Y<0 ~ "Upward",Y == 0 ~ "Quiet"))
+  
+  tablHoriDispPxFr <- TabXYcoord %>% group_by(TrackID) %>% group_modify(XdispPerTrack) 
+  tablHoriDispPxFr <- tablHoriDispPxFr %>% mutate(DirectionTrack_Hori =  case_when(X>0 ~ "Rightward",X<0 ~ "Leftward",X == 0 ~ "Quiet"))
+  
+  #VertDisplMetrics
   AllTracksVertDisp = (sum(tablVertDispPxFr$Y)/(NumFrames*NumTracks))*mp*fr
   AllTracksVertDisp = AllTracksVertDisp*-1 #0 is at the top of cuvette.
-  UpTracksVD <- filter(tablVertDispPxFr,grepl("Upward",DirectionTrack))
-  DownTracksVD <- filter(tablVertDispPxFr,grepl("Downward",DirectionTrack))
+  UpTracksVD <- filter(tablVertDispPxFr,grepl("Upward",DirectionTrack_vert))
+  DownTracksVD <- filter(tablVertDispPxFr,grepl("Downward",DirectionTrack_vert))
   NumUpTracks <- length(UpTracksVD$TrackID)
   NumDownTracks <- length(DownTracksVD$TrackID)
   UpTracksVertDisp = (sum(UpTracksVD$Y)/(NumFrames*NumUpTracks))*mp*fr
@@ -37,8 +41,39 @@ MetricCalc <- function(TabXYcoord,mp,fr){
   VertMov = (sum(tablVertMov$Y)/(NumTracks))*mp*fr
   VertMov = VertMov*-1
   
+  #Horizontal DisplMetrics
+  AllTracksHoriDisp = (sum(tablHoriDispPxFr$X)/(NumFrames*NumTracks))*mp*fr
+  AllTracksHoriDisp = AllTracksHoriDisp #0 is at the left of cuvette.
+  LeftTracksHD <- filter(tablHoriDispPxFr,grepl("Leftward",DirectionTrack_Hori))
+  RightTracksHD <- filter(tablHoriDispPxFr,grepl("Rightward",DirectionTrack_Hori))
+  NumLeftTracks <- length(LeftTracksHD$TrackID)
+  NumRightTracks <- length(RightTracksHD$TrackID)
+  LeftTracksHoriDisp = (sum(LeftTracksHD$X)/(NumFrames*NumLeftTracks))*mp*fr
+  RightTracksHoriDisp = (sum(RightTracksHD$X)/(NumFrames*NumRightTracks))*mp*fr
+  LeftTracksHoriDisp = LeftTracksHoriDisp
+  RightTracksHoriDisp = RightTracksHoriDisp
   
-  return(c(Speed,AllTracksVertDisp,UpTracksVertDisp,DownTracksVertDisp,VertMov,NumUpTracks,NumDownTracks,MeanTortuos,MeanStraightX,MeanStraightY))
+  tablHoriMov <- TabXYcoord %>% group_by(TrackID) %>% group_modify(XMovPerTrack) 
+  HoriMov = (sum(tablHoriMov$X)/(NumTracks))*mp*fr
+  HoriMov = HoriMov
+  
+  
+  return(c(Speed,
+           AllTracksVertDisp,
+           UpTracksVertDisp,
+           DownTracksVertDisp,
+           VertMov,
+           NumUpTracks,
+           NumDownTracks,
+           AllTracksHoriDisp,
+           LeftTracksHoriDisp,
+           RightTracksHoriDisp,
+           HoriMov,
+           NumLeftTracks,
+           NumRightTracks,
+           MeanTortuos,
+           MeanStraightX,
+           MeanStraightY))
 }  
 
 TotalDispPerTrack <- function(set,...){    
@@ -54,7 +89,7 @@ TotalDispPerTrack <- function(set,...){
 }
 
 StraightnessY <- function(set,...){
-
+  
   SumStraightY = 0
   for(k in 1:(length(set$Frame)-1)){
     Ymov <- set[k+1,"Y"]-set[k,"Y"]
@@ -91,7 +126,7 @@ StraightnessX <- function(set,...){
 }
 
 NetDispPerTrack <- function(set,...){
-
+  
   Yval <- (set[length(set$Frame),"Y"]-set[1,"Y"])^2
   Xval <- (set[length(set$Frame),"X"]-set[1,"X"])^2
   EuclNetD = sqrt(Xval+Yval)
@@ -109,10 +144,29 @@ YdispPerTrack <- function(set,...){
   return(SumFrame_y)
 }
 
+XdispPerTrack <- function(set,...){    
+  
+  SumFrame_x = 0
+  for(x in 1:(length(set$Frame)-1)){
+    Xval <- (set[x+1,"X"]-set[x,"X"])
+    SumFrame_x = SumFrame_x+Xval
+    
+  }
+  return(SumFrame_x)
+}
+
 YMovPerTrack <- function(set,...){    
   
   Yval <- (set[length(set$Frame),"Y"]-set[1,"Y"])
   Yval <- Yval/length(set$Frame)
   
   return(Yval)
+}
+
+XMovPerTrack <- function(set,...){    
+  
+  Xval <- (set[length(set$Frame),"X"]-set[1,"X"])
+  Xval <- Xval/length(set$Frame)
+  
+  return(Xval)
 }
