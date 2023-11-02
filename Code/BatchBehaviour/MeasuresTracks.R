@@ -43,7 +43,7 @@ FilePathsXY <- fs::dir_ls(TableINdirXY, regexp = "\\.txt$")
 TableOUtdirMetrics <- "Data/Behaviour/RecordingsMeasurements/BatchExperiments/MetricsTables/"
 
 ## Reading stimulus table-----
-StimulusTable <- read.table("Data/InputTables/StepWT3dfpBatchExperiments.csv", header = TRUE, sep = ",")
+StimulusTable <- read.table("Data/InputTables/StepWT3dpfBatchExperiments.csv", header = TRUE, sep = ",")
 StimulusTable$Trial_ID <- str_replace(StimulusTable$Trial_ID, ".txt", "")
 StimulusTable$Stimulus_Level <- as.character(StimulusTable$Stimulus_Level)
 StimulusTable$Category_stimulus <- as.character(StimulusTable$Category_stimulus)
@@ -59,10 +59,15 @@ write.csv(Parameters, paste(TableOUtdirMetrics, "Parameters_run_", Timestamp, ".
           append = TRUE,
           row.names = FALSE)
 
+##Tibble storing values#####
+
+CompleteTable <- tibble(.rows=NULL)
+
 for (j in seq_along(FilePathsXY)) {
-  IndexFile <- which(str_detect(unlist(lapply(str_split(FilePathsXY[[j]],
-                                                        pattern = "/"),
-                                              tail, n = 1L)),
+  FileName <- unlist(lapply(str_split(FilePathsXY[[j]],
+                                      pattern = "/"),
+                            tail, n = 1L))
+  IndexFile <- which(str_detect(unlist(FileName),
                                 StimulusTable$Trial_ID) == TRUE)
   if (length(IndexFile) > 0) {
     Pxmm <- str_split(StimulusTable[IndexFile, "Pxmm"], "-")
@@ -104,9 +109,16 @@ for (j in seq_along(FilePathsXY)) {
         MetricsTable[k, "Avg_Y_movement"] <- Metrics[5]
         MetricsTable[k, "Num_Tracks_Up"] <- Metrics[6]
         MetricsTable[k, "Num_Tracks_Down"] <- Metrics[7]
-        MetricsTable[k, "Tortuosity"] <- Metrics[8]
-        MetricsTable[k, "Straightness_X"] <- Metrics[9]
-        MetricsTable[k, "Straightness_Y"] <- Metrics[10]
+        MetricsTable[k, "Avg_X_displacement"] <- Metrics[8]
+        MetricsTable[k, "Avg_X_displacement_Left"] <- Metrics[9]
+        MetricsTable[k, "Avg_X_displacement_Right"] <- Metrics[10]
+        MetricsTable[k, "Avg_X_movement"] <- Metrics[11]
+        MetricsTable[k, "Num_Tracks_Left"] <- Metrics[12]
+        MetricsTable[k, "Num_Tracks_Right"] <- Metrics[13]
+        MetricsTable[k, "Tortuosity"] <- Metrics[14]
+        MetricsTable[k, "Straightness_X"] <- Metrics[15]
+        MetricsTable[k, "Straightness_Y"] <- Metrics[16]
+        TempTable <- FinaltabSplit[[k]] %>% left_join(Metrics$data[[1]] %>% unnest(CoordXY))
       } else {  # In case, that particular bin does not have any track to analyse.
         MetricsTable[k, "Avg_Speed"] <- 0
         MetricsTable[k, "Avg_Y_displacement"] <- 0
@@ -115,11 +127,30 @@ for (j in seq_along(FilePathsXY)) {
         MetricsTable[k, "Avg_Y_movement"] <- 0
         MetricsTable[k, "Num_Tracks_Up"] <- 0
         MetricsTable[k, "Num_Tracks_Down"] <- 0
+        MetricsTable[k, "Avg_X_displacement"] <- 0
+        MetricsTable[k, "Avg_X_displacement_Left"] <- 0
+        MetricsTable[k, "Avg_X_displacement_Right"] <- 0
+        MetricsTable[k, "Avg_X_movement"] <- 0
+        MetricsTable[k, "Num_Tracks_Left"] <- 0
+        MetricsTable[k, "Num_Tracks_Right"] <- 0
         MetricsTable[k, "Tortuosity"] <- 0
         MetricsTable[k, "Straightness_X"] <- 0
         MetricsTable[k, "Straightness_Y"] <- 0
+        MetricsTable[k, "Tortuosity"] <- 0
+        MetricsTable[k, "Straightness_X"] <- 0
+        MetricsTable[k, "Straightness_Y"] <- 0
+        TempTable <- tibble(.rows=NULL)
       }
+      CompleteTable <- bind_rows(CompleteTable,TempTable)
     }
+    write.csv(CompleteTable, paste(TableOUtdirMetrics,
+                                  paste("SwimDir_",
+                                        as.character(MaxTracks2Analyse),
+                                        "-tracks_",
+                                        FileName,
+                                        sep = ""),
+                                  sep = ""),
+              row.names = FALSE)
     colnames(MetricsTable) <- c("Frame",
                                "File_name",
                                "Avg_Speed",
