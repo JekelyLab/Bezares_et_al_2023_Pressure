@@ -2,9 +2,7 @@
 
 
 MetricCalc <- function(TabXYcoord,mp,fr){
-  TabXYcoord = FinaltabSplit[[k]]
-  mp = Mmpx1
-  fr =  FrameRate
+  
   NumFrames <- length(unique(TabXYcoord$Frame)) #Obtaining the number of frames in the second analysed..
   NumTracks <- length(unique(TabXYcoord$TrackID)) #Obtaining the number of tracks in the second analysed.
   tablTotalDispPxFr <- TabXYcoord %>% group_by(TrackID) %>% group_modify(TotalDispPerTrack) # Calculating the total XY displacement per track for the  
@@ -69,7 +67,7 @@ MetricCalc <- function(TabXYcoord,mp,fr){
   HoriMov = HoriMov
   
   TabXYcoord <- TabXYcoord %>%
-    nest(data = -TrackID) %>%
+    nest(CoordXY = -TrackID) %>%
     mutate(DirectionDispVert = tablVertDispPxFr$DirectionDispVert,
            DirectionDispHori = tablHoriDispPxFr$DirectionDispHori,
            TableVertMov =TableVertMov$DirectionMovVert,
@@ -90,7 +88,8 @@ MetricCalc <- function(TabXYcoord,mp,fr){
            NumRightTracks,
            MeanTortuos,
            MeanStraightX,
-           MeanStraightY))
+           MeanStraightY,
+           TabXYcoord %>% nest()))
 }  
 
 TotalDispPerTrack <- function(set,...){    
