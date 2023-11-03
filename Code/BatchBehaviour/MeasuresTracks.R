@@ -24,24 +24,23 @@
 ##########################################
 
 #Initialize----
-  rm(list = ls(all.names = TRUE)) #will clear all objects includes hidden objects.
-  gc() #free up memory and report the memory usage.
+rm(list = ls(all.names = TRUE)) #will clear all objects includes hidden objects.
+gc() #free up memory and report the memory usage.
 
 #Setting up libraries----
 
-  library(dplyr)
-  library(tidyverse)
-  library(ggplot2)
-  library(readr)
-  source("Code/BatchBehaviour/TrackingMetricsFunctions.R")
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(readr)
+source("Code/BatchBehaviour/TrackingMetricsFunctions.R")
 
 ## enter directory for importing formtted table of XY coordinates:------
 TableINdirXY  <- "Data/Behaviour/RecordingsMeasurements/BatchExperiments/ExtractedTrackCoordinates/"
-
-
 FilePathsXY <- fs::dir_ls(TableINdirXY, regexp = "\\.txt$")
+## enter directory for writing files:------
 TableOUtdirMetrics <- "Data/Behaviour/RecordingsMeasurements/BatchExperiments/MetricsTables/"
-
+TableOUtdirTxtImages <- "Data/Behaviour/TxtImages/"
 ## Reading stimulus table-----
 StimulusTable <- read.table("Data/InputTables/StepWT3dpfBatchExperiments.csv", header = TRUE, sep = ",")
 StimulusTable$Trial_ID <- str_replace(StimulusTable$Trial_ID, ".txt", "")
@@ -60,8 +59,6 @@ write.csv(Parameters, paste(TableOUtdirMetrics, "Parameters_run_", Timestamp, ".
           row.names = FALSE)
 
 ##Tibble storing values#####
-
-CompleteTable <- tibble(.rows=NULL)
 
 for (j in seq_along(FilePathsXY)) {
   FileName <- unlist(lapply(str_split(FilePathsXY[[j]],
@@ -101,7 +98,12 @@ for (j in seq_along(FilePathsXY)) {
     MetricsTable$Straightness_Y <- NA
     for (k in seq_along(FinaltabSplit)) {  # Loop through each bin (usually each second) of the file.
       if (nrow(FinaltabSplit[[k]]) > 1) {
-        Metrics <- MetricCalc(FinaltabSplit[[k]], Mmpx1, FrameRate) #Each of the metrics is calculated for each of the second in the trial.
+        Metrics <- MetricCalc(FinaltabSplit[[k]],
+                              Mmpx1,
+                              FrameRate,
+                              StimulusTable[IndexFile, "WxH_Img"],
+                              StimulusTable[IndexFile, "TxtImgSave"],
+                              TableOUtdirTxtImages) #Each of the metrics is calculated for each of the second in the trial.
         MetricsTable[k, "Avg_Speed"] <- Metrics[1]
         MetricsTable[k, "Avg_Y_displacement"] <- Metrics[2]
         MetricsTable[k, "Avg_Y_displacement_Up"] <- Metrics[3]
@@ -118,7 +120,6 @@ for (j in seq_along(FilePathsXY)) {
         MetricsTable[k, "Tortuosity"] <- Metrics[14]
         MetricsTable[k, "Straightness_X"] <- Metrics[15]
         MetricsTable[k, "Straightness_Y"] <- Metrics[16]
-        TempTable <- FinaltabSplit[[k]] %>% left_join(Metrics$data[[1]] %>% unnest(CoordXY))
       } else {  # In case, that particular bin does not have any track to analyse.
         MetricsTable[k, "Avg_Speed"] <- 0
         MetricsTable[k, "Avg_Y_displacement"] <- 0
@@ -139,18 +140,16 @@ for (j in seq_along(FilePathsXY)) {
         MetricsTable[k, "Tortuosity"] <- 0
         MetricsTable[k, "Straightness_X"] <- 0
         MetricsTable[k, "Straightness_Y"] <- 0
-        TempTable <- tibble(.rows=NULL)
       }
-      CompleteTable <- bind_rows(CompleteTable,TempTable)
     }
-    write.csv(CompleteTable, paste(TableOUtdirMetrics,
-                                  paste("SwimDir_",
-                                        as.character(MaxTracks2Analyse),
-                                        "-tracks_",
-                                        FileName,
-                                        sep = ""),
-                                  sep = ""),
-              row.names = FALSE)
+    # write.csv(CompleteTable, paste(TableOUtdirMetrics,
+    #                               paste("SwimDir_",
+    #                                     as.character(MaxTracks2Analyse),
+    #                                     "-tracks_",
+    #                                     FileName,
+    #                                     sep = ""),
+    #                               sep = ""),
+    #           row.names = FALSE)
     colnames(MetricsTable) <- c("Frame",
                                "File_name",
                                "Avg_Speed",
