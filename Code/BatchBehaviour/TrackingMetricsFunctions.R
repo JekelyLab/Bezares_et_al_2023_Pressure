@@ -1,19 +1,37 @@
+#Loading libraries
+
+
+library(tidyverse)
+source("Code/BatchBehaviour/TextImageSave.R")
+
 #------Functions for calculating metrics----####
 
 
-MetricCalc <- function(TabXYcoord,mp,fr){
+MetricCalc <- function(TabXYcoord,mp,fr,ImgPxs,FlagImgSave,ODir){
+  # TabXYcoord = FinaltabSplit[[k]]
+  # mp = Mmpx1
+  # fr = FrameRate
+  ODir = TableOUtdirTxtImages
+  ImgPxs = StimulusTable[IndexFile, "WxH_Img"]
+  FlagImgSave <- StimulusTable[IndexFile, "TxtImgSave"]
+  
   
   NumFrames <- length(unique(TabXYcoord$Frame)) #Obtaining the number of frames in the second analysed..
   NumTracks <- length(unique(TabXYcoord$TrackID)) #Obtaining the number of tracks in the second analysed.
-  tablTotalDispPxFr <- TabXYcoord %>% group_by(TrackID) %>% group_modify(TotalDispPerTrack) # Calculating the total XY displacement per track for the  
+  tablTotalDispPxFr <- TabXYcoord %>%
+    group_by(TrackID) %>%
+    group_modify(TotalDispPerTrack) # Calculating the total XY displacement per track for the  
   Speed = (sum(tablTotalDispPxFr$X)/(NumFrames*NumTracks))*mp*fr
   
-  StraightnessYperTrack <- TabXYcoord %>% group_by(TrackID) %>% group_modify(StraightnessY)
+  StraightnessYperTrack <- TabXYcoord %>%
+    group_by(TrackID) %>%
+    group_modify(StraightnessY)
   MeanStraightY = (sum(StraightnessYperTrack$Y)/(NumFrames*NumTracks))  
-  StraightnessXperTrack <- TabXYcoord %>% group_by(TrackID) %>% group_modify(StraightnessX)
+  StraightnessXperTrack <- TabXYcoord %>%
+    group_by(TrackID) %>%
+    group_modify(StraightnessX)
   MeanStraightX = (sum(StraightnessXperTrack$X)/(NumFrames*NumTracks))
-  
-  
+
   tablNetDispPxFr <- TabXYcoord %>% group_by(TrackID) %>% group_modify(NetDispPerTrack) 
   
   tableTortuosPerTrack <- tablTotalDispPxFr %>% rowwise() %>% summarise(across(X,~ tablNetDispPxFr[[cur_column()]][cur_group_id()]/.x))  #Accoriding to  Codling et al, 2008
@@ -22,22 +40,30 @@ MetricCalc <- function(TabXYcoord,mp,fr){
   
   #VertDisplMetrics
   
-  tablVertDispPxFr <- TabXYcoord %>% group_by(TrackID) %>% group_modify(YdispPerTrack) 
-  tablVertDispPxFr <- tablVertDispPxFr %>% mutate(DirectionDispVert =  case_when(Y>0 ~ "Downward",Y<0 ~ "Upward",Y == 0 ~ "Quiet"))
+  TableVertDispPxFr <- TabXYcoord %>% group_by(TrackID) %>% group_modify(YdispPerTrack) 
+  TableVertDispPxFr <- TableVertDispPxFr %>% mutate(DirectionDispVert =  case_when(Y>0 ~ "Downward",Y<0 ~ "Upward",Y == 0 ~ "Quiet"))
   
-  AllTracksVertDisp = (sum(tablVertDispPxFr$Y)/(NumFrames*NumTracks))*mp*fr
+  AllTracksVertDisp = (sum(TableVertDispPxFr$Y)/(NumFrames*NumTracks))*mp*fr
   AllTracksVertDisp = AllTracksVertDisp*-1 #0 is at the top of cuvette.
-  UpTracksVD <- filter(tablVertDispPxFr,grepl("Upward",DirectionDispVert))
-  DownTracksVD <- filter(tablVertDispPxFr,grepl("Downward",DirectionDispVert))
-  NumUpTracks <- length(UpTracksVD$TrackID)
-  NumDownTracks <- length(DownTracksVD$TrackID)
-  UpTracksVertDisp = (sum(UpTracksVD$Y)/(NumFrames*NumUpTracks))*mp*fr
-  DownTracksVertDisp = (sum(DownTracksVD$Y)/(NumFrames*NumDownTracks))*mp*fr
-  UpTracksVertDisp = UpTracksVertDisp*-1
-  DownTracksVertDisp = DownTracksVertDisp*-1
-  
+  UpTracksVD <- filter(TableVertDispPxFr,grepl("Upward",DirectionDispVert))
+  DownTracksVD <- filter(TableVertDispPxFr,grepl("Downward",DirectionDispVert)) 
+  NumUpTracksVD <- length(UpTracksVD$TrackID)
+  NumDownTracksVD <- length(DownTracksVD$TrackID)
+  SumUpTracksVertDisp = (sum(UpTracksVD$Y)/(NumFrames*NumUpTracksVD))*mp*fr
+  SumDownTracksVertDisp = (sum(DownTracksVD$Y)/(NumFrames*NumDownTracksVD))*mp*fr
+  SumUpTracksVertDisp = SumUpTracksVertDisp*-1
+  SumDownTracksVertDisp = SumDownTracksVertDisp*-1
+  ###VertMov
   TableVertMov <- TabXYcoord %>% group_by(TrackID) %>% group_modify(YMovPerTrack) 
   TableVertMov <- TableVertMov %>% mutate(DirectionMovVert =  case_when(Y>0 ~ "Downward",Y<0 ~ "Upward",Y == 0 ~ "Quiet"))
+  UpTracksVM <- filter(TableVertMov,grepl("Upward",DirectionMovVert))
+  DownTracksVM <- filter(TableVertMov,grepl("Downward",DirectionMovVert))
+  NumUpTracksVM <- length(UpTracksVM$TrackID)
+  NumDownTracksVM <- length(DownTracksVM$TrackID)
+  SumUpTracksVertMov = (sum(UpTracksVM$Y)/(NumUpTracksVM))*mp*fr
+  SumDownTracksVertMov = (sum(DownTracksVM$Y)/(NumDownTracksVM))*mp*fr
+  SumUpTracksVertMov = SumUpTracksVertMov*-1
+  SumDownTracksVertMov = SumDownTracksVertMov*-1
   
   
   VertMov = (sum(TableVertMov$Y)/(NumTracks))*mp*fr
@@ -45,41 +71,56 @@ MetricCalc <- function(TabXYcoord,mp,fr){
   
   #Horizontal DisplMetrics
   
-  tablHoriDispPxFr <- TabXYcoord %>% group_by(TrackID) %>% group_modify(XdispPerTrack) 
-  tablHoriDispPxFr <- tablHoriDispPxFr %>% mutate(DirectionDispHori =  case_when(X>0 ~ "Rightward",X<0 ~ "Leftward",X == 0 ~ "Quiet"))
+  TableHoriDispPxFr <- TabXYcoord %>% group_by(TrackID) %>% group_modify(XdispPerTrack) 
+  TableHoriDispPxFr <- TableHoriDispPxFr %>% mutate(DirectionDispHori =  case_when(X>0 ~ "Rightward",X<0 ~ "Leftward",X == 0 ~ "Quiet"))
   
-  
-  AllTracksHoriDisp = (sum(tablHoriDispPxFr$X)/(NumFrames*NumTracks))*mp*fr
-  LeftTracksHD <- filter(tablHoriDispPxFr,grepl("Leftward",DirectionDispHori))
-  RightTracksHD <- filter(tablHoriDispPxFr,grepl("Rightward",DirectionDispHori))
+  #Hor.Disp
+  AllTracksHoriDisp = (sum(TableHoriDispPxFr$X)/(NumFrames*NumTracks))*mp*fr
+  LeftTracksHD <- filter(TableHoriDispPxFr,grepl("Leftward",DirectionDispHori))
+  RightTracksHD <- filter(TableHoriDispPxFr,grepl("Rightward",DirectionDispHori))
   NumLeftTracks <- length(LeftTracksHD$TrackID)
   NumRightTracks <- length(RightTracksHD$TrackID)
   LeftTracksHoriDisp = (sum(LeftTracksHD$X)/(NumFrames*NumLeftTracks))*mp*fr
   RightTracksHoriDisp = (sum(RightTracksHD$X)/(NumFrames*NumRightTracks))*mp*fr
-  LeftTracksHoriDisp = LeftTracksHoriDisp
-  RightTracksHoriDisp = RightTracksHoriDisp
-  
- 
+
+  #Hor.Mov.
   TableHoriMov <- TabXYcoord %>% group_by(TrackID) %>% group_modify(XMovPerTrack) 
   TableHoriMov <- TableHoriMov %>% mutate(DirectionMovHori =  case_when(X>0 ~ "Rightward",X<0 ~ "Leftward",X == 0 ~ "Quiet"))
+  LeftTracksHM <- filter(TableHoriMov,grepl("Leftward",DirectionMovHori))
+  RightTracksHM <- filter(TableHoriMov,grepl("Rightward",DirectionMovHori))
+  NumLeftTracksHM <- length(LeftTracksHM$TrackID)
+  NumRightTracksHM <- length(RightTracksHM$TrackID)
+  SumLeftTracksHoriMov = (sum(LeftTracksHM$X)/(NumLeftTracksHM))*mp*fr
+  SumRightTracksHoriMov = (sum(RightTracksHM$X)/(NumRightTracksHM))*mp*fr
   
   HoriMov = (sum(TableHoriMov$X)/(NumTracks))*mp*fr
-  HoriMov = HoriMov
-  
-  TabXYcoord <- TabXYcoord %>%
-    nest(CoordXY = -TrackID) %>%
-    mutate(DirectionDispVert = tablVertDispPxFr$DirectionDispVert,
-           DirectionDispHori = tablHoriDispPxFr$DirectionDispHori,
-           TableVertMov =TableVertMov$DirectionMovVert,
-           TableHoriMov = TableHoriMov$DirectionMovHori)
-  
+
+  if(FlagImgSave == 1){
+    TrackIDTibbl <- pivot_longer(bind_rows(TableVertDispPxFr,
+                         TableVertMov,
+                         TableHoriDispPxFr,
+                         TableHoriMov),
+               cols = c("DirectionDispVert",
+                        "DirectionMovVert",
+                        "DirectionDispHori",
+                        "DirectionMovHori"),
+               names_to = "TypeD") %>% 
+    select(TrackID, TypeD,value) %>%
+    drop_na()
+  saveTxtimgs(TrackIDTibbl,
+              TabXYcoord,
+              ODir,
+              ImgPxs)
+  }
+
+
   return(c(Speed,
            AllTracksVertDisp,
-           UpTracksVertDisp,
-           DownTracksVertDisp,
+           SumUpTracksVertDisp,
+           SumDownTracksVertDisp,
            VertMov,
-           NumUpTracks,
-           NumDownTracks,
+           NumUpTracksVD,
+           NumDownTracksVD,
            AllTracksHoriDisp,
            LeftTracksHoriDisp,
            RightTracksHoriDisp,
@@ -88,8 +129,7 @@ MetricCalc <- function(TabXYcoord,mp,fr){
            NumRightTracks,
            MeanTortuos,
            MeanStraightX,
-           MeanStraightY,
-           TabXYcoord %>% nest()))
+           MeanStraightY))
 }  
 
 TotalDispPerTrack <- function(set,...){    
@@ -186,3 +226,4 @@ XMovPerTrack <- function(set,...){
   
   return(Xval)
 }
+
