@@ -8,13 +8,7 @@ source("Code/BatchBehaviour/TextImageSave.R")
 
 
 MetricCalc <- function(TabXYcoord,mp,fr,ImgPxs,FlagImgSave,ODir){
-  # TabXYcoord = FinaltabSplit[[k]]
-  # mp = Mmpx1
-  # fr = FrameRate
-  # ODir = TableOUtdirTxtImages
-  # ImgPxs = StimulusTable[IndexFile, "WxH_Img"]
-  # FlagImgSave <- StimulusTable[IndexFile, "TxtImgSave"]
-  # 
+  
   
   NumFrames <- length(unique(TabXYcoord$Frame)) #Obtaining the number of frames in the second analysed..
   NumTracks <- length(unique(TabXYcoord$TrackID)) #Obtaining the number of tracks in the second analysed.
