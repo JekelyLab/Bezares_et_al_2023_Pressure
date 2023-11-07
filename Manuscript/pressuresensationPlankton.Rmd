@@ -5,9 +5,9 @@ author:
   - name: "Luis Alberto Bezares Calderón<sup>1,`*`</sup>, Réza Shahidi<sup>1,2</sup> and Gáspár Jékely<sup>1,3,`*`</sup>"
     affiliation: "<sup>1</sup>Living Systems Institute, University of Exeter, Stocker road, Exeter, EX4 <br> <sup>2</sup>Electron Microscopy Core Facility (EMCF), University of Heidelberg, 69120 Heidelberg, Germany <br> <sup>3</sup>Centre for Organismal Studies (COS), University of Heidelberg, 69120 Heidelberg, Germany  <br> <sup>*</sup>Correspondence`:` l.a.bezares-calderon @ exeter.ac.uk, gaspar.jekely @ cos.uni-heidelberg.de"
 output:
-  html_document: default
-  pdf_document: default
   word_document: default
+  pdf_document: default
+  html_document: default
 keywords: pressure sensation, plankton, sensory systems, cilia
 bibliography: bibliography_pressurepaper.bib
 link-citations: yes

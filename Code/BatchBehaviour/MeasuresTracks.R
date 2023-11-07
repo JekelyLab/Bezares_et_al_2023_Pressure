@@ -77,7 +77,7 @@ for (j in seq_along(FilePathsXY)) {
     FinaltabSplit <- XYcoords %>%
       group_by(TimeSec) %>%
       drop_na() %>%
-      filter(if (length(unique(TrackID)) > MaxTracks2Analyse)
+      filter(if (length(unique(TrackID)) > MaxTracks2Analyse)  # if there are more tracks than the limit number, only a subsample of the limit size is taken at random.
         TrackID %in% sample(unique(TrackID), MaxTracks2Analyse)
         else TrackID %in% unique(TrackID)) %>%
       ungroup() %>%
