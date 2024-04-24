@@ -29,6 +29,7 @@
 
 
 # Loading libraries--------------------------------------------------
+  library(catmaid)
   library(cowplot)
   library(dplyr)
   library(ggplot2)
