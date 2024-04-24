@@ -1,7 +1,7 @@
 # Bezares-Calderon_et_al_2023_Pressure
 
 Repository for data, code and text for the Bezares-Calderon et al.2023 paper:
-"A ciliary photoreceptor-cell circuit mediates pressure response in marine zooplankton"
+"Mechanism of barotaxis in marine zooplankton"
 by
 Luis Alberto Bezares-Calderón, Réza Shahidi and Gáspár Jékely
 [https://doi.org/10.1101/2023.02.28.530398]
