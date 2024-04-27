@@ -1283,4 +1283,44 @@ Missing character: There is no ⁰ (U+2070) in font Arial/OT:language=dflt;mappi
 g=tex-text;!
 Missing character: There is no ⁷ (U+2077) in font Arial/OT:language=dflt;mappin
 g=tex-text;!
-Missing character: There is no ⁻ (U+207B) in font Arial/OT:
+Missing character: There is no ⁻ (U+207B) in font Arial/OT:language=dflt;mappin
+g=tex-text;!
+Missing character: There is no ⁰ (U+2070) in font Arial/OT:language=dflt;mappin
+g=tex-text;!
+Missing character: There is no ⁶ (U+2076) in font Arial/OT:language=dflt;mappin
+g=tex-text;!
+[7]
+File: Figures/Figure3.png Graphic file (type bmp)
+<Figures/Figure3.png>
+[8]
+Overfull \vbox (258.24579pt too high) has occurred while \output is active []
+
+[9] [10]
+File: Figures/Figure4.png Graphic file (type bmp)
+<Figures/Figure4.png>
+[11] [12]
+File: Figures/Figure5.png Graphic file (type bmp)
+<Figures/Figure5.png>
+[13] [14] [15]
+> Step: init table outer spec.
+> Step: parse table options.
+> Step: split table.
+> Step: init table inner spec.
+> Step: parse table inner spec.
+> Step: execute table commands.
+> Step: calculate cell and line sizes.
+! You can't use `macro parameter character #' in restricted horizontal mode.
+\l_tmpa_tl ->Cat##
+                  :T6793, RRID:AB_477585
+l.998 \end
+          {tblr} 
+Here is how much of TeX's memory you used:
+ 24002 strings out of 478190
+ 467035 string characters out of 5854827
+ 1049991 words of memory out of 5000000
+ 44260 multiletter control sequences out of 15000+600000
+ 482170 words of font info for 108 fonts, out of 8000000 for 9000
+ 14 hyphenation exceptions out of 8191
+ 86i,8n,122p,1022b,1232s stack positions out of 5000i,500n,10000p,200000b,80000s
+
+Output written on pressuresensationPlankton.pdf (15 pages).
