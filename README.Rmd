@@ -15,24 +15,25 @@ Title <- "Mechanism of barotaxis in marine zooplankton"
 ```
 
 
+[![DOI](https://zenodo.org/badge/607210164.svg)](https://zenodo.org/doi/10.5281/zenodo.11102697)
 
-[![DOI](https://zenodo.org/badge/ )](https://zenodo.org/doi/)
 
 
 # About the project: 
-- this is a repository from the [Jékely lab](https://www.cos.uni-heidelberg.de/en/research-groups/gaspar-jekely) containing source data and code documentation for the paper [Mechanism of barotaxis in marine zooplankton.](    https://doi.org/10.7554/eLife.94306.1)
+- this is a repository from the [Jékely lab](https://www.cos.uni-heidelberg.de/en/research-groups/gaspar-jekely) containing source data and code documentation for the paper [Mechanism of barotaxis in marine zooplankton.](https://doi.org/10.7554/eLife.94306.1)
 
 This repository contains the data and code for our paper:
 
-> Luis Alberto Bezares Calderón, Réza Shahidi, Gáspár Jékely. _`r Title`_. eLife <    https://doi.org/10.7554/eLife.94306.1>
+> Luis Alberto Bezares Calderón, Réza Shahidi, Gáspár Jékely. _`r Title`_. eLife <https://doi.org/10.7554/eLife.94306.1>
 
 ### How to cite
 
 Please cite this project as:
 
-[![DOI](https://zenodo.org/badge/)](https://zenodo.org/doi/0)
+[![DOI](https://zenodo.org/badge/607210164.svg)](https://zenodo.org/doi/10.5281/zenodo.11102697)
 
-> Authors, (`r format(Sys.Date(), "%Y")`). _Code and source data for `r Title`_. Accessed `r format(Sys.Date(), "%d %b %Y")`. Online at <(https://zenodo.org/doi/>
+
+> Authors, (`r format(Sys.Date(), "%Y")`). _Code and source data for `r Title`_. Accessed `r format(Sys.Date(), "%d %b %Y")`. Online at <(https://doi.org/10.5281/zenodo.11102698>
 
 ## How to work with the data
 
