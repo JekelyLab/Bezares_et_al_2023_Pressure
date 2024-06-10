@@ -71,7 +71,8 @@ theme_plot <- theme(
 
   ### read data 
   
-TableLinearIndDisp <- read_csv("Data/SourceData_elife/Figure1-SourceData7.csv")
+TableLinearIndDisp <- read_csv("Data/SourceData_elife/Figure1-SourceData7.csv",
+                               comment = "##")
 
 
 ##Visually assessing track number to decide cut off

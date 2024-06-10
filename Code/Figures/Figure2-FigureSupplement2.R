@@ -66,7 +66,8 @@ ThemePlot <- theme(
 
 ### read data Fluo intensity --------------------------------------------------
 
-FinalFluoTable <- read_csv("Data/SourceData_elife/Figure2-SourceData1.csv")
+FinalFluoTable <- read_csv("Data/SourceData_elife/Figure2-SourceData1.csv",
+                           comment = "##")
 
 #Grouping ratiometric measurements
 

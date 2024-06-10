@@ -29,7 +29,10 @@
 
 
 # Loading libraries--------------------------------------------------
-  library(catmaid)
+  library(catmaid) 
+  # if (!require("remotes")) install.packages("remotes")
+  # # nb repo is rcatmaid, but R package name is catmaid
+  # remotes::install_github("natverse/rcatmaid")
   library(cowplot)
   library(dplyr)
   library(ggplot2)
@@ -40,6 +43,7 @@
   library(png)
   library(patchwork)
   library(rbokeh)
+  library(readr)
   library(rstatix)
   library(scales)
   library(stringi)
@@ -73,7 +77,8 @@ ThemePlot <- theme(
 
 ### read data
 
-TableIndStep2dpf <- read_csv("Data/SourceData_elife/Figure1-SourceData1.csv")
+TableIndStep2dpf <- read_csv("Data/SourceData_elife/Figure1-SourceData1.csv",
+                             comment = "##")
 
 ###define pressure levels
 
@@ -281,8 +286,8 @@ ggsave("Manuscript/pictures/Panel_prVSMaxAVGdisp_step2dpf.png",
 #3 dpf --------------------------------------------------
 ### read data 3 dpf
 
-TableIndStep3dpf <- read.csv("Data/SourceData_elife/Figure1-SourceData2.csv",
-                             header = TRUE, sep = ",")
+TableIndStep3dpf <- read_csv("Data/SourceData_elife/Figure1-SourceData2.csv", 
+                             comment = "##")
 TableIndStep3dpf <- as_tibble(TableIndStep3dpf)
 
 ##Visually assessing track number to decide cut off
@@ -509,7 +514,8 @@ ggsave(
 
 # Long displacement 3dpf -----
 ### read data
-TableIndLongDisp <- read_csv("Data/SourceData_elife/Figure1-SourceData3.csv")
+TableIndLongDisp <- read_csv("Data/SourceData_elife/Figure1-SourceData3.csv", 
+                             comment = "##")
 
 ##Visually assessing track number to decide cut off
 CutoffLong <- 100
@@ -762,7 +768,8 @@ ggsave("Manuscript/pictures/PanelPcIncvsDisp_Long3dpf.png",
 # CB ----------------------------------------------------------------------
 
 ### read data 2 dpf
-TableCiliaNonbinned <- read_csv("Data/SourceData_elife/Figure1-SourceData4.csv")
+TableCiliaNonbinned <- read_csv("Data/SourceData_elife/Figure1-SourceData4.csv", 
+                                comment = "##")
 
 
 ###define pressure levels

@@ -17,6 +17,7 @@ gc() #free up memory and report the memory usage.
   library(patchwork)
   library(rbokeh)
   library(rgl)
+  library(readr)
   library(rstatix)
   library(stringr)
   library(tidyverse)
@@ -235,7 +236,8 @@ webshot2::webshot(url="Manuscript/pictures/visNetwork_INNOS.html",
 # CB--------------------------------------------------
 
 ### read data
-  TableCBFTetAndCont <- read_csv("Data/SourceData_elife/Figure4-SourceData1.csv")
+  TableCBFTetAndCont <- read_csv("Data/SourceData_elife/Figure4-SourceData1.csv",
+                                 comment = "##")
 
   ###define pressure levels
   TableCBFTetAndCont$Pressure_Level <- factor(TableCBFTetAndCont$Pressure_Level, 

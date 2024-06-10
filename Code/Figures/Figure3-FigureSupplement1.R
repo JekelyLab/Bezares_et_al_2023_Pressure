@@ -67,7 +67,8 @@
 
 ### read data 
 
-TableIndStepWTCops <- read_csv("Data/SourceData_elife/Figure3-SourceData1.csv")
+TableIndStepWTCops <- read_csv("Data/SourceData_elife/Figure3-SourceData1.csv",
+                               comment = "##")
 
 ##Visually assessing track number to decide cut off
 cutoffWC = 50
@@ -258,7 +259,8 @@ ggsave("Manuscript/pictures/Panel_PriorbatchSpeed_WTCops.png",
 
 
 ### read data 2 dpf
-TableCiliaNonbinned <- read_csv("Data/SourceData_elife/Figure1-SourceData4.csv")
+TableCiliaNonbinned <- read_csv("Data/SourceData_elife/Figure1-SourceData4.csv",
+                                comment = "##")
 
 
 ###define pressure levels

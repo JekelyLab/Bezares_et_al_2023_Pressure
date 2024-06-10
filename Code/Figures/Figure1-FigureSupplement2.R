@@ -71,7 +71,8 @@ theme_plot <- theme(
 
 ### read data
 
-TableIndStep1dpf <- read_csv("Data/SourceData_elife/Figure1-SourceData5.csv")
+TableIndStep1dpf <- read_csv("Data/SourceData_elife/Figure1-SourceData5.csv", 
+                             comment = "##")
 
 
 ###define pressure levels
@@ -197,7 +198,8 @@ ggsave("Manuscript/pictures/PanelTvsAVGDisp_step1dpf.png",
 #Hose----------
 ### read data
 
-  TableIndHose3dpf <- read_csv("Data/SourceData_elife/Figure1-SourceData6.csv")
+  TableIndHose3dpf <- read_csv("Data/SourceData_elife/Figure1-SourceData6.csv",
+                               comment = "##")
   
   
   ##Visually assessing track number to decide cut off

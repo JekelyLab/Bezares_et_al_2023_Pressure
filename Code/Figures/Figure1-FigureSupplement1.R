@@ -70,7 +70,8 @@ ThemePlot <- theme(
 ##2dpf--------------------------------------------------
 
 ### read data
-TableIndStep2dpf <- read_csv("Data/SourceData_elife/Figure1-SourceData1.csv")
+TableIndStep2dpf <- read_csv("Data/SourceData_elife/Figure1-SourceData1.csv",
+                             comment = "##")
 
 
 ###Ratio Up/Down tracks
@@ -379,7 +380,8 @@ ggsave("Manuscript/pictures/PanelTvsIndDispBP_step2dpf.png",
 
 ### read data
 
-TableIndStep3dpf <- read_csv("Data/SourceData_elife/Figure1-SourceData2.csv")
+TableIndStep3dpf <- read_csv("Data/SourceData_elife/Figure1-SourceData2.csv", 
+                             comment = "##")
 
 ###Ratio Up/Down tracks
 TableIndStep3dpf <- 

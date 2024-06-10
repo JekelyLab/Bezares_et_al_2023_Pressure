@@ -67,7 +67,8 @@ ThemePlot <- theme(
 
  
   ### read data 2 dpf
-  TableCiliaNonbinned <- read_csv("Data/SourceData_elife/Figure1-SourceData4.csv")
+  TableCiliaNonbinned <- read_csv("Data/SourceData_elife/Figure1-SourceData4.csv",
+                                  comment = "##")
   
   
   ###define pressure levels

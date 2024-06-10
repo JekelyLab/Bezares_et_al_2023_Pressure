@@ -69,7 +69,8 @@
 # CB--------------------------------------------------
 
 ### read data
-TableCBFTetAndCont <- read_csv("Data/SourceData_elife/Figure4-SourceData1.csv")
+TableCBFTetAndCont <- read_csv("Data/SourceData_elife/Figure4-SourceData1.csv",
+                               comment = "##")
 
 ###define pressure levels
 TableCBFTetAndCont$Pressure_Level <- factor(TableCBFTetAndCont$Pressure_Level, 

@@ -75,7 +75,8 @@
 
 ### read data
 
-TableIndStepWTCops <- read_csv("Data/SourceData_elife/Figure3-SourceData1.csv")
+TableIndStepWTCops <- read_csv("Data/SourceData_elife/Figure3-SourceData1.csv",
+                               comment = "##")
 
 
 ### Smoothing curves to get maximal values
@@ -272,7 +273,8 @@ ggsave("Manuscript/pictures/Panel_prVSMaxdispInd-AVG_step2dpf.png",
 # CB ----------------------------------------------------------------------
 
 ### read data 2 dpf
-TableCiliaNonbinned <- read_csv("Data/SourceData_elife/Figure1-SourceData4.csv")
+TableCiliaNonbinned <- read_csv("Data/SourceData_elife/Figure1-SourceData4.csv", 
+                                comment = "##")
 
 ###define levels
 TableCiliaNonbinned$Pressure_Level <- factor(TableCiliaNonbinned$Pressure_Level, 
@@ -458,7 +460,8 @@ ggsave(
 #Volume analysis cPRCs --------------------------------------------------
 
 ### read data cPRC volumes
-TableVols <- read_csv("Data/SourceData_elife/Figure3-SourceData2.csv")
+TableVols <- read_csv("Data/SourceData_elife/Figure3-SourceData2.csv",
+                      comment = "##")
 
 ###define levels
 
@@ -750,10 +753,8 @@ LengthBranchPlot <- (
       tip.length = 0,
       step.increase = 0.05, 
       label = "p") +  
-    #scale_y_continuous(breaks = seq(0,100,20)) +
     scale_x_discrete(labels= Glabels) +
     geom_hline(yintercept = 0) +
-    #coord_cartesian(ylim = c(0,110)) + 
     labs(
       x = "",
       y = str_wrap("relative branch length (% total length)",width = 23),
