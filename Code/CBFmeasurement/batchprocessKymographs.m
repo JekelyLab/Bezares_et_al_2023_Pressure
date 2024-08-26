@@ -1,14 +1,14 @@
 
 %Reading stimulus table
 StimulusTableName = "StimCBF_WTCops.csv";
-ISTablpath = "/ebio/ag-jekely/share/Luis/Writing/Pressure_paper/publicRepo/Bezares_et_al_2023_Pressure/Data/InputTables/";
+ISTablpath = "./Data/InputTables/";
 FullIpath= strcat(ISTablpath, StimulusTableName);
 StimTable = readtable( FullIpath, 'ReadVariableNames',true);
 
-FOutdir = '/ebio/ag-jekely/share/Luis/Writing/Pressure_paper/publicRepo/Bezares_et_al_2023_Pressure/Data/FreqRidges_CiliaBeating/';
+FOutdir = './Data/FreqRidges_CiliaBeating/';
 
 %dir read
-FIndir = '/ebio/ag-jekely/share/Luis/Writing/Pressure_paper/publicRepo/Bezares_et_al_2023_Pressure/Data/Kymographs/CLAEHKymographs/CSV-CLAEH/Input/WT/todo/';
+FIndir = './Data/Kymographs/CLAEHKymographs/CSV-CLAEH/Input/WT/todo/';
 PatternFile = strcat(FIndir,'**/CLAEH*');
 Files=dir(PatternFile);
 ListFileNames = {Files.name};
@@ -24,7 +24,7 @@ for m = 1:length(StimTable.Trial_ID)
         NumSignals = 0;
         for j = 1:length(coordCells)
             BinnedI = binning(coordCells(j,1),coordCells(j,2),Image);
-            NewFreq = WaveCalc(BinnedI);
+            NewFreq = WaveCalc(BinnedI,StimTable.Cell_border_start(m));
             NumSignals = NumSignals + width(BinnedI);
             if(j == 1)
                 OldFreq = NewFreq;
