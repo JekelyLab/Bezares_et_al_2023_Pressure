@@ -722,19 +722,28 @@ SummarySegLength$Genotype <- factor(SummarySegLength$Genotype ,
 
 Glabels <-  (parse(text=unique(as.character(SummarySegLength$Genotype))))
 
-##Comparing normalized length of external branch.
+##Comparing normalized length of basal, internal and external branch.
 
-stat.testBranching <- SummarySegLength %>% ungroup() %>%
+stat.testBranchingLess <- SummarySegLength %>% filter(Tag %in% c("basal","internal")) %>% ungroup() %>%
   group_by(Tag) %>%
-  wilcox_test(pcSeqLength ~ Genotype, alternative = "two.sided", paired = F) %>%
+  wilcox_test(pcSeqLength ~ Genotype, alternative = "less", paired = F) %>%
   adjust_pvalue(method = "bonferroni") %>%
   add_significance()
-stat.testBranching
-print(stat.testBranching, n = 100)
-stat.testBranching <- stat.testBranching %>% 
-  add_y_position()
-stat.testBranching$y.position <- stat.testBranching$y.position-stat.testBranching$y.position*0.1
-stat.testBranching$y.position <- c(15,30,40)
+
+
+stat.testBranchingGreater <- SummarySegLength %>% filter(Tag %in% c("terminal")) %>% ungroup() %>%
+  group_by(Tag) %>%
+  wilcox_test(pcSeqLength ~ Genotype, alternative = "greater", paired = F) %>%
+  adjust_pvalue(method = "bonferroni") %>%
+  add_significance()
+
+
+finalstat.testBranching <- bind_rows(stat.testBranchingLess,stat.testBranchingGreater)
+
+finalstat.testBranching <- finalstat.testBranching %>% add_y_position()
+finalstat.testBranching$y.position <- finalstat.testBranching$y.position-finalstat.testBranching$y.position*0.1
+finalstat.testBranching$y.position <- c(15,30,40)
+
 LengthBranchPlot <- (
   ggplot(SummarySegLength,
          aes(x=Genotype,y = pcSeqLength, col = Genotype)) +
@@ -748,11 +757,11 @@ LengthBranchPlot <- (
     geom_point(position=position_jitterdodge(dodge.width = 1)) +
     scale_color_manual(values =  c("#000000", "#D55E00")) +
     stat_pvalue_manual(
-      stat.testBranching,
+      finalstat.testBranching,
       bracket.nudge.y = 0, 
       tip.length = 0,
       step.increase = 0.05, 
-      label = "p") +  
+      label = "p.adj") +  
     scale_x_discrete(labels= Glabels) +
     geom_hline(yintercept = 0) +
     labs(
@@ -768,9 +777,11 @@ LengthBranchPlot <- (
   Tag == "basal" ~ scale_y_continuous(limits = c(0, 17)),
   Tag == "internal" ~ scale_y_continuous(limits = c(0, 35)),
   Tag == "terminal" ~ scale_y_continuous(limits = c(0, 102))
-  )
-  )
+)
+)
 LengthBranchPlot
+
+
 
 
   # generate figure composite panel grid ------------------------------------
