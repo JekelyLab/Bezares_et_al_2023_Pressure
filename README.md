@@ -9,7 +9,7 @@
   lab](https://www.cos.uni-heidelberg.de/en/research-groups/gaspar-jekely)
   containing source data and code documentation for the paper [Mechanism
   of barotaxis in marine
-  zooplankton.](https://doi.org/10.7554/eLife.94306.1)
+  zooplankton.](https://doi.org/10.7554/eLife.94306.3)
 
 This repository contains the data and code for our paper:
 
