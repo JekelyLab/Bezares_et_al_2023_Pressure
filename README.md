@@ -15,7 +15,7 @@ This repository contains the data and code for our paper:
 
 > Luis Alberto Bezares Calderón, Réza Shahidi, Gáspár Jékely. *Mechanism
 > of barotaxis in marine zooplankton*. eLife
-> <https://doi.org/10.7554/eLife.94306.1>
+> <https://doi.org/10.7554/eLife.94306.3>
 
 ### How to cite
 
